@@ -1,11 +1,11 @@
-"use strict";
+'use strict';
 
-const { type } = require("node:os");
+const { type } = require('node:os');
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("Brands", {
+    await queryInterface.createTable('Brands', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -13,12 +13,12 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       category_id: {
-        type: Sequelize.STRING,
+        type: Sequelize.INTEGER,
         references: {
-          model: 'Category',
-          key: 'id'
+          model: 'Categories',
+          key: 'id',
         },
-        onDelete: 'CASCADE'
+        onDelete: 'CASCADE',
       },
       name: {
         type: Sequelize.STRING,
@@ -41,6 +41,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("Brands");
+    await queryInterface.dropTable('Brands');
   },
 };

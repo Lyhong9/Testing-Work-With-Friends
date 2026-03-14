@@ -1,6 +1,5 @@
 'use strict';
 const { Model } = require('sequelize');
-const sale = require('./sale');
 module.exports = (sequelize, DataTypes) => {
   class SaleItemDetail extends Model {
     /**
@@ -24,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       std_id: DataTypes.STRING,
       sale_id: DataTypes.STRING,
-      prd_id: DataTypes.INTEGER,
+      productID: DataTypes.INTEGER,
       qty: DataTypes.INTEGER,
       price: DataTypes.DOUBLE,
       create_by: DataTypes.STRING,
