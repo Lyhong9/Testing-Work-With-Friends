@@ -1,45 +1,32 @@
-'use strict';
-/** @type {import('sequelize-cli').Migration} */
+"use strict";
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Sales', {
+    await queryInterface.createTable("Sales", {
       id: {
-        allowNull: false,
-        autoIncrement: true,
+        type: Sequelize.INTEGER,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        autoIncrement: true,
       },
-      invoiceId: {
-        type: Sequelize.STRING
-      },
-      totalAmount: {
-        type: Sequelize.DECIMAL
-      },
-      tax: {
-        type: Sequelize.DECIMAL
-      },
-      paymentMethod: {
-        type: Sequelize.STRING
-      },
+      invoiceId: Sequelize.STRING,
+      totalAmount: Sequelize.DECIMAL,
+      tax: Sequelize.DECIMAL,
+      paymentMethod: Sequelize.STRING,
       userId: {
-        type: Sequelize.INTEGER.UNSIGNED,
+        type: Sequelize.INTEGER,
+        allowNull: true,
         references: {
-          model: 'Users',
-          key: 'id'
+          model: "Users", // **must match table name exactly**
+          key: "id",
         },
-        onDelete: 'CASCADE'
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL",
       },
-      createdAt: {
-        allowNull: false,
-        type: Sequelize.DATE
-      },
-      updatedAt: {
-        allowNull: false,
-        type: Sequelize.DATE
-      }
+      createdAt: Sequelize.DATE,
+      updatedAt: Sequelize.DATE,
     });
   },
+
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Sales');
-  }
+    await queryInterface.dropTable("Sales");
+  },
 };

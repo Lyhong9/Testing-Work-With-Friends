@@ -1,29 +1,15 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class Sale extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      Sale.hasMany(models.SaleItemDetail, {
-        foreignKey: 'saleId',
-        as: 'saleItemDetails'
-      });
-      Sale.belongsTo(models.User, {
-        foreignKey: 'userId',
-        as: 'user'
-      });
-      Sale.belongsTo(models.Payment, {
-        foreignKey: 'saleId',
-        as: 'payment'
-      });
+      Sale.hasMany(models.SaleItem, { foreignKey: 'saleId', as: 'saleItems' });
+      Sale.belongsTo(models.User, { foreignKey: 'userId', as: 'user' });
+      Sale.hasOne(models.Payment, { foreignKey: 'saleId', as: 'payment' });
     }
   }
+
   Sale.init({
     invoiceId: DataTypes.STRING,
     totalAmount: DataTypes.DECIMAL,
@@ -34,5 +20,6 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Sale',
   });
+
   return Sale;
 };

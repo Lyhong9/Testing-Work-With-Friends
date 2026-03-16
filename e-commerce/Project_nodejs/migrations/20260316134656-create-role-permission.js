@@ -1,41 +1,49 @@
+// e.g. 20260316135000-create-rolepermissions-table.js
 'use strict';
-/** @type {import('sequelize-cli').Migration} */
+
+const { ref } = require("node:process");
+
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('RolePermissions', {
+    await queryInterface.createTable('rolepermissions', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       roleId: {
         type: Sequelize.INTEGER,
+        allowNull: false,
         references: {
           model: 'Roles',
-          key: 'id'
+          key: 'id',
         },
-        onDelete: 'CASCADE',
-        references: {
-          model: 'permissions',
-          key: 'id'
-        },
-        onDelete: 'CASCADE'
       },
       permissionId: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'Permissions',
+          key: 'id',
+        },
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
+    });
+
+    await queryInterface.addIndex('rolepermissions', ['roleId', 'permissionId'], {
+      unique: true,
     });
   },
-  async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('RolePermissions');
-  }
+
+  async down(queryInterface) {
+    await queryInterface.dropTable('Rolepermissions');
+  },
 };
