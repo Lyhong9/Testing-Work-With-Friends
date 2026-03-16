@@ -17,7 +17,8 @@ db.sequelize.sync().then(() => {
   console.error("Error syncing database:", err);
 });
 
-
+const getCategories = require("./routes/category.route");
+getCategories(app);
 
 // Start server
 app.listen(PORT, () => {
