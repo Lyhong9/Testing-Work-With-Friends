@@ -9,9 +9,6 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      sale_id: {
-        type: Sequelize.STRING
-      },
       invoice_id: {
         type: Sequelize.STRING
       },

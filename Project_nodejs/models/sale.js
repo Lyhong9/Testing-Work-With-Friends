@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Sale.init({
-    sale_id: DataTypes.STRING,
+    sale_id: DataTypes.INTEGER,
     invoice_id: DataTypes.STRING,
     sale_date: DataTypes.DATE,
     amount: DataTypes.DOUBLE,

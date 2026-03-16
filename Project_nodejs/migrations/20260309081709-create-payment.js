@@ -15,7 +15,12 @@ module.exports = {
           model: 'Orders',
           key: 'id'
         },
-        onDelete: 'CASCADE'
+        onDelete: 'CASCADE',
+        references: {
+          model: 'Sales',
+          key: 'id'
+        },
+        onDelete: 'CASCADE',
       },
       amount: {
         type: Sequelize.DECIMAL

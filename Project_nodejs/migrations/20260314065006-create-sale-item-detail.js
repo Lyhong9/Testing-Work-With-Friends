@@ -9,14 +9,12 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      std_id: {
-        type: Sequelize.STRING,
-      },
       sale_id: {
         type: Sequelize.STRING,
+        type: Sequelize.STRING,
         references: {
-          model: 'Sales',
-          key: 'sale_id',
+          model: 'Sale',
+          key: 'id',
         },
         onDelete: 'CASCADE',
       },
