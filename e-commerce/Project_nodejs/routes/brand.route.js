@@ -1,14 +1,17 @@
 const {
-  getCategories,
-  createCategory,
-  updaetCategory,
-  deleteCategory,
-} = require("../controllers/category.controller");
-const categoryRouter = (app) => {
-  app.get("/api/category", getCategories);
-  app.post("/api/category", createCategory);
-  app.put("/api/category", updaetCategory);
-  app.delete("/api/category/:id", deleteCategory);
+  getBrand,
+  createBrand,
+  updateBrand,
+  deleteBrand,
+  getOneBrand
+} = require("../controllers/brand.controller");
+const {uploadAny} = require("../middleware/uploads/upload");
+const brandRouter = (app) => {
+  app.get("/api/brand", getBrand);
+  app.get("/api/brand/one", getOneBrand);
+  app.post("/api/brand", uploadAny, createBrand);
+  app.put("/api/brand", uploadAny, updateBrand);
+  app.delete("/api/brand/:id", deleteBrand);
 };
 
-module.exports = categoryRouter;
+module.exports = brandRouter;

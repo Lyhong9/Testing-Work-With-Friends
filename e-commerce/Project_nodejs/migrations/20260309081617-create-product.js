@@ -10,7 +10,7 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       name: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(255)
       },
       description: {
         type: Sequelize.TEXT
@@ -36,6 +36,9 @@ module.exports = {
           key: 'id'
         },
         onDelete: 'SET NULL'
+      },
+      image: {
+        type: Sequelize.STRING(255)
       },
       createdAt: {
         allowNull: false,

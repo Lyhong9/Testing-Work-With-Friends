@@ -18,7 +18,6 @@ module.exports = {
           model: "Users", // **must match table name exactly**
           key: "id",
         },
-        onUpdate: "CASCADE",
         onDelete: "SET NULL",
       },
       createdAt: Sequelize.DATE,

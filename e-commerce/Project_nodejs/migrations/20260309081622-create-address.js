@@ -18,19 +18,19 @@ module.exports = {
         onDelete: 'CASCADE'
       },
       street: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(255)
       },
       city: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(255)
       },
       state: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(255)
       },
       zipCode: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(255)
       },
       country: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(255)
       },
       createdAt: {
         allowNull: false,

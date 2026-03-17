@@ -1,10 +1,10 @@
 {
   "development": {
-    "username": "postgres",
-    "password":  "9999",
-    "database": "friendvathana",
+    "username": "root",
+    "password":  null,
+    "database": "pos_e_commerce_db",
     "host": "127.0.0.1",
-    "dialect": "postgres"
+    "dialect": "mysql"
   },
   "test": {
     "username": "root",

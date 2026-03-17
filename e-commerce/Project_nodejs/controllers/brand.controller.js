@@ -1,66 +1,172 @@
 const { Op } = require("sequelize");
-const { Category } = require("../models");
-
-const getCategories = async (req, res) => {
-  const { keyword } = req.query;
-  if (keyword) {
-    const categories = await Category.findAll({
-      where: {
-        Name: {
-          [Op.like]: `%${keyword}%`,
-        },
-      },
-    });
-    return res.json({
-      massage: "success",
-      categories: categories,
-    });
+const { Brand } = require("../models");
+const logError = require("../middleware/logError");
+const { get } = require("node:http");
+const buildPhotoPath = (file) => {
+  if (!file) {
+    return null;
   }
-
-  const categories = await Category.findAll();
-
-  res.json({
-    massage: "success",
-    categories: categories,
-  });
+  return `/image/${file.filename}`;
 };
 
-const createCategory = async (req, res) => {
-  const { name, description, status } = req.body;
-  const category = await Category.create({
-    name,
-    description,
-    status,
-  });
-  res.json({
-    massage: "success",
-    category: category,
-  });
-};
 
-const updaetCategory = async (req, res) => {
-  const { id, name, description, status } = req.body;
-  const category = await Category.update(
-    { name, description, status },
-    { where: { id } },
-  );
-  res.json({
-    massage: "success",
-    category: category,
-  });
-};
-const deleteCategory = async (req, res) => {
-    const { id } = req.params;
-    const category = await Category.destroy({ where: { id } });
+const getOneBrand = async (req, res) => {
+  try{
+    const { search } = req.query;
+    if(search){
+      const brand = await Brand.findOne({
+        where:{
+          name:{
+            [Op.like]: `%${search}%`
+          }
+        }
+      })
+      return res.json({
+        success: true,
+        massage: "success",
+        brand: brand,
+      });
+    }
+    const brand = await Brand.findAll();
     res.json({
+      success: true,
       massage: "success",
-      category: category,
+      brand: brand,
+    })
+  }catch(err){
+    logError("getOneBrand", err, res);
+  }
+  
+}
+const getBrand = async (req, res) => {
+  try {
+    const { keyword } = req.query;
+    if (keyword) {
+      const brand = await Brand.findAll({
+        where: {
+          name: {
+            [Op.like]: `%${keyword}%`,
+          },
+        },
+      });
+      return res.json({
+        massage: "success",
+        brand: brand,
+      });
+    }
+
+    const brand = await Brand.findAll();
+
+    res.json({
+      success: true,
+      massage: "success",
+      brand: brand,
     });
+  } catch (error) {
+    logError("getBrand", error, res);
+  }
+};
+
+const createBrand = async (req, res) => {
+  try {
+    const { name, status, description } = req.body;
+    const file = req.files?.[0]; // optional uploaded file
+    const image = buildPhotoPath(file);
+
+    // Validate required fields
+    if (!name) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Brand name is required" });
+    }
+    if (!status) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Brand status is required" });
+    }
+    if (!description) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Brand description is required" });
+    }
+
+    // Create brand
+    const brand = await Brand.create({
+      name,
+      status,
+      description,
+      image: image,
+    });
+
+    res.json({ success: true, message: "success", brand });
+  } catch (error) {
+    logError("createBrand", error, res);
+  }
+};
+
+const updateBrand = async (req, res) => {
+  try {
+    const { id, name, description, status } = req.body;
+    const file = req.files?.[0]; // optional uploaded file
+    const image = file ? buildPhotoPath(file) : null;
+
+    // Validate required fields
+    if (!id) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Brand id is required" });
+    }
+    if (!name) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Brand name is required" });
+    }
+    if (!status) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Brand status is required" });
+    }
+    if (!description) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Brand description is required" });
+    }
+
+    // Update brand
+    const brand = await Brand.update(
+      {
+        name,
+        status,
+        description,
+        image: image,
+      },
+      { where: { id } }
+    );
+
+    res.json({ success: true, message: "success", brand });
+  } catch (error) {
+    logError("updateBrand", error, res);
+  }
+};
+
+const deleteBrand = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const brand = await Brand.destroy({ where: { id } });
+    res.json({
+      success: true,
+      massage: "success",
+      brand: brand,
+    });
+  } catch (error) {
+    logError("deleteBrand", error, res);
+  }
 };
 
 module.exports = {
-  getCategories,
-  createCategory,
-  updaetCategory,
-  deleteCategory,
+  getBrand,
+  createBrand,
+  updateBrand,
+  deleteBrand,
+  getOneBrand
 };

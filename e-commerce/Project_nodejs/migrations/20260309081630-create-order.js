@@ -21,7 +21,7 @@ module.exports = {
         type: Sequelize.DATE
       },
       status: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(255)
       },
       orderAmount: {
         type: Sequelize.DECIMAL

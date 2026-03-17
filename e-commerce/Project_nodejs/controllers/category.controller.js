@@ -2,13 +2,25 @@ const { Op } = require("sequelize");
 const { Category } = require("../models");
 
 const getCategories = async (req, res) => {
-  const { keyword } = req.query;
+  const { keyword, status } = req.query;
   if (keyword) {
     const categories = await Category.findAll({
       where: {
         Name: {
           [Op.like]: `%${keyword}%`,
         },
+      },
+    });
+    return res.json({
+      massage: "success",
+      categories: categories,
+    });
+  }
+
+  if(status){
+    const categories = await Category.findAll({
+      where: {
+        status: status,
       },
     });
     return res.json({
