@@ -19,17 +19,17 @@ const storage = multer.diskStorage({
 });
 
 // Allowed types
-const allowedTypes = ['.jpg', '.jpeg', '.png', '.gif'];
+const allowedTypes = ['.jpg', '.jpeg', '.png', '.gif', "webp"];
 const fileFilter = (req, file, cb) => {
   const ext = path.extname(file.originalname).toLowerCase();
   if (allowedTypes.includes(ext)) cb(null, true);
-  else cb(new Error('Only JPG, JPEG, PNG, GIF files are allowed'));
+  else cb(new Error('Only JPG, JPEG, PNG, GIF, and WEBP files are allowed'));
 };
 
 const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB
+  limits: { fileSize: 4 * 1024 * 1024 }, // 2MB
 });
 
 // Middleware for single file upload (any field name)

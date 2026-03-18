@@ -1,7 +1,6 @@
 const { Op } = require("sequelize");
 const { Brand } = require("../models");
 const logError = require("../middleware/logError");
-const { get } = require("node:http");
 const buildPhotoPath = (file) => {
   if (!file) {
     return null;

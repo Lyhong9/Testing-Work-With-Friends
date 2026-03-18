@@ -1,7 +1,7 @@
 {
   "development": {
     "username": "root",
-    "password":  null,
+    "password": "Nha1213",
     "database": "pos_e_commerce_db",
     "host": "127.0.0.1",
     "dialect": "mysql"

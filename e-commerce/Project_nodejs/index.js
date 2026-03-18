@@ -25,6 +25,9 @@ getCategories(app);
 const brandRouter = require("./routes/brand.route");
 brandRouter(app);
 
+const productRouter = require("./routes/product.route");
+productRouter(app);
+
 // Start server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
