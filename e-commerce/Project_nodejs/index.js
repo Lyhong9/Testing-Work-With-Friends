@@ -11,13 +11,11 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+
 // Serve images statically at /image
 app.use('/image', express.static(path.join(__dirname, 'public/image')));
 
-// Sync database
-db.sequelize.sync()
-  .then(() => console.log("Database synced"))
-  .catch(err => console.error("Error syncing database:", err));
+
 
 const getCategories = require("./routes/category.route");
 getCategories(app);
@@ -30,6 +28,13 @@ productRouter(app);
 
 const usersRoute = require("./routes/users.route");
 usersRoute(app);
+
+
+// Sync database
+db.sequelize.sync()
+  .then(() => console.log("Database synced"))
+  .catch(err => console.error("Error syncing database:", err));
+
 
 // Start server
 app.listen(PORT, () => {

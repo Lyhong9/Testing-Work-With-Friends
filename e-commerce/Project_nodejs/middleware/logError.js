@@ -1,6 +1,6 @@
 const fs = require("fs/promises");
 const moment = require("moment");
-
+const { validationResult } = require("express-validator");
 const logError = async (controller,err,res) => {
     try {
         
@@ -21,4 +21,16 @@ const logError = async (controller,err,res) => {
     res.status(500).send("Internal Server Error!");
 };
 
-module.exports = logError;
+const validateCheck = (req, res, next) => {
+  const errors = validationResult(req);
+  if (errors.isEmpty()) {
+    return next();
+  }
+  // const extractedErrors = [];
+  // errors.array().map((err) => extractedErrors.push({ [err.path]: err.msg }));
+  return res.status(400).json({
+    errors: errors.array(),
+  });
+};
+
+module.exports = {logError, validateCheck };
