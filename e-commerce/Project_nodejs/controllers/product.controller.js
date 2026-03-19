@@ -9,15 +9,29 @@ const buildPhotoPath = (file) => {
 // ✅ GET ALL + SEARCH
 const getProduct = async (req, res) => {
   try {
-    const { keyword } = req.query;
+    const { keyword, category_id, brand_id } = req.query;
 
-    const where = keyword
-      ? {
-          name: {
-            [Op.like]: `%${keyword}%`,
-          },
-        }
-      : {};
+    const where = {};
+
+    if (keyword) {
+      where.name = {
+        [Op.like]: `%${keyword}%`,
+      };
+    }
+
+    if (category_id) {
+      where.categoryId = category_id;
+    }
+
+    if (brand_id) {
+      where.brandId = brand_id;
+    }
+    // const where = keyword ? {
+    //   name: {
+    //     [Op.like]: `%${keyword}%`,
+    //   },
+    // }
+    // : {};
 
     const products = await Product.findAll({
       where,
@@ -67,10 +81,12 @@ const getProductOne = async (req, res) => {
 // ✅ CREATE
 const createProduct = async (req, res) => {
   try {
-    const { name, status, description, categoryId, brandId } = req.body;
+    const { name, description, price, stockQuantity, categoryId, brandId } =
+      req.body;
     const file = req.files?.[0];
+    const image = buildPhotoPath(file);
 
-    if (!name || !status || !description) {
+    if (!name || !price || !description) {
       return res.status(400).json({
         success: false,
         message: "All fields are required",
@@ -79,11 +95,12 @@ const createProduct = async (req, res) => {
 
     const product = await Product.create({
       name,
-      status,
       description,
+      price,
+      stockQuantity,
       categoryId,
       brandId,
-      image: buildPhotoPath(file),
+      image: image || null,
     });
 
     res.json({
@@ -99,8 +116,10 @@ const createProduct = async (req, res) => {
 // ✅ UPDATE
 const updateProduct = async (req, res) => {
   try {
-    const { id, name, description, status, categoryId, brandId } = req.body;
+    const { id, name, description, price, stockQuantity, categoryId, brandId } =
+      req.body;
     const file = req.files?.[0];
+    const image = buildPhotoPath(file);
 
     const existing = await Product.findByPk(id);
     if (!existing) {
@@ -112,10 +131,12 @@ const updateProduct = async (req, res) => {
 
     const updateData = {
       name,
-      status,
       description,
+      price,
+      stockQuantity,
       categoryId,
       brandId,
+      image: image || existing.image,
     };
 
     if (file) {
@@ -146,6 +167,12 @@ const deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
 
+    if (id == "") {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
     const deleted = await Product.destroy({ where: { id } });
 
     if (!deleted) {

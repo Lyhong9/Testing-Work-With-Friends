@@ -1,5 +1,5 @@
  const jwt = require("jsonwebtoken");
- const TOKEN_SECRET = "ICE_TEA_SECRET_KEY2376428343284jkfsdf";
+ const TOKEN_SECRET = "afasdfasdfsakdfjdsfsfhasfsdfjk230798547-25-749587rtonaoagbhagheq4tw45agbgart";
 
 const validate_token = () => {
   return (req, res, next) => {
@@ -22,7 +22,7 @@ const validate_token = () => {
             error: error,
           });
         } else {
-            req.user = result;
+          req.user = result;
           next();
         }
       });

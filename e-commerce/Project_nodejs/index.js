@@ -28,6 +28,9 @@ brandRouter(app);
 const productRouter = require("./routes/product.route");
 productRouter(app);
 
+const usersRoute = require("./routes/users.route");
+usersRoute(app);
+
 // Start server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
