@@ -29,6 +29,9 @@ productRouter(app);
 const usersRoute = require("./routes/users.route");
 usersRoute(app);
 
+const roleRoute = require("./routes/role.route");
+roleRoute(app);
+
 
 // Sync database
 db.sequelize.sync()

@@ -1,2 +1,0 @@
-[18/03/2026 01:42:03] Cannot set headers after they are sent to the client
-[18/03/2026 01:42:32] Cannot set headers after they are sent to the client

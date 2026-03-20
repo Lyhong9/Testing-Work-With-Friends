@@ -1,0 +1,2 @@
+[21/03/2026 01:06:08] Cannot destructure property 'name' of 'req.body' as it is undefined.
+[21/03/2026 01:06:19] WHERE parameter "id" has invalid "undefined" value
