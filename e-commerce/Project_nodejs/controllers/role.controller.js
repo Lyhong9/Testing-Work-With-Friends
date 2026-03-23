@@ -1,6 +1,8 @@
 const { Role, Permission } = require("../models");
 const { logError } = require("../middleware/logError");
 const { Op, where } = require("sequelize");
+
+
 const getRole = async (req, res) => {
   try {
 
@@ -69,7 +71,7 @@ const createRole = async (req, res) => {
       data: role,
     });
   } catch (errr) {
-    logError("createRole", errr, res);
+    logError("createRole", errr, res); 
   }
 };
 
