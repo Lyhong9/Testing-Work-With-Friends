@@ -234,6 +234,105 @@ CREATE TABLE payments (
         ON DELETE CASCADE
 );
 
+-- =====================================
+-- INVENTORY SYSTEM
+-- =====================================
+CREATE TABLE inventories (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    productId INT,
+    quantity INT DEFAULT 0,
+    FOREIGN KEY (productId) REFERENCES products(id) ON DELETE CASCADE
+);
+
+CREATE TABLE inventory_transactions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    productId INT,
+    type ENUM('IN','OUT','ADJUST'),
+    quantity INT,
+    referenceType VARCHAR(50),
+    referenceId INT,
+    createdBy INT,
+    note TEXT,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (productId) REFERENCES products(id) ON DELETE CASCADE
+);
+
+-- =====================================
+-- WAREHOUSE SYSTEM
+-- =====================================
+CREATE TABLE warehouses (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    location VARCHAR(255)
+);
+
+CREATE TABLE warehouse_inventories (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    warehouseId INT,
+    productId INT,
+    quantity INT DEFAULT 0,
+    FOREIGN KEY (warehouseId) REFERENCES warehouses(id) ON DELETE CASCADE,
+    FOREIGN KEY (productId) REFERENCES products(id) ON DELETE CASCADE
+);
+
+CREATE TABLE stock_transfers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    fromWarehouseId INT,
+    toWarehouseId INT,
+    status VARCHAR(50),
+    createdBy INT,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE stock_transfer_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    transferId INT,
+    productId INT,
+    quantity INT,
+    FOREIGN KEY (transferId) REFERENCES stock_transfers(id) ON DELETE CASCADE
+);
+
+CREATE TABLE stock_adjustments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    productId INT,
+    warehouseId INT,
+    quantity INT,
+    type ENUM('INCREASE','DECREASE'),
+    reason VARCHAR(255),
+    createdBy INT,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- =====================================
+-- SUPPLIER & PURCHASE
+-- =====================================
+CREATE TABLE suppliers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(150),
+    phone VARCHAR(20),
+    email VARCHAR(150),
+    address TEXT
+);
+
+CREATE TABLE purchases (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    supplierId INT,
+    totalAmount DECIMAL(10,2),
+    status VARCHAR(50),
+    purchaseDate DATE,
+    createdBy INT,
+    FOREIGN KEY (supplierId) REFERENCES suppliers(id) ON DELETE SET NULL
+);
+
+CREATE TABLE purchase_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    purchaseId INT,
+    productId INT,
+    quantity INT,
+    cost DECIMAL(10,2),
+    FOREIGN KEY (purchaseId) REFERENCES purchases(id) ON DELETE CASCADE
+);
+
 
 # USERS
 npx sequelize-cli model:generate --name User --attributes username:string,email:string,password:text,status:boolean

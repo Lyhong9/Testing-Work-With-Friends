@@ -1,8 +1,10 @@
-const { User, UserRole, Role, Permission } = require("../models");
+const { User, UserRole, Role, Permission, sequelize } = require("../models");
 const { Op } = require("sequelize");
 const { logError } = require("../middleware/logError");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
+
 const getUsers = async (req, res) => {
   try {
     const { search } = req.query;
@@ -70,8 +72,9 @@ const getUsers = async (req, res) => {
 
 const registerUser = async (req, res) => {
   try {
+    const t = await sequelize.transaction();
     // ✅ prevent crash
-    const { username, email, password, status } = req.body || {};
+    const { username, email, password, status, role_id } = req.body || {};
 
     if (!username) {
       return res.status(400).json({
@@ -101,22 +104,12 @@ const registerUser = async (req, res) => {
       });
     }
 
-    // if(!role_id) {
-    //   return res.status(400).json({
-    //     success: false,
-    //     message: "Role is required",
-    //   });
-    // }
-
-    // const userGetID = await User.findAll();
-
-    // const Check_ID = userGetID.map((user) => user.id);
-    // const id = Math.max(...Check_ID);
-
-    // await UserRole.create({
-    //   userId: id,
-    //   roleId: role_id,
-    // });
+    if(!role_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Role is required",
+      });
+    }
 
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
@@ -133,7 +126,14 @@ const registerUser = async (req, res) => {
       email,
       password: passwordHash,
       status,
-    });
+    }, { transaction: t });
+
+    await UserRole.create({
+      userId: user.id,
+      roleId: role_id,
+    }, { transaction: t });
+
+    await t.commit();
 
     res.json({
       success: true,
@@ -237,14 +237,14 @@ const getAccessToken = async (paramData) => {
 // }
 
 const otpStore = new Map();
-const OTP_EXPIRE_MS = 5 * 60 * 1000;
+const OTP_EXPIRE_MS = 10 * 60 * 1000;
 const VERIFIED_EXPIRE_MS = 10 * 60 * 1000;
 
 //send OTP to Email
 const sendOTP = async (req, res) => {
   try {
     const { email } = req.body;
-    if (IsValid(email)) {
+    if (!email) {
       return res.status(400).json({
         success: false,
         message: "Email is required",
@@ -264,13 +264,13 @@ const sendOTP = async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "pkhouch97@gmail.com",
-        pass: "w n w v g d r w c v o b e y l a", // Use environment variable for security
+        user: "Vothanarern@gmail.com",
+        pass: "oafy ihyj qlzt qrzm", // Use environment variable for security
       },
     });
 
     const mailOptions = {
-      from: "pkhouch97@gmail.com",
+      from: "Vothanarern@gmail.com",
       to: user.email,
       subject: "Your OTP Code",
       text: `Your OTP code is ${otp}`,
@@ -299,7 +299,7 @@ const verifyOtp = async (req, res) => {
   try {
     const { email, otp } = req.body;
 
-    if (IsValid(email) || IsValid(otp)) {
+    if (!(email) || !(otp)) {
       return res.status(400).json({
         success: false,
         message: "Email and OTP are required",
@@ -356,7 +356,7 @@ const resetPassword = async (req, res) => {
   try {
     const { email, newPassword } = req.body;
 
-    if (IsValid(email) || IsValid(newPassword)) {
+    if (!(email) || !(newPassword)) {
       return res.status(400).json({
         success: false,
         message: "Email and newPassword are required",
@@ -387,7 +387,7 @@ const resetPassword = async (req, res) => {
       });
     }
 
-    const hashedPassword = await bcript.hash(newPassword, 10);
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
     await user.update({ password: hashedPassword });
     otpStore.delete(email);
 
@@ -400,4 +400,4 @@ const resetPassword = async (req, res) => {
   }
 };
 
-module.exports = { getUsers, registerUser, userLogin };
+module.exports = { getUsers, registerUser, userLogin,  sendOTP, verifyOtp, resetPassword };
