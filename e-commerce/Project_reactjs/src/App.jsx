@@ -1,35 +1,39 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from "react";
+import { Routes, Route } from "react-router-dom";
+import Layout from "./components/Layout";
+import Dashboard from "./page/Dashboard";
+import ProductsPage from "./page/ProductsPage";
+import SalesPage from "./page/SalesPage";
+import CustomersPage from "./page/CustomersPage";
+import ReportsPage from "./page/ReportsPage";
+import Category from "./page/feature/Category/Category";
+import Brand from "./page/feature/Brand/Brand";
+import Products from "./page/feature/Products/Products";
+// import Dashboard from "./page/feature/Dashboard/Dashboard";
+import Role from "./page/feature/Role/Role";
+import Login from "./page/feature/User/Login";
+import SalePos from "./page/feature/SalePos/SalePos";
 
-function App() {
-  const [count, setCount] = useState(0)
 
+const App = () => {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <Routes>
+      <Route element={<Layout />}>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        {/* <Route path="/products" element={<ProductsPage />} />
+        <Route path="/sales" element={<SalesPage />} /> */}
+        <Route path="/customers" element={<CustomersPage />} />
+        <Route path="/reports" element={<ReportsPage />} />
+        <Route path="/category" element={<Category />} />
+        <Route path="/brand" element={<Brand />} />
+        <Route path="/products" element={<Products />} />
+        <Route path="/role" element={<Role />} />
+        <Route path="/salepos" element={<SalePos />} />
+      </Route>
+      <Route path="/login" element={<Login />} />
+    </Routes>
+  );
+};
 
-export default App
+export default App;
