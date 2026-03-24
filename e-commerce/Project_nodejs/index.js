@@ -31,6 +31,8 @@ usersRoute(app);
 
 const roleRoute = require("./routes/role.route");
 roleRoute(app);
+const saleRoute = require("./routes/sales.route")
+saleRoute(app)
 
 const userRoleRoute  = require("./routes/userRole.route")
 userRoleRoute(app)
