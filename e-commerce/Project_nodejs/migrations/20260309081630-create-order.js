@@ -18,7 +18,8 @@ module.exports = {
         onDelete: 'CASCADE'
       },
       orderDate: {
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        currentTimestamp: true
       },
       status: {
         type: Sequelize.STRING(255)

@@ -1,0 +1,16 @@
+[24/03/2026 23:19:45] MasterProduct is not defined
+[24/03/2026 23:20:09] OrderItem is associated to Order using an alias. You must use the 'as' keyword to specify the alias within your include statement.
+[24/03/2026 23:20:43] Product is associated to OrderItem using an alias. You must use the 'as' keyword to specify the alias within your include statement.
+[24/03/2026 23:23:14] Unknown column 'Order.userId' in 'field list'
+[24/03/2026 23:25:34] Include unexpected. Element has to be either a Model, an Association or an object.
+[24/03/2026 23:27:23] Include unexpected. Element has to be either a Model, an Association or an object.
+[24/03/2026 23:28:22] Unknown column 'Order.userId' in 'field list'
+[24/03/2026 23:29:24] Include unexpected. Element has to be either a Model, an Association or an object.
+[24/03/2026 23:29:38] Unknown column 'Order.userId' in 'field list'
+[24/03/2026 23:30:10] Unknown column 'Order.userId' in 'field list'
+[24/03/2026 23:31:47] Unknown column 'Order.userId' in 'field list'
+[24/03/2026 23:32:12] Unknown column 'Order.userId' in 'field list'
+[24/03/2026 23:33:25] Unknown column 'userId' in 'field list'
+[24/03/2026 23:33:36] Unknown column 'userId' in 'field list'
+[24/03/2026 23:34:53] Unknown column 'userId' in 'field list'
+[24/03/2026 23:36:03] Unknown column 'userId' in 'field list'

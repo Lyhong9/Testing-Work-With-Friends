@@ -46,6 +46,9 @@ addressesRoute(app)
 const paymentRoute = require("./routes/payments.route")
 paymentRoute(app)
 
+const orderRoute = require("./routes/order.route")
+orderRoute(app)
+
 // Sync database
 db.sequelize.sync()
   .then(() => console.log("Database synced"))

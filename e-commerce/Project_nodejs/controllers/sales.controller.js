@@ -1,4 +1,4 @@
-const { Sale, SaleItem, sequelize } = require("../models");
+const { Sale, SaleItem, sequelize, Product } = require("../models");
 const { logError } = require("../middleware/logError");
 const { Op } = require("sequelize");
 const {alertNewSale} = require("../util/sentTelegram");
@@ -10,16 +10,21 @@ const getSale = async (req, res) => {
       include: [
         {
           model: SaleItem,
-          as: "saleItems"
+          as: "saleItems",
+          include: [
+            {
+              model: Product,
+              as: "product",
+            },
+          ],
         }
       ],
-      order: [["id", "DESC"]]
     });
 
     res.status(200).json({
       success: true,
       message: "Get all sales",
-      data: sales
+      sales: sales
     });
 
   } catch (error) {
