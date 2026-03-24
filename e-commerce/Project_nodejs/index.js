@@ -32,6 +32,8 @@ usersRoute(app);
 const roleRoute = require("./routes/role.route");
 roleRoute(app);
 
+const userRoleRoute  = require("./routes/userRole.route")
+userRoleRoute(app)
 
 // Sync database
 db.sequelize.sync()
