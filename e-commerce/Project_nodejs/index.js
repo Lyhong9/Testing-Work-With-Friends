@@ -37,6 +37,12 @@ saleRoute(app)
 const userRoleRoute  = require("./routes/userRole.route")
 userRoleRoute(app)
 
+const  customerRoute = require("./routes/customer.route")
+customerRoute(app)
+
+const addressesRoute = require("./routes/addresses.route")
+addressesRoute(app)
+
 // Sync database
 db.sequelize.sync()
   .then(() => console.log("Database synced"))

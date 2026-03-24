@@ -1,0 +1,2 @@
+[24/03/2026 21:44:21] Cannot read properties of undefined (reading 'findAll')
+[24/03/2026 21:48:26] Customer is not defined

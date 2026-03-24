@@ -1,6 +1,6 @@
 const { Op } = require("sequelize");
 const { Brand } = require("../models");
-const logError = require("../middleware/logError");
+const {logError} = require("../middleware/logError");
 const buildPhotoPath = (file) => {
   if (!file) {
     return null;
@@ -131,13 +131,21 @@ const updateBrand = async (req, res) => {
         .json({ success: false, message: "Brand description is required" });
     }
 
+    // Check if brand exists
+    const brandExists = await Brand.findOne({ where: { id } });
+    if (!brandExists) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Brand not found" });
+    }
+
     // Update brand
     const brand = await Brand.update(
       {
-        name,
-        status,
-        description,
-        image: image,
+        name: name || brandExists.name,
+        status: status || brandExists.status,
+        description: description || brandExists.description,
+        image: image || brandExists.image,
       },
       { where: { id } }
     );

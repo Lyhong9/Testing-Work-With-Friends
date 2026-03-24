@@ -81,9 +81,6 @@ const updateUserRole = async (req, res) =>{
     })
 }
 
-
-
-
 module.exports = {
     getUserRole,
     CreateUserRole,

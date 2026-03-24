@@ -12,14 +12,15 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "brandId",
         as: "products",
       });
-      // Brand.belongsTo(models.Category, {
-      //   foreignKey: "category_id",
-      //   as: "category",
-      // });
+      Brand.belongsTo(models.Category, {
+        foreignKey: "categoryId",
+        as: "category",
+      });
     }
   }
   Brand.init(
     {
+      categoryId: DataTypes.INTEGER,
       name: DataTypes.STRING,
       status: DataTypes.BOOLEAN,
       description: DataTypes.TEXT,
