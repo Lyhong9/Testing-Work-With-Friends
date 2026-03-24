@@ -283,6 +283,30 @@ const deleteCustomer = async (req, res) => {
   }
 };
 
+
+
+const otpStore = new Map();
+const OTP_EXPIRE_MS = 5 * 60 * 1000;
+const VERIFIED_EXPIRE_MS = 10 * 60 * 1000;
+
+const sendOTP = async (req, res) => {
+  
+}
+
+const verifyOtp = async (req, res) => {
+  
+}
+
+const resetPassword = async (req, res) => {
+  
+}
+
+
+
+
+
+
+
 // ==============================
 // EXPORT
 // ==============================
@@ -293,4 +317,7 @@ module.exports = {
   updateCustomer,
   deleteCustomer,
   login,
+  sendOTP,
+  verifyOtp,
+  resetPassword
 };

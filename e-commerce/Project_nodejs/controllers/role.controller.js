@@ -1,6 +1,6 @@
 const { Role, Permission } = require("../models");
 const { logError } = require("../middleware/logError");
-const { Op, where } = require("sequelize");
+const { Op } = require("sequelize");
 
 
 const getRole = async (req, res) => {

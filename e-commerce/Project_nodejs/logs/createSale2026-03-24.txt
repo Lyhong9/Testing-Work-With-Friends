@@ -1,2 +1,4 @@
 [24/03/2026 07:51:25] saleItems.map is not a function
 [24/03/2026 08:09:46] items is not defined
+[24/03/2026 22:37:37] Cannot add or update a child row: a foreign key constraint fails (`pos_e_commerce_db`.`saleitems`, CONSTRAINT `saleitems_ibfk_2` FOREIGN KEY (`productId`) REFERENCES `products` (`id`) ON DELETE CASCADE)
+[24/03/2026 22:38:39] Cannot add or update a child row: a foreign key constraint fails (`pos_e_commerce_db`.`saleitems`, CONSTRAINT `saleitems_ibfk_2` FOREIGN KEY (`productId`) REFERENCES `products` (`id`) ON DELETE CASCADE)
