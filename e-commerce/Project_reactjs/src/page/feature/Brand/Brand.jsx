@@ -1,7 +1,10 @@
-import React from "react";
+import React, { use } from "react";
 import "../../../style/feature.css";
 import { useState, useEffect } from "react";
 import "./brand.css";
+import request from "../../../utils/request";
+import {alertSuccess, confirmDelete, alertError} from "../../../swertalert/AlertSuccess";
+import {BaseURL} from "../../../utils/BaseURL";
 const Brand = () => {
   const MAX_PHOTO_SIZE_MB = 2;
   const MAX_PHOTO_SIZE_BYTES = MAX_PHOTO_SIZE_MB * 1024 * 1024;
@@ -16,9 +19,8 @@ const Brand = () => {
   const [formData, setFormData] = useState({
     code: "",
     desc: "",
-    remark: "",
     brand_id: "",
-    photo: "",
+    image: "",
   });
   const [selectedPhotoFile, setSelectedPhotoFile] = useState(null);
   const [categories, setCategories] = useState([]);
@@ -29,6 +31,26 @@ const Brand = () => {
   const endIndex = startIndex + itemsPerPage;
   const paginatedBrands = filteredBrands.slice(startIndex, endIndex);
 
+
+  const fetchBrands = async () => {
+    try {
+       setLoading(true);
+      const response = await request("/api/brand", "GET");
+      console.log(response);
+      // alertSuccess("Success!", "Operation completed successfully");
+      // confirmDelete(async () => {
+      //   await request(`product/${id}`, "DELETE");
+      // })
+      setLoading(false);
+      setFilteredBrands(response.brand);
+    } catch (error) {
+      console.error("Error fetching brands:", error);
+    }
+  }
+
+  useEffect(() => {
+    fetchBrands();
+  }, []);
   const handleAddBrand = () => {
     setShowForm(true);
   };
@@ -36,15 +58,73 @@ const Brand = () => {
 
   const handleFormSubmit = async () =>{
 
+    try{
+
+      const formData = new FormData();
+      formData.append("code", formData.code);
+      formData.append("desc", formData.desc);
+      formData.append("brand_id", formData.brand_id);
+      
+      if(selectedPhotoFile){
+        formData.append("image", selectedPhotoFile);
+      }
+
+      const response = await request("brand", "POST", formData);
+
+      if(response.success){
+        alertSuccess("Success!", "Add Brand successfully!");
+        setShowForm(false);
+        fetchBrands();
+      }
+    }catch(error){
+      alertError("Error", "Something went wrong!");
+    }
+
   }
+
+  const handleDeleteBrand = async (code) => {
+    const result = await confirmDelete(async () => {
+      await request(`brand/${code}`, "DELETE");
+    });
+    if (result.isConfirmed) {
+      fetchBrands();
+    }
+  };
+
+  const handleEditBrand = (brand) => {
+    setFormData({
+      code: brand.code,
+      desc: brand.desc || "",
+      brand_id: brand.brand_id || "",
+      image: brand.image || "",
+    });
+    setSelectedPhotoFile(null);
+    setEditingCode(brand.code);
+    setShowForm(true);
+  };
 
   const handlePhotoChange = async () =>{
+    const file = event.target.files?.[0];
+    if(!file){
+      return;
+    }
+    if(file.size > MAX_PHOTO_SIZE_BYTES){
+      alertError("Error", `Image too large. Please choose a file smaller than ${MAX_PHOTO_SIZE_MB}MB.`);
+      event.target.value = "";
+      return;
+    }
+    setSelectedPhotoFile(file);
 
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setFormData((prev) => ({ ...prev, image: reader.result || "" }));
+    };
+    reader.readAsDataURL(file);
   }
 
-  const getPhotoUrl = async () =>{
-
-  }
+   const getPhotoUrl = (photo) => {
+    return `${BaseURL}${photo.startsWith("/") ? "" : "/"}${photo}`;
+  };
   return (
     <>
       <div className="brand-container">
@@ -86,13 +166,100 @@ const Brand = () => {
         </div>
         {/* end search and ad new  */}
 
-        {paginatedBrands?.map((brand) => (
-          <div className="brand-item" key={brand.brand_id}>
-            <div className="brand-code">{brand.brand_id}</div>
-            <div className="brand-desc">{brand.name_brand}</div>
-            <div className="brand-remark">{brand.remark}</div>
+         {loading ? (
+        <div className="loading">Loading...</div>
+      ) : (
+        <>
+          <table className="category-table">
+            <thead>
+              <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Image</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {paginatedBrands.length > 0 ? (
+                paginatedBrands.map((brand) => (
+                  <tr key={brand.id}>
+                    <td>{brand.id}</td>
+                    <td>{brand.name || "-" }</td>
+                    <td>{brand.description || "-"}</td>
+                    <td>{brand.status ? "Active" : "Inactive" }</td>
+                    <td>
+                      {brand.image ? (
+                        <img src={BaseURL + brand.image}  className="brand-photo" />
+                        // <img src={"https://clubcode-api-pos.up.railway.app/" + brand.photo}  className="brand-photo" />
+                      ) : (
+                        "-"
+                      )}
+                    </td>
+                    <td className="actions">
+                      <button
+                        className="btn-edit"
+                        onClick={() => handleEditBrand(brand)}
+                      >
+                        ✎ Edit
+                      </button>
+                      <button
+                        className="btn-delete"
+                        onClick={() => handleDeleteBrand(brand.code)}
+                      >
+                        🗑 Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="6" className="no-data">
+                    No brands found
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+
+          <div className="pagination-info">
+            Showing {startIndex + 1} to{" "}
+            {Math.min(endIndex, filteredBrands.length)} of{" "}
+            {filteredBrands.length} brands
           </div>
-        ))}
+
+          <div className="pagination-controls">
+            <button
+              className="btn-pagination"
+              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </button>
+            <div className="page-numbers">
+              {Array.from({ length: totalPages }, (_, i) => (
+                <button
+                  key={i + 1}
+                  className={`page-number ${currentPage === i + 1 ? "active" : ""}`}
+                  onClick={() => setCurrentPage(i + 1)}
+                >
+                  {i + 1}
+                </button>
+              ))}
+            </div>
+            <button
+              className="btn-pagination"
+              onClick={() =>
+                setCurrentPage(Math.min(totalPages, currentPage + 1))
+              }
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </button>
+          </div>
+        </>
+      )}
 
         {/* filter page current table  */}
         <div className="pagination-info">
@@ -148,51 +315,19 @@ const Brand = () => {
               </div>
               <form onSubmit={handleFormSubmit}>
                 <div className="form-group">
-                  <label>Code *</label>
+                  <label>Name *</label>
                   <input
                     type="text"
-                    value={formData.code}
+                    value={formData.name}
                     onChange={(e) =>
-                      setFormData({ ...formData, code: e.target.value })
+                      setFormData({ ...formData, name: e.target.value })
                     }
                     disabled={!!editingCode}
-                    placeholder="Enter brand code"
+                    placeholder="Enter brand name"
                     required
                   />
                 </div>
 
-                {/* select category (optional) */}
-                <div className="form-group">
-                  <Box>
-                    <FormControl fullWidth size="small">
-                      <InputLabel id="category-select-label">
-                        Category
-                      </InputLabel>
-                      <Select
-                        labelId="category-select-label"
-                        id="category-select"
-                        value={formData.category_id}
-                        label="Category"
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            category_id: e.target.value,
-                          })
-                        }
-                      >
-                        <MenuItem value="">
-                          <em>-- Select Category --</em>
-                        </MenuItem>
-                        {categories.map((cat) => (
-                          <MenuItem key={cat.code} value={cat.code}>
-                            {cat.code}
-                            {cat.desc ? ` - ${cat.desc}` : ""}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </Box>
-                </div>
                 <div className="form-group">
                   <label>Description</label>
                   <input
@@ -205,30 +340,19 @@ const Brand = () => {
                   />
                 </div>
                 <div className="form-group">
-                  <label>Photo</label>
+                  <label>image</label>
                   <input
                     type="file"
                     accept="image/*"
                     onChange={handlePhotoChange}
                   />
-                  {formData.photo ? (
+                  {formData.image ? (
                     <img
-                      src={getPhotoUrl(formData.photo)}
+                      src={formData.image}
                       alt="Brand preview"
                       className="brand-photo-preview"
                     />
                   ) : null}
-                </div>
-                <div className="form-group">
-                  <label>Remark</label>
-                  <textarea
-                    value={formData.remark}
-                    onChange={(e) =>
-                      setFormData({ ...formData, remark: e.target.value })
-                    }
-                    placeholder="Enter remark"
-                    rows="3"
-                  />
                 </div>
                 <div className="form-actions">
                   <button type="submit" className="btn-submit">
