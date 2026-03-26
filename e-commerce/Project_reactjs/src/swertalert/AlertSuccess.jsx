@@ -2,8 +2,8 @@ import Swal from "sweetalert2";
 
 // ✅ Success Alert
 export const alertSuccess = ({
-  title = "Success!",
-  text = "Operation completed successfully",
+  title = "",
+  text = "",
   confirmButtonText = "OK",
 }) => {
   return Swal.fire({

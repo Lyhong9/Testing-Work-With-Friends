@@ -14,10 +14,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'categoryId',
         as: 'products'
       });
-      Category.hasMany(models.Brand, {
-        foreignKey: 'categoryId',
-        as: 'brand'
-      });
+      // Category.hasMany(models.Brand, {
+      //   foreignKey: 'categoryId',
+      //   as: 'brand'
+      // });
     }
   }
   Category.init({

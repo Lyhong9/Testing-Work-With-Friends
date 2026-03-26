@@ -69,6 +69,87 @@ const getUsers = async (req, res) => {
   }
 };
 
+const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleted = await User.destroy({ where: { id } });
+    res.json({
+      success: true,
+      message: "User deleted successfully",
+      deleted,
+    });
+  } catch (error) {
+    logError("deleteUser", error, res);
+  }
+};
+
+const updateUser = async (req, res) => {
+  try {
+    const { id, username, email, password, status, role_id } = req.body || {};
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "User id is required",
+      });
+    }
+
+    if (!username) {
+      return res.status(400).json({
+        success: false,
+        message: "Username is required",
+      });
+    }
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email is required",
+      });
+    }
+
+    if (!password) {
+      return res.status(400).json({
+        success: false,
+        message: "Password is required",
+      });
+    }
+
+    if (!status) {
+      return res.status(400).json({
+        success: false,
+        message: "Status is required",
+      });
+    }
+
+    if (!role_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Role is required",
+      });
+    }
+
+    const hashPassword = await bcrypt.hash(password, 10);
+
+    const updated = await User.update(
+      {
+        username,
+        email,
+        password: hashPassword,
+        status,
+        role_id,
+      },
+      { where: { id } },
+    );
+    res.json({
+      success: true,
+      message: "User updated successfully",
+      updated,
+    });
+  } catch (error) {
+    logError("updateUser", error, res);
+  }
+};
+
 const registerUser = async (req, res) => {
   try {
     const t = await sequelize.transaction();
@@ -103,7 +184,7 @@ const registerUser = async (req, res) => {
       });
     }
 
-    if(!role_id) {
+    if (!role_id) {
       return res.status(400).json({
         success: false,
         message: "Role is required",
@@ -120,17 +201,23 @@ const registerUser = async (req, res) => {
 
     const passwordHash = await bcrypt.hash(password, 10); // bcrypt.hash(password, 10);
 
-    const user = await User.create({
-      username,
-      email,
-      password: passwordHash,
-      status,
-    }, { transaction: t });
+    const user = await User.create(
+      {
+        username,
+        email,
+        password: passwordHash,
+        status,
+      },
+      { transaction: t },
+    );
 
-    await UserRole.create({
-      userId: user.id,
-      roleId: role_id,
-    }, { transaction: t });
+    await UserRole.create(
+      {
+        userId: user.id,
+        roleId: role_id,
+      },
+      { transaction: t },
+    );
 
     await t.commit();
 
@@ -298,7 +385,7 @@ const verifyOtp = async (req, res) => {
   try {
     const { email, otp } = req.body;
 
-    if (!(email) || !(otp)) {
+    if (!email || !otp) {
       return res.status(400).json({
         success: false,
         message: "Email and OTP are required",
@@ -355,7 +442,7 @@ const resetPassword = async (req, res) => {
   try {
     const { email, newPassword } = req.body;
 
-    if (!(email) || !(newPassword)) {
+    if (!email || !newPassword) {
       return res.status(400).json({
         success: false,
         message: "Email and newPassword are required",
@@ -399,4 +486,13 @@ const resetPassword = async (req, res) => {
   }
 };
 
-module.exports = { getUsers, registerUser, userLogin,  sendOTP, verifyOtp, resetPassword };
+module.exports = {
+  getUsers,
+  registerUser,
+  userLogin,
+  sendOTP,
+  verifyOtp,
+  resetPassword,
+  deleteUser,
+  updateUser,
+};

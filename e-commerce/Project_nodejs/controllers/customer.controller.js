@@ -77,7 +77,7 @@ const getCustomer = async (req, res) => {
           as: "addresses",
           attributes: ["id", "street", "city", "state", "zipCode", "country"],
         },
-      ]
+      ],
     });
 
     res.json({
@@ -283,29 +283,174 @@ const deleteCustomer = async (req, res) => {
   }
 };
 
-
-
 const otpStore = new Map();
 const OTP_EXPIRE_MS = 5 * 60 * 1000;
 const VERIFIED_EXPIRE_MS = 10 * 60 * 1000;
 
 const sendOTP = async (req, res) => {
-  
-}
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email is required",
+      });
+    }
+
+    const uesr = await UserActivation.findOne({
+      where: {
+        email: email,
+      },
+    });
+
+    if (!uesr) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000);
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "Vothanarern@gmail.com",
+        pass: "oafy ihyj qlzt qrzm", // Use environment variable for security
+      },
+    });
+
+    const mailOptions = {
+      from: "Vothanarern@gmail.com",
+      to: email,
+      subject: "OTP Verification",
+      text: `Your OTP is: ${otp}`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    otpStore.set(email, {
+      otp: otp.toString(),
+      otpExpireAt: Date.now() + OTP_EXPIRE_MS,
+      verified: false,
+      verifiedExpireAt: null,
+    });
+
+    res.json({
+      success: true,
+      message: "OTP sent successfully",
+      otp: otp,
+    });
+  } catch (error) {
+    logError("sendOTP", error, res);
+  }
+};
 
 const verifyOtp = async (req, res) => {
-  
-}
+  try{
+    const { email, otp } = req.body;
+
+    if(!(email) || !(otp)){
+      return res.status(400).json({
+        success: false,
+        message: "Email and OTP are required",
+      });
+    }
+
+    const user = await UserActivation.findOne({ where: { email: email } });
+    if(!user){
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const otpData = otpStore.get(email);
+    if(!otpData){
+      return res.status(400).json({
+        success: false,
+        message: "OTP not found. Please request a new OTP",
+      });
+    }
+
+    if(Date.now() > otpData.otpExpireAt){
+      otpStore.delete(email);
+      return res.status(400).json({
+        success: false,
+        message: "OTP has expired. Please request a new OTP",
+      });
+    }
+
+    if(otpData.otp !== otp.toString()){
+      return res.status(400).json({
+        success: false,
+        message: "Invalid OTP",
+      });
+    }
+
+    otpStore.set(email, {
+      ...otpData,
+      verified: true,
+      verifiedExpireAt: Date.now() + VERIFIED_EXPIRE_MS,
+    });
+
+    res.json({
+      success: true,
+      message: "OTP verified successfully",
+    })
+  }catch(error){
+    logError("verifyOtp", error, res);
+  }
+};
 
 const resetPassword = async (req, res) => {
-  
-}
+  try{
+    const { email, newPassword } = req.body;
 
+    if(!(email) || !(newPassword)){
+      return res.status(400).json({
+        success: false,
+        message: "Email and newPassword are required",
+      });
+    }
 
+    const user = await User.findOne({ where: { email: email } });
+    if(!user){
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
 
+    const otpData = otpStore.get(email);
+    if(!otpData || !otpData.verified){
+      return res.status(400).json({
+        success: false,
+        message: "OTP is not verified",
+      });
+    }
 
+    if(!otpData.verifiedExpireAt || Date.now() > otpData.verifiedExpireAt){
+      otpStore.delete(email);
+      return res.status(400).json({
+        success: false,
+        message: "OTP has expired. Please request a new OTP",
+      });
+    }
 
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
 
+    await User.update({password: hashedPassword})
+    otpStore.delete(email);
+
+    res.json({
+      success: true,
+      message: "Password reset successfully",
+    })
+  }catch(error){
+    logError("resetPassword", error, res);
+  }
+};
 
 // ==============================
 // EXPORT
@@ -319,5 +464,5 @@ module.exports = {
   login,
   sendOTP,
   verifyOtp,
-  resetPassword
+  resetPassword,
 };

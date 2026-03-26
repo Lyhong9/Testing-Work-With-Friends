@@ -5,6 +5,8 @@ const {
   sendOTP,
   resetPassword,
   verifyOtp,
+  deleteUser,
+  updateUser
 } = require("../controllers/users.controller");
 const { validateCheck } = require("../middleware/logError");
 const { body } = require("express-validator");
@@ -22,12 +24,13 @@ const validateRegister = () => {
 };
 const usersRoute = (app) => {
   app.get("/api/user", getUsers);
-  app.post("/api/user", validateRegister(), validateCheck, registerUser);
+  app.post("/api/user",validateCheck, registerUser);
   app.post("/api/user/login", userLogin);
   app.post("/api/user/sendOTP", sendOTP);
   app.post("/api/user/verifyOTP", verifyOtp);
   app.post("/api/user/resetPassword", resetPassword);
-  // app.delete('/api/user/:id' ,validate_token(), Delete);
+  app.put("/api/user", updateUser);
+  app.delete("/api/user/:id",deleteUser);
 };
 
 module.exports = usersRoute;

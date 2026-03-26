@@ -1,10 +1,15 @@
-import React, { use } from "react";
+import React from "react";
 import "../../../style/feature.css";
 import { useState, useEffect } from "react";
 import "./brand.css";
 import request from "../../../utils/request";
 import {alertSuccess, confirmDelete, alertError} from "../../../swertalert/AlertSuccess";
 import {BaseURL} from "../../../utils/BaseURL";
+import Box from "@mui/material/Box";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
 const Brand = () => {
   const MAX_PHOTO_SIZE_MB = 2;
   const MAX_PHOTO_SIZE_BYTES = MAX_PHOTO_SIZE_MB * 1024 * 1024;
@@ -17,9 +22,9 @@ const Brand = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingCode, setEditingCode] = useState(null);
   const [formData, setFormData] = useState({
-    code: "",
+    name: "",
     desc: "",
-    brand_id: "",
+    status: "",
     image: "",
   });
   const [selectedPhotoFile, setSelectedPhotoFile] = useState(null);
@@ -31,75 +36,122 @@ const Brand = () => {
   const endIndex = startIndex + itemsPerPage;
   const paginatedBrands = filteredBrands.slice(startIndex, endIndex);
 
+  useEffect(() => {
+    fetchBrands();
+  }, []);
 
   const fetchBrands = async () => {
     try {
        setLoading(true);
       const response = await request("/api/brand", "GET");
-      console.log(response);
       // alertSuccess("Success!", "Operation completed successfully");
       // confirmDelete(async () => {
       //   await request(`product/${id}`, "DELETE");
       // })
-      setLoading(false);
-      setFilteredBrands(response.brand);
+      if(response.success){
+        setLoading(false);
+        setBrands(response.brand);
+      }
     } catch (error) {
       console.error("Error fetching brands:", error);
     }
   }
 
   useEffect(() => {
-    fetchBrands();
-  }, []);
+    CloseModal();
+  }, [showForm]);
+  const CloseModal = () =>{
+    if(showForm == false){
+      setFormData({
+          name: "",
+          desc: "",
+          status: "",
+          image: "",
+        });
+        setSelectedPhotoFile(null);
+        setEditingCode(null);
+        setShowForm(false);
+    }
+  }
+
+  useEffect(() => {
+    if (searchKeyword.trim()) {
+      const filtered = brands.filter((brand) =>
+        brand.name.toLowerCase().includes(searchKeyword.toLowerCase()),
+      );
+      setFilteredBrands(filtered);
+    }
+    else {
+      setFilteredBrands(brands);
+    }
+    setCurrentPage(1);
+  }, [searchKeyword, brands]);
   const handleAddBrand = () => {
     setShowForm(true);
   };
 
 
-  const handleFormSubmit = async () =>{
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
 
-    try{
+    try {
+      const payload = new FormData();
+      payload.append("name", formData.name);
+      payload.append("description", formData.desc);
+      payload.append("status", formData.status ? 1 : 0);
 
-      const formData = new FormData();
-      formData.append("code", formData.code);
-      formData.append("desc", formData.desc);
-      formData.append("brand_id", formData.brand_id);
-      
-      if(selectedPhotoFile){
-        formData.append("image", selectedPhotoFile);
+      if (selectedPhotoFile) {
+        payload.append("image", selectedPhotoFile);
       }
 
-      const response = await request("brand", "POST", formData);
+      let url = "/api/brand";
+      let method = "POST";
 
-      if(response.success){
-        alertSuccess("Success!", "Add Brand successfully!");
+      if (editingCode) {
+        payload.append("id", editingCode);
+        method = "PUT"; // or POST if backend requires
+      }
+
+      const response = await request(url, method, payload);
+
+      if (response) {
+        alertSuccess(
+         {
+           title: "Success!",
+          text: editingCode
+            ? "Brand updated successfully"
+            : "Brand created successfully",
+         }
+        );
         setShowForm(false);
         fetchBrands();
+      } else {
+        alertError("Error", response.message);
       }
-    }catch(error){
+    } catch (error) {
       alertError("Error", "Something went wrong!");
-    }
-
-  }
-
-  const handleDeleteBrand = async (code) => {
-    const result = await confirmDelete(async () => {
-      await request(`brand/${code}`, "DELETE");
-    });
-    if (result.isConfirmed) {
-      fetchBrands();
     }
   };
 
+    const handleDeleteBrand = async (id) => {
+      await confirmDelete(async () => {
+        setLoading(true);
+        await request(`/api/brand/${id}`, "DELETE");
+        fetchBrands();
+        setLoading(false);
+      });
+    };
+
   const handleEditBrand = (brand) => {
     setFormData({
-      code: brand.code,
-      desc: brand.desc || "",
-      brand_id: brand.brand_id || "",
+      name: brand.name || "",
+      desc: brand.description || "",
+      status: brand.status ?? "",   // ✅ FIXED
       image: brand.image || "",
     });
-    setSelectedPhotoFile(null);
-    setEditingCode(brand.code);
+
+    setSelectedPhotoFile(brand.image || null);
+    setEditingCode(brand.id);
     setShowForm(true);
   };
 
@@ -166,100 +218,67 @@ const Brand = () => {
         </div>
         {/* end search and ad new  */}
 
-         {loading ? (
-        <div className="loading">Loading...</div>
-      ) : (
-        <>
-          <table className="category-table">
-            <thead>
-              <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Status</th>
-                <th>Image</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginatedBrands.length > 0 ? (
-                paginatedBrands.map((brand) => (
-                  <tr key={brand.id}>
-                    <td>{brand.id}</td>
-                    <td>{brand.name || "-" }</td>
-                    <td>{brand.description || "-"}</td>
-                    <td>{brand.status ? "Active" : "Inactive" }</td>
-                    <td>
-                      {brand.image ? (
-                        <img src={BaseURL + brand.image}  className="brand-photo" />
-                        // <img src={"https://clubcode-api-pos.up.railway.app/" + brand.photo}  className="brand-photo" />
-                      ) : (
-                        "-"
-                      )}
-                    </td>
-                    <td className="actions">
-                      <button
-                        className="btn-edit"
-                        onClick={() => handleEditBrand(brand)}
-                      >
-                        ✎ Edit
-                      </button>
-                      <button
-                        className="btn-delete"
-                        onClick={() => handleDeleteBrand(brand.code)}
-                      >
-                        🗑 Delete
-                      </button>
+        {loading ? (
+          <div className="loading">Loading...</div>
+        ) : (
+          <>
+            <table className="brand-table">
+              <thead>
+                <tr>
+                  <th>Id</th>
+                  <th>Name</th>
+                  <th>Description</th>
+                  <th>Status</th>
+                  <th>Image</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {paginatedBrands.length > 0 ? (
+                  paginatedBrands.map((brand) => (
+                    <tr key={brand.id}>
+                      <td>{brand.id}</td>
+                      <td>{brand.name || "-"}</td>
+                      <td>{brand.description || "-"}</td>
+                      <td>{brand.status ? "Active" : "Inactive"}</td>
+                      <td>
+                        {brand.image ? (
+                          <img
+                            src={BaseURL + brand.image}
+                            className="brand-photo"
+                          />
+                        ) : (
+                          // <img src={"https://clubcode-api-pos.up.railway.app/" + brand.photo}  className="brand-photo" />
+                          "-"
+                        )}
+                      </td>
+                      <td className="actions">
+                        <button
+                          className="btn-edit"
+                          onClick={() => handleEditBrand(brand)}
+                        >
+                          ✎ Edit
+                        </button>
+                        <button
+                          className="btn-delete"
+                          onClick={() => handleDeleteBrand(brand.id)}
+                        >
+                          🗑 Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="6" className="no-data">
+                      No brands found
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="6" className="no-data">
-                    No brands found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-
-          <div className="pagination-info">
-            Showing {startIndex + 1} to{" "}
-            {Math.min(endIndex, filteredBrands.length)} of{" "}
-            {filteredBrands.length} brands
-          </div>
-
-          <div className="pagination-controls">
-            <button
-              className="btn-pagination"
-              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-              disabled={currentPage === 1}
-            >
-              Previous
-            </button>
-            <div className="page-numbers">
-              {Array.from({ length: totalPages }, (_, i) => (
-                <button
-                  key={i + 1}
-                  className={`page-number ${currentPage === i + 1 ? "active" : ""}`}
-                  onClick={() => setCurrentPage(i + 1)}
-                >
-                  {i + 1}
-                </button>
-              ))}
-            </div>
-            <button
-              className="btn-pagination"
-              onClick={() =>
-                setCurrentPage(Math.min(totalPages, currentPage + 1))
-              }
-              disabled={currentPage === totalPages}
-            >
-              Next
-            </button>
-          </div>
-        </>
-      )}
+                )}
+              </tbody>
+            </table>
+          </>
+        )}
 
         {/* filter page current table  */}
         <div className="pagination-info">
@@ -322,7 +341,7 @@ const Brand = () => {
                     onChange={(e) =>
                       setFormData({ ...formData, name: e.target.value })
                     }
-                    disabled={!!editingCode}
+                    // disabled={!!editingCode}
                     placeholder="Enter brand name"
                     required
                   />
@@ -338,6 +357,29 @@ const Brand = () => {
                     }
                     placeholder="Enter description"
                   />
+                </div>
+                {/* select category (optional) */}
+                <div className="form-group">
+                  <Box>
+                    <FormControl fullWidth size="small">
+                      <InputLabel id="brand-select-label">status</InputLabel>
+                      <Select
+                        labelId="brand-select-label"
+                        id="brand-select"
+                        value={formData.status ? "1" : "0"}
+                        label="status"
+                        onChange={(e) =>
+                          setFormData({ ...formData, status: e.target.value })
+                        }
+                      >
+                        <MenuItem value="">
+                          <em>-- Select status --</em>
+                        </MenuItem>
+                        <MenuItem value="1">Active</MenuItem>
+                        <MenuItem value="0">Inactive</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Box>
                 </div>
                 <div className="form-group">
                   <label>image</label>
