@@ -11,6 +11,12 @@ const Sidebar = () => {
   //list menu item 
   const menuItems = [
     { id: "dashboard", label: "📊 Dashboard", path: "/dashboard" },
+    // {
+    //   id: "brand", label: "📦 Brand", path: "/brand",
+    // },
+    // {
+    //   id: "category", label: "📦 Category", path: "/category",
+    // },
     {
       id: "products",
       label: "📦 Product Management",
@@ -27,8 +33,8 @@ const Sidebar = () => {
       path: "/sales",
       submenu: [
         { id: "new-sale", label: "New Sale", path: "/salepos" },
-        { id: "sales-list", label: "Sales History", path: "/salepos" },
-      ],
+        { id: "sales-list", label: "Sales History", path: "/saleslist" },
+      ],  
     },
     { id: "customers", label: "👥 Customer", path: "/customers" },
     {

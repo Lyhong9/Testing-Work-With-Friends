@@ -13,8 +13,8 @@ import Select from "@mui/material/Select";
 const Products = () => {
   const MAX_PHOTO_SIZE_MB = 2;
   const MAX_PHOTO_SIZE_BYTES = MAX_PHOTO_SIZE_MB * 1024 * 1024;
-  const [brands, setBrands] = useState([]);
-  const [filteredBrands, setFilteredBrands] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [filteredProduct, setFilteredProduct] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
@@ -28,34 +28,36 @@ const Products = () => {
     image: "",
   });
   const [selectedPhotoFile, setSelectedPhotoFile] = useState(null);
-  const [categories, setCategories] = useState([]);
+  const [category, setCategory] = useState([]);
+  const [brand, setBrand] = useState([]);
 
   // Pagination calculation
-  const totalPages = Math.ceil(filteredBrands.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredProduct.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const paginatedBrands = filteredBrands.slice(startIndex, endIndex);
+  const paginatedProduct = filteredProduct.slice(startIndex, endIndex);
 
   useEffect(() => {
-    fetchBrands();
+    fetchProduct();
   }, []);
 
-  const fetchBrands = async () => {
+  const fetchProduct = async () => {
     try {
-       setLoading(true);
-      const response = await request("/api/brand", "GET");
-      // alertSuccess("Success!", "Operation completed successfully");
-      // confirmDelete(async () => {
-      //   await request(`product/${id}`, "DELETE");
-      // })
-      if(response.success){
-        setLoading(false);
-        setBrands(response.brand);
+      setLoading(true);
+      const response = await request("/api/product", "GET");
+
+      console.log("response", response );
+
+      if (response && response.product) {
+        setProducts(response.product);
       }
     } catch (error) {
-      console.error("Error fetching brands:", error);
+      console.error("Error fetching products:", error);
+    } finally {
+      setLoading(false);
     }
-  }
+  };
+
 
   useEffect(() => {
     CloseModal();
@@ -76,16 +78,16 @@ const Products = () => {
 
   useEffect(() => {
     if (searchKeyword.trim()) {
-      const filtered = brands.filter((brand) =>
-        brand.name.toLowerCase().includes(searchKeyword.toLowerCase()),
+      const filtered = products.filter((product) =>
+        product.name.toLowerCase().includes(searchKeyword.toLowerCase()),
       );
-      setFilteredBrands(filtered);
+      setFilteredProduct(filtered);
     }
     else {
-      setFilteredBrands(brands);
+      setFilteredProduct(products);
     }
     setCurrentPage(1);
-  }, [searchKeyword, brands]);
+  }, [searchKeyword, products]);
   const handleAddBrand = () => {
     setShowForm(true);
   };
@@ -104,7 +106,7 @@ const Products = () => {
         payload.append("image", selectedPhotoFile);
       }
 
-      let url = "/api/brand";
+      let url = "/api/product";
       let method = "POST";
 
       if (editingCode) {
@@ -124,7 +126,7 @@ const Products = () => {
          }
         );
         setShowForm(false);
-        fetchBrands();
+        fetchProduct();
       } else {
         alertError("Error", response.message);
       }
@@ -136,22 +138,22 @@ const Products = () => {
     const handleDeleteBrand = async (id) => {
       await confirmDelete(async () => {
         setLoading(true);
-        await request(`/api/brand/${id}`, "DELETE");
-        fetchBrands();
+        await request(`/api/product/${id}`, "DELETE");
+        fetchProduct();
         setLoading(false);
       });
     };
 
-  const handleEditBrand = (brand) => {
+  const handleEditBrand = (product) => {
     setFormData({
-      name: brand.name || "",
-      desc: brand.description || "",
-      status: brand.status ?? "",   // ✅ FIXED
-      image: brand.image || "",
+      name: product.name || "",
+      desc: product.description || "",
+      status: product.status ?? "",   // ✅ FIXED
+      image: product.image || "",
     });
 
-    setSelectedPhotoFile(brand.image || null);
-    setEditingCode(brand.id);
+    setSelectedPhotoFile(product.image || null);
+    setEditingCode(product.id);
     setShowForm(true);
   };
 
@@ -179,16 +181,16 @@ const Products = () => {
   };
   return (
     <>
-      <div className="brand-container">
+      <div className="product-container">
         {/* search and ad new  */}
-        <div className="brand-header">
-          <h1 className="brand-title">Brand Management</h1>
-          <button className="btn-add-brand" onClick={handleAddBrand}>
+        <div className="product-header">
+          <h1 className="product-title">Brand Management</h1>
+          <button className="btn-add-product" onClick={handleAddBrand}>
             + Add New Brand
           </button>
         </div>
 
-        <div className="brand-controls">
+        <div className="product-controls">
           <div className="items-per-page">
             <label>Show</label>
             <select
@@ -203,11 +205,11 @@ const Products = () => {
               <option value={20}>20</option>
               <option value={50}>50</option>
             </select>
-            <span>brands per page</span>
+            <span>products per page</span>
           </div>
 
           <div className="search-box">
-            <label>Search brands:</label>
+            <label>Search products:</label>
             <input
               type="text"
               placeholder="Search by code or description..."
@@ -222,46 +224,54 @@ const Products = () => {
           <div className="loading">Loading...</div>
         ) : (
           <>
-            <table className="brand-table">
+            <table className="product-table">
               <thead>
                 <tr>
                   <th>Id</th>
                   <th>Name</th>
                   <th>Description</th>
+                  <th>Price</th>
+                  <th>Qty</th>
+                  <th>Brand</th>
+                  <th>Category</th>
                   <th>Status</th>
                   <th>Image</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {paginatedBrands.length > 0 ? (
-                  paginatedBrands.map((brand) => (
-                    <tr key={brand.id}>
-                      <td>{brand.id}</td>
-                      <td>{brand.name || "-"}</td>
-                      <td>{brand.description || "-"}</td>
-                      <td>{brand.status ? "Active" : "Inactive"}</td>
+                {paginatedProduct.length > 0 ? (
+                  paginatedProduct.map((product) => (
+                    <tr key={product.id}>
+                      <td>{product.id}</td>
+                      <td>{product.name || "-"}</td>
+                      <td>{product.description || "-"}</td>
+                      <td>{product.price || "-"}</td>
+                      <td>{product.stockQuantity || "-" }</td>
+                      <td>{product.brand.name || "-"}</td>
+                      <td>{product.category.name || "-"}</td>
+                      <td>{product.status ? "Active" : "Inactive"}</td>
                       <td>
-                        {brand.image ? (
+                        {product.image ? (
                           <img
-                            src={BaseURL + brand.image}
-                            className="brand-photo"
+                            src={BaseURL + product.image}
+                            className="product-photo"
                           />
                         ) : (
-                          // <img src={"https://clubcode-api-pos.up.railway.app/" + brand.photo}  className="brand-photo" />
+                          // <img src={"https://clubcode-api-pos.up.railway.app/" + product.photo}  className="product-photo" />
                           "-"
                         )}
                       </td>
                       <td className="actions">
                         <button
                           className="btn-edit"
-                          onClick={() => handleEditBrand(brand)}
+                          onClick={() => handleEditBrand(product)}
                         >
                           ✎ Edit
                         </button>
                         <button
                           className="btn-delete"
-                          onClick={() => handleDeleteBrand(brand.id)}
+                          onClick={() => handleDeleteBrand(product.id)}
                         >
                           🗑 Delete
                         </button>
@@ -271,7 +281,7 @@ const Products = () => {
                 ) : (
                   <tr>
                     <td colSpan="6" className="no-data">
-                      No brands found
+                      No products found
                     </td>
                   </tr>
                 )}
@@ -283,8 +293,8 @@ const Products = () => {
         {/* filter page current table  */}
         <div className="pagination-info">
           Showing {startIndex + 1} to{" "}
-          {Math.min(endIndex, filteredBrands.length)} of {filteredBrands.length}{" "}
-          brands
+          {Math.min(endIndex, filteredProduct.length)} of {filteredProduct.length}{" "}
+          products
         </div>
 
         <div className="pagination-controls">
@@ -342,7 +352,7 @@ const Products = () => {
                       setFormData({ ...formData, name: e.target.value })
                     }
                     // disabled={!!editingCode}
-                    placeholder="Enter brand name"
+                    placeholder="Enter product name"
                     required
                   />
                 </div>
@@ -362,10 +372,10 @@ const Products = () => {
                 <div className="form-group">
                   <Box>
                     <FormControl fullWidth size="small">
-                      <InputLabel id="brand-select-label">status</InputLabel>
+                      <InputLabel id="product-select-label">status</InputLabel>
                       <Select
-                        labelId="brand-select-label"
-                        id="brand-select"
+                        labelId="product-select-label"
+                        id="product-select"
                         value={formData.status ? "1" : "0"}
                         label="status"
                         onChange={(e) =>
@@ -392,7 +402,7 @@ const Products = () => {
                     <img
                       src={formData.image}
                       alt="Brand preview"
-                      className="brand-photo-preview"
+                      className="product-photo-preview"
                     />
                   ) : null}
                 </div>

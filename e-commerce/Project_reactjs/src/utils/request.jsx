@@ -1,47 +1,34 @@
 import axios from "axios";
-import {BaseURL} from "./BaseURL";
+import { BaseURL } from "./BaseURL";
 
-const request = (path = "", method = "", data = {}) => {
-  if (data instanceof FormData) {
-    return axios({
-      method: method,
+const request = async (path = "", method = "", data = {}) => {
+  try {
+    const res = await axios({
+      method,
       url: BaseURL + path,
-      data: data,
-      headers: {
-        "Accept": "application/json", 
-        "Content-Type": "multipart/form-data",
-      },
+      data,
+      headers:
+        data instanceof FormData
+          ? {
+              Accept: "application/json",
+              "Content-Type": "multipart/form-data",
+            }
+          : {
+              "Content-Type": "application/json",
+            },
     });
-  } else {
-    return axios({
-      method: method,
-      url: BaseURL + path,
-      data: data,
-      headers: {
-        "Accept": "application/json",
-      },
-    })
-      .then((response) => {
-        const resData = response.data;
 
-        if (resData.error) {
-          throw resData.error;
-        }
+    const resData = res.data;
 
-        if (resData.message) {
-          throw resData.message;
-        }
+    // ✅ ONLY throw when failed
+    if (resData.success === false) {
+      throw resData.message || "Request failed";
+    }
 
-        if (resData.errors) {
-          throw resData.errors;
-        }
-
-        return resData;
-      })
-      .catch((error) => {
-        console.log(error);
-        throw error; // better to rethrow so caller can handle
-      });
+    return resData; // IMPORTANT
+  } catch (error) {
+    console.error("Request error:", error);
+    throw error;
   }
 };
 

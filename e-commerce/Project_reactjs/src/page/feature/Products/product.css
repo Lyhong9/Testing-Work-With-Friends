@@ -1,11 +1,11 @@
-.brand-container {
+.product-container {
   padding: 20px;
   background-color: #f5f5f5;
   min-height: 100vh;
 }
 
 /* Header Section */
-.brand-header {
+.product-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -16,14 +16,14 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.brand-title {
+.product-title {
   font-size: 28px;
   font-weight: 600;
   color: #1a3a52;
   margin: 0;
 }
 
-.btn-add-brand {
+.btn-add-product {
   background: linear-gradient(90deg, rgba(68, 171, 135, 1) 0%, rgba(18, 128, 89, 1) 100%);
   color: white;
   border: none;
@@ -37,17 +37,17 @@
   transition: all 0.3s ease-in-out;
 }
 
-.btn-add-brand:hover {
+.btn-add-product:hover {
   background: linear-gradient(90deg, rgba(54, 255, 184, 1) 0%, rgba(18, 128, 89, 1) 100%);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-.btn-add-brand:active {
+.btn-add-product:active {
   transform: scale(0.97);
 }
 /* Controls Section */
-.brand-controls {
+.product-controls {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -110,7 +110,7 @@
 }
 
 /* Table Section */
-.brand-table {
+.product-table {
   width: 100%;
   background-color: white;
   border-collapse: collapse;
@@ -120,33 +120,33 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.brand-table thead {
+.product-table thead {
   background: linear-gradient(90deg, rgba(68, 171, 135, 1) 0%, rgba(18, 128, 89, 1) 100%);
   color: white;
 }
 
-.brand-table thead th {
+.product-table thead th {
   padding: 15px 20px;
   text-align: left;
   font-weight: 600;
   border-bottom: 2px solid #218838;
 }
 
-.brand-table tbody tr {
+.product-table tbody tr {
   border-bottom: 1px solid #eee;
   transition: background-color 0.2s ease;
 }
 
-.brand-table tbody tr:hover {
+.product-table tbody tr:hover {
   background-color: #f9f9f9;
 }
 
-.brand-table tbody td {
+.product-table tbody td {
   padding: 15px 20px;
   color: #333;
 }
 
-.brand-photo {
+.product-photo {
   width: 36px;
   height: 36px;
   object-fit: cover;
@@ -154,7 +154,7 @@
   display: block;
 }
 
-.brand-photo-preview {
+.product-photo-preview {
   width: 60px;
   height: 60px;
   object-fit: cover;
@@ -163,7 +163,7 @@
   display: block;
 }
 
-.brand-table .no-data {
+.product-table .no-data {
   text-align: center;
   color: #999;
   padding: 30px;
@@ -483,17 +483,17 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .brand-header {
+  .product-header {
     flex-direction: column;
     gap: 15px;
     text-align: center;
   }
 
-  .brand-title {
+  .product-title {
     font-size: 24px;
   }
 
-  .brand-controls {
+  .product-controls {
     flex-direction: column;
     align-items: stretch;
   }
@@ -507,18 +507,18 @@
     width: 100%;
   }
 
-  .brand-table thead {
+  .product-table thead {
     display: none;
   }
 
-  .brand-table tbody tr {
+  .product-table tbody tr {
     display: block;
     border: 1px solid #ddd;
     margin-bottom: 15px;
     border-radius: 4px;
   }
 
-  .brand-table tbody td {
+  .product-table tbody td {
     display: block;
     padding: 12px;
     text-align: right;
@@ -526,14 +526,14 @@
     border-bottom: 1px solid #eee;
   }
 
-  .brand-table tbody td::before {
+  .product-table tbody td::before {
     content: attr(data-label);
     float: left;
     font-weight: 600;
     color: #333;
   }
 
-  .brand-table tbody td.actions {
+  .product-table tbody td.actions {
     flex-direction: column;
   }
 
@@ -556,20 +556,20 @@
 }
 
 @media (max-width: 480px) {
-  .brand-container {
+  .product-container {
     padding: 10px;
   }
 
-  .brand-header,
-  .brand-controls {
+  .product-header,
+  .product-controls {
     padding: 15px;
   }
 
-  .brand-title {
+  .product-title {
     font-size: 20px;
   }
 
-  .btn-add-brand {
+  .btn-add-product {
     width: 100%;
     padding: 10px 15px;
     font-size: 14px;

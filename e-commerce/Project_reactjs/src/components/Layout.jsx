@@ -1,11 +1,38 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
 import "../style/Layout.css";
-
+import request from "../utils/request"
+import GlobleData from "../store/GlobleData";
+import { BaseURL } from "../utils/BaseURL";
 const Layout = () => {
-  return (
+  const {setBrand, setCategory} = GlobleData();
+
+
+  useEffect(() => {
+    fetchBrand();
+    fetchCategory();
+  }, []);
+  const fetchBrand = async () => {
+    try{
+      const res = await request("/api/brand", "get");
+      console.log(res);
+      setBrand(res.brand);
+    }catch(error){
+      console.log(error);
+    }
+  }
+  const fetchCategory = async () => {
+    try{
+      const res = await request("/api/category", "get");
+      console.log(res);
+      setCategory(res.category);
+    }catch(error){
+      console.log(error);
+    }
+  }
+  return (  
     <div className="app-container">
       <div className="main-layout">
         <Sidebar />
