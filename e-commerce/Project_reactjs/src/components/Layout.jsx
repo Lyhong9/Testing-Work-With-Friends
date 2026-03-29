@@ -25,8 +25,9 @@ const Layout = () => {
   const fetchCategory = async () => {
     try{
       const res = await request("/api/category", "get");
+      // console.log(res);
+      setCategory(res.category)
       setCategory(res.categories);
-
     }catch(error){
       console.log(error);
     }

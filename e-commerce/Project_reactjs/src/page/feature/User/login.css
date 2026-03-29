@@ -1,0 +1,152 @@
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Background with overlay */
+.header-login {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* Image background */
+  background: url("../../../../public/cafeBg.avif") no-repeat center/cover;
+  position: relative;
+}
+
+/* Dark overlay for better readability */
+.header-login::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4); /* adjust darkness */
+  backdrop-filter: blur(4px);
+}
+
+/* Form container */
+.form-login {
+  position: relative; /* IMPORTANT (to stay above overlay) */
+  width: 350px;
+  padding: 30px;
+  border-radius: 15px;
+
+  /* Glass effect */
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Title */
+.title-login {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.title-login p {
+  font-size: 26px;
+  font-weight: bold;
+  color: #fff;
+}
+
+/* Inputs */
+.form-login form div {
+  margin-bottom: 15px;
+}
+
+.form-login input {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  outline: none;
+  font-size: 14px;
+}
+
+/* Focus effect */
+.form-login input:focus {
+  box-shadow: 0 0 5px #00f2fe;
+}
+
+/* Button */
+.form-login button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: #00c6ff;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.form-login button:hover {
+  background: #0072ff;
+}
+
+/* Responsive */
+@media (max-width: 400px) {
+  .form-login {
+    width: 90%;
+    padding: 20px;
+  }
+}
+
+/* Subtitle */
+.subtitle {
+  display: block;
+  font-size: 14px;
+  color: #ddd;
+  margin-top: 5px;
+}
+
+/* Remember + forgot */
+.extra-options {
+  display: flex;
+  justify-content: end;
+  align-items: flex-end;
+  font-size: 13px;
+  margin-bottom: 15px;
+  color: white;
+}
+
+.extra-options a {
+  color: #00f2fe;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.extra-options a:hover {
+  text-decoration: underline;
+}
+
+/* Register text */
+.register-text {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 14px;
+  color: white;
+}
+
+.register-text a {
+  color: #00f2fe;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.register-text a:hover {
+  text-decoration: underline;
+}
+
+.remember-me{
+  display: flex; 
+  justify-content: center;
+  align-items: center;
+}
