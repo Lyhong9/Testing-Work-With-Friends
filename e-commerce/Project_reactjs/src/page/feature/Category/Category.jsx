@@ -25,14 +25,8 @@ const Category = () => {
   const [formData, setFormData] = useState({
     name: "",
     desc: "",
-    price: "",
-    qty: "",
-    category: "",
-    brand: "",
     status: "",
-    image: "",
   });
-  const [selectedPhotoFile, setSelectedPhotoFile] = useState(null);
 
   // Pagination calculation
   const totalPages = Math.ceil(filteredCategory.length / itemsPerPage);
@@ -56,41 +50,32 @@ const Category = () => {
     }
   }, [searchKeyword, Category]);
 
-  const fetchCategory = () => {};
+  const fetchCategory = async() => {
+      setLoading(true);
+      const res = await request("/api/category", "get")
+      setLoading(false);
+      if(res) {
+        setCategory(res.categories || []);
+      }
+  };
   const handleFormSubmit = () => {};
-  const handleAddCategory = () => {};
+  
+    const handleAddCategory = () => {
+    setShowForm(true);
+    setEditingCode(null);
+    setFormData({});
+  };
 
   const handleEditcategory = (product) => {};
 
   const handleDeletecategory = (id) => {};
-
-  // const handlePhotoChange = (event) => {
-  //   const file =  event.target.files?.[0];
-  //   if(!file){
-  //     return;
-  //   }
-  //   if(file.size > MAX_PHOTO_SIZE_BYTES){
-  //     alertError("Error", `Image too large. Please choose a file smaller than ${MAX_PHOTO_SIZE_MB}MB.`);
-  //     event.target.value = "";
-  //     return;
-  //   }
-  //   setSelectedPhotoFile(file);
-
-  //   const reader = new FileReader();
-  //   reader.onloadend().then(() => {
-  //     setFormData((prev) => ({...prev, image: reader.result || ""}))
-  //   })
-
-  //   reader.readAsDataURL(file);
-  // };
-
 
 
   return (
     <>
       <div className="category-container">
         <div className="category-header">
-          <h1 className="product-title">CategoryfetchCategory Management</h1>
+          <h1 className="product-title">Category Management</h1>
           <button className="btn-add-product" onClick={handleAddCategory}>
             + Add New Category
           </button>
@@ -111,11 +96,11 @@ const Category = () => {
               <option value={20}>20</option>
               <option value={50}>50</option>
             </select>
-            <span>CategoryfetchCategory per page</span>
+            <span>Category per page</span>
           </div>
 
           <div className="search-box">
-            <label>Search CategoryfetchCategory:</label>
+            <label>Search Category:</label>
             <input
               type="text"
               placeholder="Search by code or description..."
@@ -141,22 +126,22 @@ const Category = () => {
               </thead>
               <tbody>
                 {paginatedCategory.length > 0 ? (
-                  paginatedCategory.map((product) => (
-                    <tr key={product.id}>
-                      <td>{product.id}</td>
-                      <td>{product.name || "-"}</td>
-                      <td>{product.description || "-"}</td>
-                      <td>{product.status || "-"}</td>
+                  paginatedCategory.map((category) => (
+                    <tr key={category.id}>
+                      <td>{category.id}</td>
+                      <td>{category.name || "-"}</td>
+                      <td>{category.description || "-"}</td>
+                      <td>{category.status ? "Active" : "Inactive"}</td>
                       <td className="actions">
                         <button
                           className="btn-edit"
-                          onClick={() => handleEditcategory(product)}
+                          onClick={() => handleEditcategory(category)}
                         >
                           ✎ Edit
                         </button>
                         <button
                           className="btn-delete"
-                          onClick={() => handleDeletecategory(product.id)}
+                          onClick={() => handleDeletecategory(category.id)}
                         >
                           🗑 Delete
                         </button>
@@ -252,32 +237,6 @@ const Category = () => {
                       setFormData({ ...formData, desc: e.target.value })
                     }
                     placeholder="Enter description"
-                  />
-                </div>
-
-                {/* price product  */}
-                <div className="form-group">
-                  <label>Price</label>
-                  <input
-                    type="number"
-                    value={formData.price}
-                    onChange={(e) =>
-                      setFormData({ ...formData, price: e.target.value })
-                    }
-                    placeholder="Enter price"
-                  />
-                </div>
-
-                {/* stock quantity product  */}
-                <div className="form-group">
-                  <label>Stock Quantity</label>
-                  <input
-                    type="number"
-                    value={formData.qty}
-                    onChange={(e) =>
-                      setFormData({ ...formData, qty: e.target.value })
-                    }
-                    placeholder="Enter stock quantity"
                   />
                 </div>
 
