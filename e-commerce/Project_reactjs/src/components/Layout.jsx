@@ -12,12 +12,11 @@ const Layout = () => {
 
   useEffect(() => {
     fetchBrand();
-    fetchCategory();
+   fetchCategory()
   }, []);
   const fetchBrand = async () => {
     try{
       const res = await request("/api/brand", "get");
-      console.log(res);
       setBrand(res.brand);
     }catch(error){
       console.log(error);
@@ -26,8 +25,8 @@ const Layout = () => {
   const fetchCategory = async () => {
     try{
       const res = await request("/api/category", "get");
-      console.log(res);
-      setCategory(res.category);
+      setCategory(res.categories);
+
     }catch(error){
       console.log(error);
     }

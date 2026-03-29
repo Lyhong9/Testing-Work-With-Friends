@@ -3,13 +3,18 @@ import "../../../style/feature.css";
 import { useState, useEffect } from "react";
 import "./product.css";
 import request from "../../../utils/request";
-import {alertSuccess, confirmDelete, alertError} from "../../../swertalert/AlertSuccess";
-import {BaseURL} from "../../../utils/BaseURL";
+import {
+  alertSuccess,
+  confirmDelete,
+  alertError,
+} from "../../../swertalert/AlertSuccess";
+import { BaseURL } from "../../../utils/BaseURL";
 import Box from "@mui/material/Box";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
+import GlobleData from "../../../store/GlobleData";
 const Products = () => {
   const MAX_PHOTO_SIZE_MB = 2;
   const MAX_PHOTO_SIZE_BYTES = MAX_PHOTO_SIZE_MB * 1024 * 1024;
@@ -24,12 +29,16 @@ const Products = () => {
   const [formData, setFormData] = useState({
     name: "",
     desc: "",
+    price: "",
+    qty: "",
+    category: "",
+    brand: "",
     status: "",
     image: "",
   });
   const [selectedPhotoFile, setSelectedPhotoFile] = useState(null);
-  const [category, setCategory] = useState([]);
-  const [brand, setBrand] = useState([]);
+
+  const { brand, category } = GlobleData();
 
   // Pagination calculation
   const totalPages = Math.ceil(filteredProduct.length / itemsPerPage);
@@ -46,8 +55,6 @@ const Products = () => {
       setLoading(true);
       const response = await request("/api/product", "GET");
 
-      console.log("response", response );
-
       if (response && response.product) {
         setProducts(response.product);
       }
@@ -58,23 +65,26 @@ const Products = () => {
     }
   };
 
-
   useEffect(() => {
     CloseModal();
   }, [showForm]);
-  const CloseModal = () =>{
-    if(showForm == false){
+  const CloseModal = () => {
+    if (showForm == false) {
       setFormData({
-          name: "",
-          desc: "",
-          status: "",
-          image: "",
-        });
-        setSelectedPhotoFile(null);
-        setEditingCode(null);
-        setShowForm(false);
+        name: "",
+        desc: "",
+        price: "",
+        qty: "",
+        category: "",
+        brand: "",
+        status: "",
+        image: "",
+      });
+      setSelectedPhotoFile(null);
+      setEditingCode(null);
+      setShowForm(false);
     }
-  }
+  };
 
   useEffect(() => {
     if (searchKeyword.trim()) {
@@ -82,16 +92,14 @@ const Products = () => {
         product.name.toLowerCase().includes(searchKeyword.toLowerCase()),
       );
       setFilteredProduct(filtered);
-    }
-    else {
+    } else {
       setFilteredProduct(products);
     }
     setCurrentPage(1);
   }, [searchKeyword, products]);
-  const handleAddBrand = () => {
+  const handleAdd = () => {
     setShowForm(true);
   };
-
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -100,7 +108,11 @@ const Products = () => {
       const payload = new FormData();
       payload.append("name", formData.name);
       payload.append("description", formData.desc);
-      payload.append("status", formData.status ? 1 : 0);
+      payload.append("price", formData.price);
+      payload.append("stockQuantity", formData.qty);
+      payload.append("categoryId", formData.category);
+      payload.append("brandId", formData.brand);
+      // payload.append("status", formData.status ? 1 : 0);
 
       if (selectedPhotoFile) {
         payload.append("image", selectedPhotoFile);
@@ -117,14 +129,12 @@ const Products = () => {
       const response = await request(url, method, payload);
 
       if (response) {
-        alertSuccess(
-         {
-           title: "Success!",
+        alertSuccess({
+          title: "Success!",
           text: editingCode
-            ? "Brand updated successfully"
-            : "Brand created successfully",
-         }
-        );
+            ? "products updated successfully"
+            : "products created successfully",
+        });
         setShowForm(false);
         fetchProduct();
       } else {
@@ -135,20 +145,24 @@ const Products = () => {
     }
   };
 
-    const handleDeleteBrand = async (id) => {
-      await confirmDelete(async () => {
-        setLoading(true);
-        await request(`/api/product/${id}`, "DELETE");
-        fetchProduct();
-        setLoading(false);
-      });
-    };
+  const handleDeleteBrand = async (id) => {
+    await confirmDelete(async () => {
+      setLoading(true);
+      await request(`/api/product/${id}`, "DELETE");
+      fetchProduct();
+      setLoading(false);
+    });
+  };
 
   const handleEditBrand = (product) => {
     setFormData({
       name: product.name || "",
       desc: product.description || "",
-      status: product.status ?? "",   // ✅ FIXED
+      price: product.price || "",
+      qty: product.stockQuantity || "",
+      category: product.categoryId || "",
+      brand: product.brandId || "",
+      // status: product.status ?? "", // ✅ FIXED
       image: product.image || "",
     });
 
@@ -157,13 +171,16 @@ const Products = () => {
     setShowForm(true);
   };
 
-  const handlePhotoChange = async () =>{
+  const handlePhotoChange = async (event) => {
     const file = event.target.files?.[0];
-    if(!file){
+    if (!file) {
       return;
     }
-    if(file.size > MAX_PHOTO_SIZE_BYTES){
-      alertError("Error", `Image too large. Please choose a file smaller than ${MAX_PHOTO_SIZE_MB}MB.`);
+    if (file.size > MAX_PHOTO_SIZE_BYTES) {
+      alertError(
+        "Error",
+        `Image too large. Please choose a file smaller than ${MAX_PHOTO_SIZE_MB}MB.`,
+      );
       event.target.value = "";
       return;
     }
@@ -174,9 +191,9 @@ const Products = () => {
       setFormData((prev) => ({ ...prev, image: reader.result || "" }));
     };
     reader.readAsDataURL(file);
-  }
+  };
 
-   const getPhotoUrl = (photo) => {
+  const getPhotoUrl = (photo) => {
     return `${BaseURL}${photo.startsWith("/") ? "" : "/"}${photo}`;
   };
   return (
@@ -185,7 +202,7 @@ const Products = () => {
         {/* search and ad new  */}
         <div className="product-header">
           <h1 className="product-title">Brand Management</h1>
-          <button className="btn-add-product" onClick={handleAddBrand}>
+          <button className="btn-add-product" onClick={handleAdd}>
             + Add New Brand
           </button>
         </div>
@@ -234,7 +251,7 @@ const Products = () => {
                   <th>Qty</th>
                   <th>Brand</th>
                   <th>Category</th>
-                  <th>Status</th>
+                  {/* <th>Status</th> */}
                   <th>Image</th>
                   <th>Actions</th>
                 </tr>
@@ -247,10 +264,10 @@ const Products = () => {
                       <td>{product.name || "-"}</td>
                       <td>{product.description || "-"}</td>
                       <td>{product.price || "-"}</td>
-                      <td>{product.stockQuantity || "-" }</td>
-                      <td>{product.brand.name || "-"}</td>
-                      <td>{product.category.name || "-"}</td>
-                      <td>{product.status ? "Active" : "Inactive"}</td>
+                      <td>{product.stockQuantity || "-"}</td>
+                      <td>{product.brand?.name || "-"}</td>
+                      <td>{product.category?.name || "-"}</td>
+                      {/* <td>{product.status ? "Active" : "Inactive"}</td> */}
                       <td>
                         {product.image ? (
                           <img
@@ -293,8 +310,8 @@ const Products = () => {
         {/* filter page current table  */}
         <div className="pagination-info">
           Showing {startIndex + 1} to{" "}
-          {Math.min(endIndex, filteredProduct.length)} of {filteredProduct.length}{" "}
-          products
+          {Math.min(endIndex, filteredProduct.length)} of{" "}
+          {filteredProduct.length} products
         </div>
 
         <div className="pagination-controls">
@@ -343,6 +360,7 @@ const Products = () => {
                 </button>
               </div>
               <form onSubmit={handleFormSubmit}>
+                {/* name product  */}
                 <div className="form-group">
                   <label>Name *</label>
                   <input
@@ -356,7 +374,7 @@ const Products = () => {
                     required
                   />
                 </div>
-
+                {/* description  */}
                 <div className="form-group">
                   <label>Description</label>
                   <input
@@ -368,15 +386,98 @@ const Products = () => {
                     placeholder="Enter description"
                   />
                 </div>
+
+                {/* price product  */}
+                <div className="form-group">
+                  <label>Price</label>
+                  <input
+                    type="number"
+                    value={formData.price}
+                    onChange={(e) =>
+                      setFormData({ ...formData, price: e.target.value })
+                    }
+                    placeholder="Enter price"
+                  />
+                </div>
+
+                {/* stock quantity product  */}
+                <div className="form-group">
+                  <label>Stock Quantity</label>
+                  <input
+                    type="number"
+                    value={formData.qty}
+                    onChange={(e) =>
+                      setFormData({ ...formData, qty: e.target.value })
+                    }
+                    placeholder="Enter stock quantity"
+                  />
+                </div>
+
                 {/* select category (optional) */}
                 <div className="form-group">
+                  <Box>
+                    <FormControl fullWidth size="small">
+                      <InputLabel id="product-select-label">category</InputLabel>
+                      <Select
+                        labelId="product-select-label"
+                        id="product-select"
+                        value={formData.category}
+                        label="category"
+                        onChange={(e) =>
+                          setFormData({ ...formData, category: e.target.value })
+                        }
+                      >
+                        <MenuItem value="">
+                          <em>-- Select category --</em>
+                        </MenuItem>
+                       {
+                        category.map((category) => (
+                          <MenuItem key={category.id} value={category.id}>
+                            {category.name}
+                          </MenuItem>
+                        ))
+                       }
+                      </Select>
+                    </FormControl>
+                  </Box>
+                </div>
+                {/* select brand (optional) */}
+                <div className="form-group">
+                  <Box>
+                    <FormControl fullWidth size="small">
+                      <InputLabel id="product-select-label">brand</InputLabel>
+                      <Select
+                        labelId="product-select-label"
+                        id="product-select"
+                        value={formData.brand}
+                        label="brand"
+                        onChange={(e) =>
+                          setFormData({ ...formData, brand: e.target.value })
+                        }
+                      >
+                        <MenuItem value="">
+                          <em>-- Select brand --</em>
+                        </MenuItem>
+                       {
+                        brand.map((brand) => (
+                          <MenuItem key={brand.id} value={brand.id}>
+                            {brand.name}
+                          </MenuItem>
+                        ))
+                       }
+                      </Select>
+                    </FormControl>
+                  </Box>
+                </div>
+                {/* select status (optional) */}
+                {/* <div className="form-group">
                   <Box>
                     <FormControl fullWidth size="small">
                       <InputLabel id="product-select-label">status</InputLabel>
                       <Select
                         labelId="product-select-label"
                         id="product-select"
-                        value={formData.status ? "1" : "0"}
+                        value={formData.status}
                         label="status"
                         onChange={(e) =>
                           setFormData({ ...formData, status: e.target.value })
@@ -385,12 +486,14 @@ const Products = () => {
                         <MenuItem value="">
                           <em>-- Select status --</em>
                         </MenuItem>
-                        <MenuItem value="1">Active</MenuItem>
-                        <MenuItem value="0">Inactive</MenuItem>
+                        <MenuItem value={1}>Active</MenuItem>
+                        <MenuItem value={0}>Inactive</MenuItem>
                       </Select>
                     </FormControl>
                   </Box>
-                </div>
+                </div> */}
+
+                {/* image  */}
                 <div className="form-group">
                   <label>image</label>
                   <input

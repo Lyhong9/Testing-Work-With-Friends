@@ -155,7 +155,7 @@ const Brand = () => {
     setShowForm(true);
   };
 
-  const handlePhotoChange = async () =>{
+  const handlePhotoChange = async (event) =>{
     const file = event.target.files?.[0];
     if(!file){
       return;
@@ -366,7 +366,7 @@ const Brand = () => {
                       <Select
                         labelId="brand-select-label"
                         id="brand-select"
-                        value={formData.status ? "1" : "0"}
+                        value={formData.status}
                         label="status"
                         onChange={(e) =>
                           setFormData({ ...formData, status: e.target.value })
@@ -375,8 +375,8 @@ const Brand = () => {
                         <MenuItem value="">
                           <em>-- Select status --</em>
                         </MenuItem>
-                        <MenuItem value="1">Active</MenuItem>
-                        <MenuItem value="0">Inactive</MenuItem>
+                        <MenuItem value={1}>Active</MenuItem>
+                        <MenuItem value={0}>Inactive</MenuItem>
                       </Select>
                     </FormControl>
                   </Box>
