@@ -6,13 +6,15 @@ import "../style/Layout.css";
 import request from "../utils/request"
 import GlobleData from "../store/GlobleData";
 import { BaseURL } from "../utils/BaseURL";
+import { alertError } from "../swertalert/AlertSuccess";
 const Layout = () => {
-  const {setBrand, setCategory} = GlobleData();
+  const {setBrand, setCategory, setRole} = GlobleData();
 
 
   useEffect(() => {
     fetchBrand();
-   fetchCategory()
+   fetchCategory();
+   fetchRole();
   }, []);
   const fetchBrand = async () => {
     try{
@@ -26,10 +28,21 @@ const Layout = () => {
     try{
       const res = await request("/api/category", "get");
       // console.log(res);
-      setCategory(res.category)
+      // setCategory(res.category)
       setCategory(res.categories);
     }catch(error){
       console.log(error);
+    }
+  }
+
+  const fetchRole = async () =>{
+    try{
+        const res = await request("/api/role", "get");
+        if(res) { 
+          setRole(res.role)
+        }    
+    }catch(error){
+      alertError({text: error?.message || "fetch Role Failed!"})
     }
   }
   return (  

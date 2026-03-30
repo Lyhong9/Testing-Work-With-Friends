@@ -16,6 +16,8 @@ const request = async (path = "", method = "", data = {}) => {
           : {
               "Content-Type": "application/json",
             },
+      Authorization: "Bearer " + localStorage.getItem("access_token"),
+      
     });
 
     const resData = res.data;

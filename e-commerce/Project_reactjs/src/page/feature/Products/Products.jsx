@@ -16,7 +16,7 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import GlobleData from "../../../store/GlobleData";
 const Products = () => {
-  const MAX_PHOTO_SIZE_MB = 2;
+  const MAX_PHOTO_SIZE_MB = 10;
   const MAX_PHOTO_SIZE_BYTES = MAX_PHOTO_SIZE_MB * 1024 * 1024;
   const [products, setProducts] = useState([]);
   const [filteredProduct, setFilteredProduct] = useState([]);
@@ -178,8 +178,7 @@ const Products = () => {
     }
     if (file.size > MAX_PHOTO_SIZE_BYTES) {
       alertError(
-        "Error",
-        `Image too large. Please choose a file smaller than ${MAX_PHOTO_SIZE_MB}MB.`,
+        {text: `Image too large. Please choose a file smaller than ${MAX_PHOTO_SIZE_MB}MB.`}
       );
       event.target.value = "";
       return;

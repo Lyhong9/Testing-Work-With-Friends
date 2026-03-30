@@ -11,7 +11,7 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 const Brand = () => {
-  const MAX_PHOTO_SIZE_MB = 2;
+  const MAX_PHOTO_SIZE_MB = 10;
   const MAX_PHOTO_SIZE_BYTES = MAX_PHOTO_SIZE_MB * 1024 * 1024;
   const [brands, setBrands] = useState([]);
   const [filteredBrands, setFilteredBrands] = useState([]);
@@ -129,7 +129,7 @@ const Brand = () => {
         alertError("Error", response.message);
       }
     } catch (error) {
-      alertError("Error", "Something went wrong!");
+      alertError({text: error?.message || "An error occurred while saving the brand."});
     }
   };
 

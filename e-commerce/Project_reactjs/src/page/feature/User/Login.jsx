@@ -1,11 +1,12 @@
 import React from 'react'
 import "./login.css"
 import { NavLink } from 'react-router-dom';
-
+import UseLogin from '../../../userContext/UseLogin';
 const Login = () => {
-  const handleLogin = (e) =>{
-    e.preventDefault();
-  }
+  const {handleLogin
+  ,dataUser,setDataUser
+  } = UseLogin();
+
 
   return (
     <div className='header-login'>
@@ -23,7 +24,9 @@ const Login = () => {
             <input 
               type="email" 
               name="email" 
+              value={dataUser.email}
               placeholder='Enter your email' 
+              onChange={(e) => setDataUser((prev) => ({...prev, email: e.target.value}))}
             />
           </div>
 
@@ -32,6 +35,8 @@ const Login = () => {
               type="password" 
               name="password" 
               placeholder='Enter your password' 
+              value={dataUser.password}
+              onChange={(e) => setDataUser((prev) => ({...prev, password: e.target.value}))}
             />
           </div>
 

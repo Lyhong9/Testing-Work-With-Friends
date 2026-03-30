@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import request from "../../../utils/request";
 import { alertError, alertSuccess, confirmDelete } from "../../../swertalert/AlertSuccess";
 import { BaseURL } from "../../../utils/BaseURL";
@@ -23,9 +23,11 @@ const Category = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingCode, setEditingCode] = useState(null);
   const [formData, setFormData] = useState({
+    id: null,
     name: "",
     desc: "",
     status: "",
+
   });
 
   // Pagination calculation
@@ -37,6 +39,7 @@ const Category = () => {
   useEffect(() => {
     fetchCategory();
   }, []);
+  
 
   useEffect(() => {
     if(searchKeyword.trim()) {
@@ -51,14 +54,45 @@ const Category = () => {
   }, [searchKeyword, Category]);
 
   const fetchCategory = async() => {
-      setLoading(true);
+      try{
+        setLoading(true);
       const res = await request("/api/category", "get")
       setLoading(false);
       if(res) {
         setCategory(res.categories || []);
       }
+      }catch(error) {
+        setLoading(false);
+        alertError({text: error?.message || "Failed to fetch category"});
+      }
   };
-  const handleFormSubmit = () => {};
+  const handleFormSubmit = () => {
+    try{
+      const dataForm = {
+        name: formData.name,
+        description: formData.desc,
+        status: formData.status,
+      };
+
+      let method = "post";
+      let url = "/api/category";
+      if(editingCode) {
+        dataForm.id = editingCode;
+        method = "put";
+      }
+
+      setLoading(true);
+      const res = request(url, method, dataForm);
+      if(res) {
+        setShowForm(false);
+        alertSuccess({title: "Success!", text: editingCode ? "Category updated successfully" : "Category created successfully"});
+        setLoading(false);
+        fetchCategory();
+      }
+    }catch(error) {
+      alertError({text: error?.message || "Failed to save category"});
+    }
+  };
   
     const handleAddCategory = () => {
     setShowForm(true);
@@ -66,9 +100,25 @@ const Category = () => {
     setFormData({});
   };
 
-  const handleEditcategory = (product) => {};
+  const handleEditcategory = (cate) => {
+    setShowForm(true);
+    setEditingCode(cate.id);
+    setFormData({
+      id: cate.id,
+      name: cate.name || "",
+      desc: cate.description || "",
+      status: cate.status || "",
+    });
+  };
 
-  const handleDeletecategory = (id) => {};
+  const handleDeletecategory = async (id) => {
+    await confirmDelete(async () => {
+      setLoading(true);
+      await request(`/api/category/${id}`, "DELETE");
+      fetchCategory();
+      setLoading(false);
+    });
+  };
 
 
   return (
