@@ -1,5 +1,5 @@
 
-import { useState, useEffect, use } from "react";
+import { useState, useEffect, } from "react";
 import request from "../../../utils/request";
 import { alertError, alertSuccess, confirmDelete } from "../../../swertalert/AlertSuccess";
 import { BaseURL } from "../../../utils/BaseURL";
@@ -12,7 +12,7 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import GlobleData from "../../../store/GlobleData";
 const Category = () => {  
-  const MAX_PHOTO_SIZE_MB = 2;
+  const MAX_PHOTO_SIZE_MB = 10;
   const MAX_PHOTO_SIZE_BYTES = MAX_PHOTO_SIZE_MB * 1024 * 1024;
   const [Category, setCategory] = useState([]);
   const [filteredCategory, setFilteredCategory] = useState([]);

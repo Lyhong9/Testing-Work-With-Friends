@@ -309,10 +309,10 @@ const userLogin = async (req, res) => {
     logError("userLogin", err, res);
   }
 };
+
+const { TOKEN_SECRET } = require("../util/TOKEN_SECRET");
 const getAccessToken = async (paramData) => {
-  const KeyToken =
-    "afasdfasdfsakdfjdsfsfhasfsdfjk230798547-25-749587rtonaoagbhagheq4tw45agbgartj";
-  const access_token = await jwt.sign({ data: paramData }, KeyToken, {
+  const access_token = await jwt.sign({ data: paramData }, TOKEN_SECRET, {
     expiresIn: "1d",
   });
   return access_token;

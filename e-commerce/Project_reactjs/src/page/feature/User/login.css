@@ -12,7 +12,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-
   /* Image background */
   background: url("../../../../public/cafeBg.avif") no-repeat center/cover;
   position: relative;

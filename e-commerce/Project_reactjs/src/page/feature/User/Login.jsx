@@ -1,62 +1,137 @@
-import React from 'react'
-import "./login.css"
-import { NavLink } from 'react-router-dom';
-import UseLogin from '../../../userContext/UseLogin';
+import React from "react";
+import "./login.css";
+import { NavLink } from "react-router-dom";
+import UseLogin from "../../../userContext/UseLogin";
+
 const Login = () => {
-  const {handleLogin
-  ,dataUser,setDataUser
+  const {
+    handleLogin,
+    dataUser,
+    setDataUser,
+    fetchOtp,
+    handleVerifyOtp,
+    handleResetPassword,
+    forgotPass,
+    setForgotPass,
+    verifiedOtp,
+    // loading states
+    loading,
+    otpLoading,
+    verifyLoading,
+    resetLoading,
   } = UseLogin();
 
-
   return (
-    <div className='header-login'>
-      <div className='form-login'>
+    <div className="header-login">
+      <div className="form-login">
         <form onSubmit={handleLogin}>
-          
-          <div className='title-login'>
+          {/* TITLE */}
+          <div className="title-login">
             <p>Welcome Back 👋</p>
-            <span className='subtitle'>
-              Please login to your account
-            </span>
+            <span className="subtitle">Please login to your account</span>
           </div>
 
-          <div>
-            <input 
-              type="email" 
-              name="email" 
-              value={dataUser.email}
-              placeholder='Enter your email' 
-              onChange={(e) => setDataUser((prev) => ({...prev, email: e.target.value}))}
-            />
-          </div>
+          {/* EMAIL */}
+          <input
+            type="email"
+            style={{ marginBottom: "15px" }}
+            value={dataUser.email}
+            placeholder="Enter your email"
+            required
+            onChange={(e) =>
+              setDataUser({ ...dataUser, email: e.target.value })
+            }
+          />
 
-          <div>
-            <input 
-              type="password" 
-              name="password" 
-              placeholder='Enter your password' 
+          {/* PASSWORD OR FORGOT FLOW */}
+          {!forgotPass ? (
+            <input
+              type="password"
               value={dataUser.password}
-              onChange={(e) => setDataUser((prev) => ({...prev, password: e.target.value}))}
+              placeholder="Enter password"
+              onChange={(e) =>
+                setDataUser({ ...dataUser, password: e.target.value })
+              }
             />
-          </div>
+          ) : (
+            <>
+              {/* OTP STEP */}
+              {!verifiedOtp ? (
+                <>
+                  <input
+                    style={{ marginBottom: "15px" }}
+                    type="text"
+                    value={dataUser.otp}
+                    placeholder="Enter OTP"
+                    onChange={(e) =>
+                      setDataUser({ ...dataUser, otp: e.target.value })
+                    }
+                  />
 
-          {/* Extra text */}
-          <div className='extra-options'>
-            <a href="#"><NavLink to="/forgot">Forgot password?</NavLink></a>
-          </div>
-          <button type="submit">Login</button>
+                  {!dataUser.otp ? (
+                    <button type="button" onClick={fetchOtp} disabled={otpLoading}>
+                      {otpLoading ? "Sending OTP..." : "Send OTP"}
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleVerifyOtp}
+                      disabled={verifyLoading}
+                    >
+                      {verifyLoading ? "Verifying..." : "Verify OTP"}
+                    </button>
+                  )}
+                </>
+              ) : (
+                /* NEW PASSWORD STEP */
+                <input
+                  style={{ marginBottom: "15px" }}
+                  type="password"
+                  value={dataUser.resetPass}
+                  placeholder="New password"
+                  onChange={(e) =>
+                    setDataUser({ ...dataUser, resetPass: e.target.value })
+                  }
+                />
+              )}
+            </>
+          )}
 
-          {/* Bottom text */}
-          <div className='register-text'>
+          {/* FORGOT PASSWORD TOGGLE */}
+          {!forgotPass ? (
+              <div className="extra-options">
+                <NavLink to="" onClick={() => setForgotPass(!forgotPass)}>
+                  Forgot password?
+                </NavLink>
+              </div>
+            ) : null
+          }
+
+          {/* MAIN ACTION BUTTON */}
+          {!forgotPass? (
+            <button type="submit" disabled={loading}>
+              {loading ? "Logging in..." : "Login"}
+            </button>
+          ) : verifiedOtp ? (
+            <button
+              type="button"
+              onClick={handleResetPassword}
+              disabled={resetLoading}
+            >
+              {resetLoading ? "Resetting..." : "Reset Password"}
+            </button>
+          ) : null}
+
+          {/* REGISTER */}
+          <div className="register-text">
             <p>
-              Don’t have an account? <a href="#"><NavLink to={"/register"}>Register</NavLink></a>
+              Don’t have an account? <NavLink to="/register">Register</NavLink>
             </p>
           </div>
-
         </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;

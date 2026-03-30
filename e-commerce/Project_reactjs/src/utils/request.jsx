@@ -1,35 +1,58 @@
 import axios from "axios";
 import { BaseURL } from "./BaseURL";
+import { GetLocalStorage, RemoveLocalStorage } from "../store/LocalStorage";
 
-const request = async (path = "", method = "", data = {}) => {
+const request = async (path = "", method = "GET", data = {}) => {
+  const token = GetLocalStorage();
+
   try {
     const res = await axios({
       method,
       url: BaseURL + path,
       data,
-      headers:
-        data instanceof FormData
-          ? {
-              Accept: "application/json",
-              "Content-Type": "multipart/form-data",
-            }
-          : {
-              "Content-Type": "application/json",
-            },
-      Authorization: "Bearer " + localStorage.getItem("access_token"),
-      
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token ? "Bearer " + token : "",
+      },
     });
 
-    const resData = res.data;
+    const statusCode = res.status;
 
-    // ✅ ONLY throw when failed
-    if (resData.success === false) {
-      throw resData.message || "Request failed";
+    if (statusCode === 401) {
+      // 🔴 Unauthorized case
+      RemoveLocalStorage();
+      window.location.href = "/login"; // redirect user
+      throw new Error("Unauthorized. Please login again.");
     }
 
-    return resData; // IMPORTANT
+    if (statusCode < 200 || statusCode >= 300) {
+      throw new Error(`Request failed with status code ${statusCode}`);
+    }
+
+    if (res.data.status === "error") {
+      throw new Error(res.data.message);
+    }
+
+    if (res.data.status === "fail") {
+      throw new Error(res.data.message);
+    }
+
+    if (res.data.status === "success") {
+      console.log(res.data.message);
+    }
+
+    return res.data;
+
   } catch (error) {
-    console.error("Request error:", error);
+    console.log(error);
+
+    // 🔴 handle axios error response (important for 401 from server)
+    if (error?.response?.status === 401) {
+      RemoveLocalStorage();
+      window.location.href = "/login";
+      throw new Error("Unauthorized. Please login again.");
+    }
+
     throw error;
   }
 };

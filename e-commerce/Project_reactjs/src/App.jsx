@@ -13,6 +13,7 @@ import Products from "./page/feature/Products/Products";
 import Role from "./page/feature/Role/Role";
 import Login from "./page/feature/User/Login";
 import SalePos from "./page/feature/SalePos/SalePos";
+import Register from "./page/feature/User/Register";
 
 
 const App = () => {
@@ -32,6 +33,7 @@ const App = () => {
         <Route path="/salepos" element={<SalePos />} />
       </Route>
       <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
     </Routes>
   );
 };
