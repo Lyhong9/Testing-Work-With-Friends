@@ -38,7 +38,7 @@ const Layout = () => {
   const fetchRole = async () =>{
     try{
         const res = await request("/api/role", "get");
-        console.log(res);
+        // console.log(res);
         if(res) { 
           setRole(res.role)
         }    

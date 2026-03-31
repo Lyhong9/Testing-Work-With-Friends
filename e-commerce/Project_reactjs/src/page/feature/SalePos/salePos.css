@@ -1,0 +1,229 @@
+/* =========================
+   GLOBAL LAYOUT (POS)
+========================= */
+.sale-container {
+  display: grid;
+  grid-template-columns: 1.8fr 1.2fr 1fr;
+  gap: 15px;
+  padding: 15px;
+  min-height: 100vh;
+  background: #f4f6f9;
+  box-sizing: border-box;
+}
+
+/* =========================
+   PANELS
+========================= */
+.sale-container > div {
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+/* Optional top border colors */
+.right { border-top: 4px solid #4caf50; overflow-y: auto; }
+.center { border-top: 4px solid #2196f3; }
+.left { border-top: 4px solid #ff9800; }
+
+/* =========================
+   PRODUCT GRID
+========================= */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 12px;
+}
+
+/* PRODUCT CARD */
+.product-item {
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #eee;
+  overflow: hidden;
+  transition: 0.25s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* IMAGE */
+.product-image {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  background: #f0f0f0;
+}
+
+/* INFO */
+.product-info {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.product-name {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.product-price-qty {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.product-price {
+  font-weight: bold;
+  color: #2e7d32;
+}
+
+.product-price-qty span {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1976d2;
+}
+
+/* DESCRIPTION */
+.product-desc {
+  font-size: 12px;
+  color: #777;
+  height: 32px;
+  overflow: hidden;
+}
+
+/* META */
+.product-meta {
+  font-size: 11px;
+  color: #999;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* BUTTON */
+.btn-primary {
+  margin-top: auto;
+  padding: 7px;
+  border: none;
+  border-radius: 6px;
+  background: #2196f3;
+  color: white;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-primary:hover {
+  background: #1976d2;
+}
+
+/* =========================
+   LEFT PAYMENT PANEL
+========================= */
+.header-pay {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.header-pay div {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+/* CASH INPUT */
+.cash-box {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.cash-box input {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  outline: none;
+}
+
+/* PAYMENT METHODS */
+.payment-methods {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.payment-methods button {
+  flex: 1;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: #fafafa;
+  cursor: pointer;
+  font-size: 12px;
+  transition: 0.2s;
+}
+
+.payment-methods button:hover {
+  background: #eee;
+}
+
+/* CUSTOMER */
+.customer-box {
+  margin-top: 15px;
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  border: 1px solid #eee;
+  border-radius: 10px;
+}
+
+/* CHECKOUT */
+.checkout-btn {
+  margin-top: 10px;
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  background: #28a745;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.checkout-btn:hover {
+  background: #218838;
+}
+
+/* =========================
+   RESPONSIVE FIX (IMPORTANT)
+========================= */
+@media (max-width: 992px) {
+  .sale-container {
+    grid-template-columns: 1fr;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.btn_group {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
