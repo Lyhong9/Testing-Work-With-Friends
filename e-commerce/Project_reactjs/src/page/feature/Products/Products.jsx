@@ -1,4 +1,3 @@
-import React from "react";
 import "../../../style/feature.css";
 import { useState, useEffect } from "react";
 import "./product.css";
@@ -177,9 +176,9 @@ const Products = () => {
       return;
     }
     if (file.size > MAX_PHOTO_SIZE_BYTES) {
-      alertError(
-        {text: `Image too large. Please choose a file smaller than ${MAX_PHOTO_SIZE_MB}MB.`}
-      );
+      alertError({
+        text: `Image too large. Please choose a file smaller than ${MAX_PHOTO_SIZE_MB}MB.`,
+      });
       event.target.value = "";
       return;
     }
@@ -360,113 +359,120 @@ const Products = () => {
               </div>
               <form onSubmit={handleFormSubmit}>
                 {/* name product  */}
-                <div className="form-group">
-                  <label>Name *</label>
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
-                    // disabled={!!editingCode}
-                    placeholder="Enter product name"
-                    required
-                  />
-                </div>
-                {/* description  */}
-                <div className="form-group">
-                  <label>Description</label>
-                  <input
-                    type="text"
-                    value={formData.desc}
-                    onChange={(e) =>
-                      setFormData({ ...formData, desc: e.target.value })
-                    }
-                    placeholder="Enter description"
-                  />
-                </div>
-
-                {/* price product  */}
-                <div className="form-group">
-                  <label>Price</label>
-                  <input
-                    type="number"
-                    value={formData.price}
-                    onChange={(e) =>
-                      setFormData({ ...formData, price: e.target.value })
-                    }
-                    placeholder="Enter price"
-                  />
+                <div className="form-grid">
+                  <div className="form-group">
+                    <label>Name *</label>
+                    <input
+                      type="text"
+                      value={formData.name}
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
+                      // disabled={!!editingCode}
+                      placeholder="Enter product name"
+                      required
+                    />
+                  </div>
+                  {/* description  */}
+                  <div className="form-group">
+                    <label>Description</label>
+                    <input
+                      type="text"
+                      value={formData.desc}
+                      onChange={(e) =>
+                        setFormData({ ...formData, desc: e.target.value })
+                      }
+                      placeholder="Enter description"
+                    />
+                  </div>
                 </div>
 
-                {/* stock quantity product  */}
-                <div className="form-group">
-                  <label>Stock Quantity</label>
-                  <input
-                    type="number"
-                    value={formData.qty}
-                    onChange={(e) =>
-                      setFormData({ ...formData, qty: e.target.value })
-                    }
-                    placeholder="Enter stock quantity"
-                  />
+                <div className="form-grid">
+                  {/* price product  */}
+                  <div className="form-group">
+                    <label>Price</label>
+                    <input
+                      type="number"
+                      value={formData.price}
+                      onChange={(e) =>
+                        setFormData({ ...formData, price: e.target.value })
+                      }
+                      placeholder="Enter price"
+                    />
+                  </div>
+
+                  {/* stock quantity product  */}
+                  <div className="form-group">
+                    <label>Stock Quantity</label>
+                    <input
+                      type="number"
+                      value={formData.qty}
+                      onChange={(e) =>
+                        setFormData({ ...formData, qty: e.target.value })
+                      }
+                      placeholder="Enter stock quantity"
+                    />
+                  </div>
                 </div>
 
-                {/* select category (optional) */}
-                <div className="form-group">
-                  <Box>
-                    <FormControl fullWidth size="small">
-                      <InputLabel id="product-select-label">category</InputLabel>
-                      <Select
-                        labelId="product-select-label"
-                        id="product-select"
-                        value={formData.category}
-                        label="category"
-                        onChange={(e) =>
-                          setFormData({ ...formData, category: e.target.value })
-                        }
-                      >
-                        <MenuItem value="">
-                          <em>-- Select category --</em>
-                        </MenuItem>
-                       {
-                        category.map((category) => (
-                          <MenuItem key={category.id} value={category.id}>
-                            {category.name}
+                <div className="form-grid">
+                  {/* select category (optional) */}
+                  <div className="form-group">
+                    <Box>
+                      <FormControl fullWidth size="small">
+                        <InputLabel id="product-select-label">
+                          category
+                        </InputLabel>
+                        <Select
+                          labelId="product-select-label"
+                          id="product-select"
+                          value={formData.category}
+                          label="category"
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              category: e.target.value,
+                            })
+                          }
+                        >
+                          <MenuItem value="">
+                            <em>-- Select category --</em>
                           </MenuItem>
-                        ))
-                       }
-                      </Select>
-                    </FormControl>
-                  </Box>
-                </div>
-                {/* select brand (optional) */}
-                <div className="form-group">
-                  <Box>
-                    <FormControl fullWidth size="small">
-                      <InputLabel id="product-select-label">brand</InputLabel>
-                      <Select
-                        labelId="product-select-label"
-                        id="product-select"
-                        value={formData.brand}
-                        label="brand"
-                        onChange={(e) =>
-                          setFormData({ ...formData, brand: e.target.value })
-                        }
-                      >
-                        <MenuItem value="">
-                          <em>-- Select brand --</em>
-                        </MenuItem>
-                       {
-                        brand.map((brand) => (
-                          <MenuItem key={brand.id} value={brand.id}>
-                            {brand.name}
+                          {category.map((category) => (
+                            <MenuItem key={category.id} value={category.id}>
+                              {category.name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </Box>
+                  </div>
+                  {/* select brand (optional) */}
+                  <div className="form-group">
+                    <Box>
+                      <FormControl fullWidth size="small">
+                        <InputLabel id="product-select-label">brand</InputLabel>
+                        <Select
+                          labelId="product-select-label"
+                          id="product-select"
+                          value={formData.brand}
+                          label="brand"
+                          onChange={(e) =>
+                            setFormData({ ...formData, brand: e.target.value })
+                          }
+                        >
+                          <MenuItem value="">
+                            <em>-- Select brand --</em>
                           </MenuItem>
-                        ))
-                       }
-                      </Select>
-                    </FormControl>
-                  </Box>
+                          {brand.map((brand) => (
+                            <MenuItem key={brand.id} value={brand.id}>
+                              {brand.name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </Box>
+                  </div>
                 </div>
                 {/* select status (optional) */}
                 {/* <div className="form-group">

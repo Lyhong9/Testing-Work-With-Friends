@@ -28,7 +28,6 @@ const Brand = () => {
     image: "",
   });
   const [selectedPhotoFile, setSelectedPhotoFile] = useState(null);
-  const [categories, setCategories] = useState([]);
 
   // Pagination calculation
   const totalPages = Math.ceil(filteredBrands.length / itemsPerPage);

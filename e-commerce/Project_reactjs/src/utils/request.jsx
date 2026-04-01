@@ -4,16 +4,25 @@ import { GetLocalStorage, RemoveLocalStorage } from "../store/LocalStorage";
 
 const request = async (path = "", method = "GET", data = {}) => {
   const token = GetLocalStorage();
-
+  let headers = []
   try {
+    if(data instanceof FormData){
+      headers = {
+        "Content-Type": "multipart/form-data",
+        Authorization: token ? "Bearer " + token : "",
+      }
+    }
+    else{
+      headers = {
+        "Content-Type": "application/json",
+        Authorization: token ? "Bearer " + token : "",
+      }
+    }
     const res = await axios({
       method,
       url: BaseURL + path,
       data,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: token ? "Bearer " + token : "",
-      },
+      headers,
     });
 
     const statusCode = res.status;

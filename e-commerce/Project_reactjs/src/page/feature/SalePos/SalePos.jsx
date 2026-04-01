@@ -9,10 +9,17 @@ import {
   alertSuccess,
   confirmDelete,
 } from "../../../swertalert/AlertSuccess";
+import UseSalePos from "./UseSalePos";
+import DataStore from "../../../store/DataStore";
 const SalePos = () => {
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
   const [payments, setPayments] = useState([]);
+
+  const { handleAddList, filed, setFiled, handlePlusQty, handleSubtractQty } =
+    UseSalePos();
+
+  const { data } = DataStore();
 
   useEffect(() => {
     fetchProducts();
@@ -32,10 +39,14 @@ const SalePos = () => {
 
   return (
     <div className="sale-container">
-      <div className="right"  style={{ marginBottom: "5rem"}}>
+      <div className="right">
         <div className="product-grid">
           {products.map((product) => (
-            <div key={product.id} className="product-item">
+            <div
+              key={product.id}
+              className="product-item"
+              onClick={(e) => handleAddList(product)}
+            >
               <img
                 src={BaseURL + product.image}
                 alt={product.name}
@@ -62,11 +73,50 @@ const SalePos = () => {
         </div>
       </div>
 
-      <div className="center" style={{ marginBottom: "5rem"}}>
-        <h1>List Order</h1>
+      <div className="center">
+        {data && data.length > 0 ? (
+          <div>
+            {data?.map((item) => (
+              <div key={item.id} className="order-item">
+                <div className="order-info" key={item.id}>
+                  <p>{filed}</p>
+                  <div>
+                    <img src={BaseURL + item.image} alt={item.name} />
+                    <div>
+                      <p className="order-name">{item.name}</p>
+                      <p className="order-price">${item.price}</p>
+                    </div>
+                  </div>
+                  <div>
+                    <button
+                      className="btn-secondary"
+                      onClick={handleSubtractQty}
+                    >
+                      -
+                    </button>
+                    <span>{filed}</span>
+                    <button className="btn-secondary" onClick={handlePlusQty}>
+                      +
+                    </button>
+                  </div>
+                </div>
+                <div className="order-qty">
+                  <span>Qty: {item.stockQuantity}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="empty-order">
+            <p>No products added to the order list.</p>
+          </div>
+        )}
       </div>
 
-      <div className="left" style={{display: "flex", flexDirection: "column", justifyContent: "space-between", marginBottom: "5rem"}}>
+      <div
+        className="left"
+        // style={{display: "flex", flexDirection: "column", justifyContent: "space-between", marginBottom: "8rem" }}
+      >
         <span>
           <div className="header-pay">
             <div>
