@@ -1,25 +1,32 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./salePos.css";
-import { useState } from "react";
-import { useEffect } from "react";
 import request from "../../../utils/request";
 import { BaseURL } from "../../../utils/BaseURL";
-import {
-  alertError,
-  alertSuccess,
-  confirmDelete,
-} from "../../../swertalert/AlertSuccess";
+import { alertError } from "../../../swertalert/AlertSuccess";
 import UseSalePos from "./UseSalePos";
-import DataStore from "../../../store/DataStore";
+import {Modal} from "antd"
+
 const SalePos = () => {
   const [products, setProducts] = useState([]);
-  const [orders, setOrders] = useState([]);
-  const [payments, setPayments] = useState([]);
 
-  const { handleAddList, filed, setFiled, handlePlusQty, handleSubtractQty } =
-    UseSalePos();
-
-  const { data } = DataStore();
+  const {
+    handleAddList,
+    paymentMethod,
+    Cart,
+    handleQty,
+    totalPrice,
+    removeItem,
+    clearCart,
+    handlePayMethod,
+    checkout,
+    Qr,
+    Case,
+    cashReceived,
+    setcashReceived,
+    isOpen,setIsOpen,
+    formatTime,
+    countMinutes
+  } = UseSalePos();
 
   useEffect(() => {
     fetchProducts();
@@ -28,7 +35,6 @@ const SalePos = () => {
   const fetchProducts = async () => {
     try {
       const res = await request("/api/product", "GET");
-      console.log(res);
       if (res) {
         setProducts(res.product);
       }
@@ -38,116 +44,173 @@ const SalePos = () => {
   };
 
   return (
-    <div className="sale-container">
-      <div className="right">
-        <div className="product-grid">
-          {products.map((product) => (
-            <div
-              key={product.id}
-              className="product-item"
-              onClick={(e) => handleAddList(product)}
-            >
-              <img
-                src={BaseURL + product.image}
-                alt={product.name}
-                className="product-image"
-              />
+    <>
+      <div className="sale-container">
+        {/* ✅ RIGHT: PRODUCT LIST */}
+        <div className="right">
+          {products.length > 0 ? (
+            <div className="product-grid">
+              {products.map((product) => (
+                <div
+                  key={product.id}
+                  className="product-item"
+                  onClick={() => handleAddList(product)}
+                >
+                  <img
+                    src={BaseURL + product.image}
+                    alt={product.name}
+                    className="product-image"
+                  />
 
-              <div className="product-info">
-                <p className="product-name">{product.name}</p>
-                <div className="product-price-qty">
-                  <p className="product-price">${product.price}</p>
-                  <span>Qty: {product.stockQuantity}</span>
+                  <div className="product-info">
+                    <p className="product-name">{product.name}</p>
+
+                    <div className="product-price-qty">
+                      <p className="product-price" style={{}}>
+                        ${product.price}
+                      </p>
+                      <span>Stock: {product.stockQuantity}</span>
+                    </div>
+
+                    <p className="product-desc">{product.description}</p>
+
+                    <div className="product-meta">
+                      <span>Category {product.category.name}</span>
+                      <span>Brand {product.brand.name}</span>
+                    </div>
+
+                    <button className="btn-primary">Add to List</button>
+                  </div>
                 </div>
-                <p className="product-desc">{product.description}</p>
-
-                <div className="product-meta">
-                  <span>Category {product.category.name}</span>
-                  <span>Brand {product.brand.name}</span>
-                </div>
-
-                <button className="btn-primary">Add to List</button>
-              </div>
+              ))}
             </div>
-          ))}
+          ) : (
+            <div className="empty-order">
+              <div className="spinner"></div>
+              <p>Loading Products...</p>
+            </div>
+          )}
         </div>
-      </div>
 
-      <div className="center">
-        {data && data.length > 0 ? (
-          <div>
-            {data?.map((item) => (
-              <div key={item.id} className="order-item">
-                <div className="order-info" key={item.id}>
-                  <p>{filed}</p>
-                  <div>
-                    <img src={BaseURL + item.image} alt={item.name} />
-                    <div>
-                      <p className="order-name">{item.name}</p>
-                      <p className="order-price">${item.price}</p>
+        {/* ✅ CENTER: CART */}
+        <div className="center">
+          <span>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "20px",
+              }}
+            >
+              <p>Order List</p>
+              <button className="" onClick={clearCart}>
+                <i className="bi bi-trash"></i>
+              </button>
+            </div>
+            {Cart.length > 0 ? (
+              Cart.map((item) => (
+                <>
+                  <div key={item.id} className="order-item">
+                    <div className="order-info">
+                      <div>
+                        <img src={BaseURL + item.image} alt={item.name} />
+                        <div>
+                          <p className="order-name">{item.name}</p>
+                          <p className="order-price">${item.price}</p>
+                        </div>
+                      </div>
+
+                      {/* ✅ FIXED QTY CONTROL */}
+                      <div>
+                        <button
+                          className="btn-secondary"
+                          onClick={() => handleQty(item.id, -1)}
+                        >
+                          -
+                        </button>
+
+                        <span>{item.stockQuantity}</span>
+
+                        <button
+                          className="btn-secondary"
+                          onClick={() => handleQty(item.id, 1)}
+                        >
+                          +
+                        </button>
+                        <span
+                          className="order-delete"
+                          onClick={() => removeItem(item.id)}
+                        >
+                          <button>
+                            <i className="bi bi-x-lg"></i>{" "}
+                          </button>
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="order-qty">
+                      <span>Total: ${item.price * item.stockQuantity}</span>
                     </div>
                   </div>
-                  <div>
-                    <button
-                      className="btn-secondary"
-                      onClick={handleSubtractQty}
-                    >
-                      -
-                    </button>
-                    <span>{filed}</span>
-                    <button className="btn-secondary" onClick={handlePlusQty}>
-                      +
-                    </button>
-                  </div>
-                </div>
-                <div className="order-qty">
-                  <span>Qty: {item.stockQuantity}</span>
-                </div>
+                </>
+              ))
+            ) : (
+              <div className="empty-order">
+                <div className="spinner"></div>
+                <p>Loading Cart...</p>
               </div>
-            ))}
-          </div>
-        ) : (
-          <div className="empty-order">
-            <p>No products added to the order list.</p>
-          </div>
-        )}
-      </div>
+            )}
+          </span>
+        </div>
 
-      <div
-        className="left"
-        // style={{display: "flex", flexDirection: "column", justifyContent: "space-between", marginBottom: "8rem" }}
-      >
-        <span>
+        {/* ✅ LEFT: PAYMENT */}
+        <div className="left">
           <div className="header-pay">
             <div>
               <span>Subtotal</span>
-              <strong>subtotal</strong>
+              <strong>${totalPrice}</strong>
             </div>
+
             <div>
-              <span>Tax</span>
-              <strong>tex</strong>
+              <span>Tax (10%)</span>
+              <strong>${(totalPrice * 0.1).toFixed(2)}</strong>
             </div>
+
             <div>
               <span>Total</span>
-              <strong>total</strong>
+              <strong>${(totalPrice * 1.1).toFixed(2)}</strong>
             </div>
           </div>
+
           <div className="payment-me">
             <div className="cash-box">
               <label>Cash Received</label>
-              <input type="number" placeholder="0.00" />
+              <input
+                type="number"
+                placeholder="0.00"
+                value={cashReceived}
+                onChange={(e) => setcashReceived(e.target.value)}
+              />
             </div>
+
             <div className="payment-methods">
-              <button>
-                <span>💵</span> Cash
-              </button>
-              <button>
-                <span>📱</span> QR Pay
-              </button>
+              <button onClick={() => handlePayMethod("cash")}>💵 Cash</button>
+              <button onClick={() => handlePayMethod("qr")}>📱 QR Pay</button>
             </div>
           </div>
-        </span>
-        <div className="nav-pay">
+
+          {/* <div className="nav-pay">
+            <div className="customer-box">
+              <div>
+                <span>Customer</span>
+                <strong>Walk-in Customer</strong>
+              </div>
+              <button>✏️</button>
+            </div>
+
+            <button className="checkout-btn">Checkout</button>
+          </div> */}
           <div className="customer-box">
             <div>
               <span>Customer</span>
@@ -156,10 +219,49 @@ const SalePos = () => {
             <button>✏️</button>
           </div>
 
-          <button className="checkout-btn">Checkout</button>
+          <button className="checkout-btn" onClick={checkout}>
+            Checkout — {totalPrice.toFixed(2)}
+          </button>
         </div>
       </div>
-    </div>
+      <div className="payment-processing">
+        {paymentMethod === "qr" && (
+          <Modal
+            open={isOpen}
+            onCancel={() => setIsOpen(false)}
+            footer={null}
+            title="Payment Processing"
+          >
+            <div className="qr-code-container">
+              <img
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=payment:${totalPrice.toFixed(
+                  2
+                )}`}
+                alt="QR Code"
+                className="qr-code-image"
+              />
+            </div>
+            <div style={{ textAlign: "center", fontSize: "15px", color: 'rgb(255, 0, 0', fontWeight: '600'}}>{formatTime(countMinutes)}</div>
+            <h2 style={{ textAlign: "center" }}>Scan to Pay</h2>
+
+            <div className="processing-details">
+              <div className="detail-row">
+                <span>Amount</span>
+                <strong>{totalPrice.toFixed(2)}</strong>
+              </div>
+
+              <div className="detail-row">
+                <span>Status</span>
+                <strong>
+                  <span className="pulse-dot"></span>
+                  Waiting for payment...
+                </strong>
+              </div>
+            </div>
+          </Modal>
+        )}
+      </div>
+    </>
   );
 };
 
