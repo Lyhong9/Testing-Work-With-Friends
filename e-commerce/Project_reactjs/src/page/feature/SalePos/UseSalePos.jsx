@@ -1,7 +1,9 @@
 import DataStore from "../../../store/DataStore";
 import { useState, useEffect } from "react";
-import { alertError } from "../../../swertalert/AlertSuccess";
-
+import { alertError, alertSuccess } from "../../../swertalert/AlertSuccess";
+import { BaseURL } from "../../../utils/BaseURL";
+import request from "../../../utils/request";
+import  {getProfileUser} from "../../../store/ProfileUser"
 const UseSalePos = () => {
   const [Cart, setCart] = useState([]);
   const [Case, setCase] = useState([]);
@@ -9,6 +11,9 @@ const UseSalePos = () => {
   const [cashReceived, setcashReceived] = useState();
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const [isOpen, setIsOpen] = useState(false);
+  const [caseLoading, setCaseLoading] = useState(false);
+
+  const setProfile = getProfileUser();
 
   // ⏱ 5 minutes countdown (300 seconds)
   const [countMinutes, setCountMinutes] = useState(300);
@@ -67,7 +72,62 @@ const UseSalePos = () => {
   // ===============================
   // CHECKOUT (EMPTY FOR NOW)
   // ===============================
-  const checkout = () => {};
+  const generateInvoiceID = () => {
+    const date = new Date();
+
+    const ymd = date.toISOString().slice(0, 10).replace(/-/g, "");
+    const random = Math.floor(1000 + Math.random() * 9000);
+
+    return `INV-${ymd}-${random}`;
+  };
+  const checkout = async () => {
+    try {
+      if (paymentMethod === "cash") {
+        if(cashReceived === undefined || cashReceived === null || cashReceived === ''){
+          alertError({
+            title: "Error",
+            text: "Cart is empty is required!",
+          });
+          return;
+        }
+        if(cashReceived < totalPrice){
+          alertError({
+            title: "Error",
+            text: "Cash received is not enough!",
+          });
+          return;
+        }
+
+        const invoiceId = generateInvoiceID(); // ✅ generate here
+        setCaseLoading(true);
+        const res = await request("/api/sale", "POST", {
+          invoiceId: invoiceId,
+          totalAmount: totalPrice,
+          tax: 10,
+          paymentMethod: "cash",
+          userId: setProfile?.id,
+          saleItems: Cart.map((c) => ({
+            productId: c.id,
+            quantity: c.stockQuantity,
+            price: c.price,
+          })),
+        });
+        if(res){
+          setCart([]);
+          alertSuccess({
+            title: "Success",
+            text: "Checkout successful!",
+          });
+          setCaseLoading(false);
+        }
+      }
+    } catch (error) {
+      alertError({
+        title: "Error",
+        text: error.message,
+      });
+    }
+  };
 
   // ===============================
   // PAYMENT METHOD HANDLER
@@ -81,12 +141,14 @@ const UseSalePos = () => {
       return;
     }
 
-    setPaymentMethod(type);
-
     if (type === "qr") {
-      setCountMinutes(5); // reset timer when QR opens
+      setPaymentMethod("qr");
+      setCountMinutes(10); // reset timer when QR opens
     }
 
+    if (type === "cash") {
+      setPaymentMethod("cash");
+    }
     setIsOpen(true);
   };
 
@@ -96,7 +158,7 @@ const UseSalePos = () => {
   useEffect(() => {
     let timer;
 
-    if (paymentMethod === "qr") {
+    if (isOpen && paymentMethod === "qr") {
       timer = setInterval(() => {
         setCountMinutes((prev) => {
           if (prev <= 1) {
@@ -114,12 +176,9 @@ const UseSalePos = () => {
         });
       }, 1000);
     }
-    if(countMinutes === 0) {
-      setIsOpen(false);
-    }
 
     return () => clearInterval(timer);
-  }, [paymentMethod]);
+  }, [paymentMethod, isOpen]);
 
   // ===============================
   // FORMAT TIME (MM:SS)
@@ -154,7 +213,8 @@ const UseSalePos = () => {
     setIsOpen,
     countMinutes,
     formatTime,
+    caseLoading
   };
-};
+};;
 
 export default UseSalePos;

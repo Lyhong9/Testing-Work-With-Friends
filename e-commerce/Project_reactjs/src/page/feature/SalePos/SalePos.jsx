@@ -25,7 +25,8 @@ const SalePos = () => {
     setcashReceived,
     isOpen,setIsOpen,
     formatTime,
-    countMinutes
+    countMinutes,
+    caseLoading
   } = UseSalePos();
 
   useEffect(() => {
@@ -260,6 +261,18 @@ const SalePos = () => {
             </div>
           </Modal>
         )}
+        <div>
+          {
+            caseLoading ? (
+              <div className="empty-order">
+                <div className="spinner"></div>
+                <p>Loading Cart...</p>
+              </div>
+            ) : (
+              ""
+            )
+          }
+        </div>
       </div>
     </>
   );

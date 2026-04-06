@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import request from "../utils/request";
 import { alertError, alertSuccess } from "../swertalert/AlertSuccess";
 import { SetLocalUser } from "../store/LocalStorage";
-
+import { setProfileUser } from "../store/ProfileUser";
 const UseLogin = () => {
   const [dataUser, setDataUser] = useState({
     email: "",
@@ -40,6 +40,7 @@ const UseLogin = () => {
       });
 
       SetLocalUser(res.access_token);
+      setProfileUser(res.user);
 
       const from = location.state?.from || "/";
       navigate(from);

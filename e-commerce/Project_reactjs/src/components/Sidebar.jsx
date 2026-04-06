@@ -33,7 +33,7 @@ const Sidebar = () => {
       path: "/sales",
       submenu: [
         { id: "new-sale", label: "New Sale", path: "/salepos" },
-        { id: "sales-list", label: "Sales History", path: "/saleslist" },
+        { id: "sales-list", label: "Sales History", path: "/salehistory" },
       ],  
     },
     { id: "customers", label: "👥 Customer", path: "/customers" },

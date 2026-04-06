@@ -14,7 +14,7 @@ import Role from "./page/feature/Role/Role";
 import Login from "./page/feature/User/Login";
 import SalePos from "./page/feature/SalePos/SalePos";
 import Register from "./page/feature/User/Register";
-
+import SaleHistory from "./page/feature/saleHistory/SaleHistory";
 
 const App = () => {
   return (
@@ -31,6 +31,7 @@ const App = () => {
         <Route path="/products" element={<Products />} />
         <Route path="/role" element={<Role />} />
         <Route path="/salepos" element={<SalePos />} />
+        <Route path="/salehistory" element={<SaleHistory />} />
       </Route>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
