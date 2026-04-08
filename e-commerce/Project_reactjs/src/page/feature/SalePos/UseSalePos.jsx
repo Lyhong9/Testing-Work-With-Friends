@@ -12,6 +12,7 @@ const UseSalePos = () => {
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const [isOpen, setIsOpen] = useState(false);
   const [caseLoading, setCaseLoading] = useState(false);
+  const [Search, setSearch] = useState("");
 
   const setProfile = getProfileUser();
 
@@ -53,10 +54,11 @@ const UseSalePos = () => {
   // ===============================
   // TOTAL PRICE
   // ===============================
-  const totalPrice = Cart.reduce(
+  const subtotal = Cart.reduce(
     (sum, item) => sum + item.price * item.stockQuantity,
     0,
   );
+  const totalPrice = Number((subtotal * 1.1).toFixed(2));
 
   // ===============================
   // REMOVE / CLEAR CART
@@ -83,14 +85,14 @@ const UseSalePos = () => {
   const checkout = async () => {
     try {
       if (paymentMethod === "cash") {
-        if(cashReceived === undefined || cashReceived === null || cashReceived === ''){
+        if (cashReceived === undefined || cashReceived === null || cashReceived === '') {
           alertError({
             title: "Error",
-            text: "Cart is empty is required!",
+            text: "Cash received is required!",
           });
           return;
         }
-        if(cashReceived < totalPrice){
+        if (cashReceived < totalPrice) {
           alertError({
             title: "Error",
             text: "Cash received is not enough!",
@@ -213,7 +215,8 @@ const UseSalePos = () => {
     setIsOpen,
     countMinutes,
     formatTime,
-    caseLoading
+    caseLoading,
+    setSearch
   };
 };;
 

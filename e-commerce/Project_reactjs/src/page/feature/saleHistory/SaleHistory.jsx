@@ -42,10 +42,12 @@ const SaleHistory = () => {
   
   const getSale = async () =>{
     try {
+      setLoading(true);
       const res = await request("/api/sale");
       if (res) {
         setSale(res.sales);
         setFilteredSale(res.sales);
+        setLoading(false);
       }
     } catch (error) {
       console.error("Error fetching Sale:", error);
@@ -69,10 +71,12 @@ const SaleHistory = () => {
 
   const handleDeleteSale = async (sale) => {
     try {
+      setLoading(true);
       const res = await request(`/api/sale/${sale.id}`, "delete");
       if (res) {
         alertSuccess({ text: "Sale deleted successfully" });
         getSale();
+        setLoading(false);
       }
     } catch (error) {
       console.error("Error deleting Sale:", error);
@@ -201,9 +205,13 @@ const SaleHistory = () => {
               <thead>
                 <tr>
                   <th>Id</th>
-                  <th>Name</th>
-                  <th>Description</th>
-                  <th>Status</th>
+                  <th>invoiceId</th>
+                  <th>totalAmount</th>
+                  <th>paymentMethod</th>
+                  <th>productId</th>
+                  <th>quantity</th>
+                  <th>price</th>
+                  <th>image</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -212,9 +220,19 @@ const SaleHistory = () => {
                   paginatedSale.map((Sale) => (
                     <tr key={Sale.id}>
                       <td>{Sale.id}</td>
-                      <td>{Sale.name || "-"}</td>
-                      <td>{Sale.description || "-"}</td>
-                      <td>{Sale.status ? "Active" : "Inactive"}</td>
+                      <td>{Sale.invoiceId || "-"}</td>
+                      <td>{Sale.totalAmount || "-"}</td>
+                      <td>{Sale.paymentMethod}</td>
+                      {
+                        Sale.saleItems.map((saleItem) => (
+                         <>
+                            <td>{saleItem.productId}</td>
+                            <td>{saleItem.quantity}</td>
+                            <td>{saleItem.price}</td>
+                            <td><img src={BaseURL + saleItem.product.image} alt="" style={{width: "30px", height: "30px"}} /></td>
+                         </>
+                        ))
+                      }
                       <td className="actions">
                         <button
                           className="btn-edit"

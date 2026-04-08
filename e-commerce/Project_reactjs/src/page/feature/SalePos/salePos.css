@@ -752,3 +752,29 @@
     font-size: 13px;
   }
 }
+
+.search-bar{
+  padding: 0.5rem;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  background-color: #afafaf80;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.search-bar input[type="text"] {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  width: 100%;
+}
+
+.search-bar input[type="text"]:focus {
+  outline: none;
+  border-color: #007BFF;
+}

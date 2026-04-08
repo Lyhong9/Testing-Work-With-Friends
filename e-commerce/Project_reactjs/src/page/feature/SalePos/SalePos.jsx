@@ -8,6 +8,7 @@ import {Modal} from "antd"
 
 const SalePos = () => {
   const [products, setProducts] = useState([]);
+  const [Search, SetSearch] = useState("");
 
   const {
     handleAddList,
@@ -26,12 +27,25 @@ const SalePos = () => {
     isOpen,setIsOpen,
     formatTime,
     countMinutes,
-    caseLoading
+    caseLoading,
   } = UseSalePos();
 
   useEffect(() => {
     fetchProducts();
   }, []);
+
+   useEffect(() => {
+    if(Search.trim()) {
+      const filtered =  products.filter(
+        (pro) => (pro.name && pro.name.toLowerCase().includes(Search.toLowerCase()))
+      );
+      setProducts(filtered);
+    }
+    else {
+      setProducts(products);
+      fetchProducts();
+    }
+  }, [Search, products]);
 
   const fetchProducts = async () => {
     try {
@@ -47,8 +61,12 @@ const SalePos = () => {
   return (
     <>
       <div className="sale-container">
+
         {/* ✅ RIGHT: PRODUCT LIST */}
         <div className="right">
+        <div className="search-bar">
+          <input type="text" placeholder="search" value={Search} onChange={(e)=> SetSearch(e.target.value)}/>  
+        </div>
           {products.length > 0 ? (
             <div className="product-grid">
               {products.map((product) => (
@@ -221,7 +239,7 @@ const SalePos = () => {
           </div>
 
           <button className="checkout-btn" onClick={checkout}>
-            Checkout — {totalPrice.toFixed(2)}
+            Checkout — {(totalPrice * 1.1).toFixed(2)}
           </button>
         </div>
       </div>
