@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { alertError, alertSuccess } from "../../../swertalert/AlertSuccess";
 import { BaseURL } from "../../../utils/BaseURL";
 import request from "../../../utils/request";
-import  {getProfileUser} from "../../../store/ProfileUser"
+import { getProfileUser } from "../../../store/ProfileUser";
 const UseSalePos = () => {
   const [Cart, setCart] = useState([]);
   const [Case, setCase] = useState([]);
@@ -82,10 +82,16 @@ const UseSalePos = () => {
 
     return `INV-${ymd}-${random}`;
   };
+  // ...existing code...
+
   const checkout = async () => {
     try {
       if (paymentMethod === "cash") {
-        if (cashReceived === undefined || cashReceived === null || cashReceived === '') {
+        if (
+          cashReceived === undefined ||
+          cashReceived === null ||
+          cashReceived === ""
+        ) {
           alertError({
             title: "Error",
             text: "Cash received is required!",
@@ -114,7 +120,16 @@ const UseSalePos = () => {
             price: c.price,
           })),
         });
-        if(res){
+
+        // Fix: Loop over Cart to send individual PUT requests matching backend expectations (id, quantity)
+        for (const item of Cart) {
+          await request("/api/sale/quantity", "PUT", {
+            id: item.id,
+            quantity: item.stockQuantity,
+          });
+        }
+
+        if (res) {
           setCart([]);
           alertSuccess({
             title: "Success",
@@ -130,6 +145,8 @@ const UseSalePos = () => {
       });
     }
   };
+
+  // ...existing code...
 
   // ===============================
   // PAYMENT METHOD HANDLER
@@ -216,8 +233,8 @@ const UseSalePos = () => {
     countMinutes,
     formatTime,
     caseLoading,
-    setSearch
+    setSearch,
   };
-};;
+};
 
 export default UseSalePos;

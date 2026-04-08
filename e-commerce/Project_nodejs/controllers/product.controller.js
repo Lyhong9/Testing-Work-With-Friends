@@ -191,6 +191,11 @@ const deleteProduct = async (req, res) => {
   }
 };
 
+
+
+
+
+
 module.exports = {
   getProduct,
   getProductOne,

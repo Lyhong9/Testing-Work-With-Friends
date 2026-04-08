@@ -8,12 +8,12 @@ const Navbar = () => {
       RemoveLocalStorage();
     };
   return (
-    <nav className="navbar">
-      <div className="navbar-container">
-        <div className="navbar-brand">
+    <nav className="navbarone">
+      <div className="navbarone-container" >
+        <div className="navbarone-brand">
           <h2>Dashboard</h2>
         </div>
-        <ul className="navbar-menu">
+        <ul className="navbarone-menu">
           <li>
             <NavLink to="/login" >
               <button className="Btn_logout" onClick={handlLogin}>

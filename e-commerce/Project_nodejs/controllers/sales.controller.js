@@ -80,11 +80,84 @@ const createSale = async (req, res) => {
 };
 
 const deleteSale = async (req, res) => {
-    
+  const transaction = await sequelize.transaction();
+  try {
+    const { id } = req.params;
+
+    // Find the sale with its items
+    const sale = await Sale.findByPk(id, {
+      include: [{ model: SaleItem, as: 'saleItems' }],
+      transaction,
+    });
+
+    if (!sale) {
+      return res.status(404).json({
+        success: false,
+        message: 'Sale not found',
+      });
+    }
+
+    // Restore stock quantities
+    for (const item of sale.saleItems) {
+      await Product.increment('stockQuantity', {
+        by: item.quantity,
+        where: { id: item.productId },
+        transaction,
+      });
+    }
+
+    // Delete sale items
+    await SaleItem.destroy({
+      where: { saleId: id },
+      transaction,
+    });
+
+    // Delete the sale
+    await Sale.destroy({
+      where: { id },
+      transaction,
+    });
+
+    await transaction.commit();
+
+    res.status(200).json({
+      success: true,
+      message: 'Sale deleted successfully, stock restored',
+    });
+  } catch (error) {
+    await transaction.rollback();
+    logError('deleteSale', error, res);
+  }
+};
+
+const updateProduct = async (req, res) => {
+  try{
+    const {id, quantity} = req.body;
+
+    const product = await Product.findByPk(id);
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    await product.update({ stockQuantity: product.stockQuantity - quantity });
+    res.status(200).json({
+      success: true,
+      message: "Product updated successfully",
+      product,
+    });
+
+  }catch(err){
+    logError("updateProduct", err, res)
+  }
 }
 
 
 module.exports = {
   getSale,
-  createSale
+  createSale,
+  deleteSale,
+  updateProduct
 };

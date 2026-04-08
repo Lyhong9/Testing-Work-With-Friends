@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import request from "../../../utils/request";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 import {
-  alertError,
-  alertSuccess,
   confirmDelete,
 } from "../../../swertalert/AlertSuccess";
 import { BaseURL } from "../../../utils/BaseURL";
@@ -15,78 +15,125 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import GlobleData from "../../../store/GlobleData";
+import { Modal, Button, Space, Image } from "antd";
 const SaleHistory = () => {
   const MAX_PHOTO_SIZE_MB = 10;
   const MAX_PHOTO_SIZE_BYTES = MAX_PHOTO_SIZE_MB * 1024 * 1024;
   const [Sale, setSale] = useState([]);
-  const [filteredSale, setFilteredSale] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
-  const [loading, setLoading] = useState(false);
+  const [ViweDetail, setViweDetail] = useState(null);
   const [showForm, setShowForm] = useState(false);
-  const [editingCode, setEditingCode] = useState(null);
-  const [formData, setFormData] = useState({
-    id: null,
-    name: "",
-    desc: "",
-    status: "",
-  });
+  // Pagination calculation
+  // Pagination calculation
+  const filteredSale = useMemo(() => {
+    if (searchKeyword.trim()) {
+      return Sale.filter((sale) =>
+        sale.saleItems[0]?.product?.name
+          ?.toLowerCase()
+          .includes(searchKeyword.toLowerCase()),
+      );
+    } else {
+      return Sale;
+    }
+  }, [Sale, searchKeyword]);
 
-  // Pagination calculation
-  // Pagination calculation
   const totalPages = Math.ceil(filteredSale.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const paginatedSale = filteredSale.slice(startIndex, endIndex);
-  
-  const getSale = async () =>{
+
+  const getSale = async () => {
     try {
-      setLoading(true);
       const res = await request("/api/sale");
       if (res) {
-        setSale(res.sales);
-        setFilteredSale(res.sales);
-        setLoading(false);
+        console.log(res.sales);
+        setSale(res.sales || []);
       }
     } catch (error) {
       console.error("Error fetching Sale:", error);
     }
-  }
+  };
 
   useEffect(() => {
     getSale();
   }, []);
 
-  const handleEditSale = (sale) => {
-    setEditingCode(sale.id);
-    setFormData({
-      id: sale.id,
-      name: sale.name,
-      desc: sale.desc,
-      status: sale.status,
-    });
+  const handleViweDetail = (sale) => {
+    setViweDetail(sale);
     setShowForm(true);
   };
 
   const handleDeleteSale = async (sale) => {
-    try {
-      setLoading(true);
-      const res = await request(`/api/sale/${sale.id}`, "delete");
-      if (res) {
-        alertSuccess({ text: "Sale deleted successfully" });
-        getSale();
-        setLoading(false);
-      }
-    } catch (error) {
-      console.error("Error deleting Sale:", error);
-    }
+    await confirmDelete(async () => {
+      await request(`/api/sale/${sale.id}`, "DELETE");
+      getSale();
+    });
+  };  
+
+
+  // print TO CSV 
+  const exportToCSV = () => {
+    const filename = "sales_history.csv";
+    const headers = ["Sale ID", "Invoice ID", "Total Amount", "Tax", "Payment Method", "User ID", "Created At", "Product ID", "Quantity", "Price"];
+    let data = [headers.join(",")];
+
+    Sale.forEach((sale) => {
+      sale.saleItems.forEach((item) => {
+        const row = [
+          sale.id,
+          `"${sale.invoiceId}"`,
+          sale.totalAmount,
+          sale.tax,
+          sale.paymentMethod,
+          sale.userId,
+          new Date(sale.createdAt).toLocaleDateString(),
+          item.productId,
+          item.quantity,
+          item.price,
+        ];
+        data.push(row.join(","));
+      });
+    });
+
+    const blob = new Blob([data.join("\n")], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
   };
+
+
+  // print pdf 
+  const ref = useRef();
+
+  const downloadPDF = async () => {
+    const element = ref.current;
+    const canvas = await html2canvas(element);
+    const data = canvas.toDataURL("image/png");
+
+    const pdf = new jsPDF("p", "mm", "a4");
+    const imgProps = pdf.getImageProperties(data);
+
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight =
+      (imgProps.height * pdfWidth) / imgProps.width;
+
+    pdf.addImage(data, "PNG", 0, 0, pdfWidth, pdfHeight);
+    pdf.save("document.pdf");
+  };
+
+  let totalSales = 0;
+  Sale.forEach((sale) => {
+    totalSales += parseFloat(sale.totalAmount);
+  });
 
 
   return (
     <>
-      <div className="category-container">
+      <div className="category-container"  ref={ref}>
         <div className="sales-container">
           {/* Header */}
           <div className="sales-header">
@@ -99,10 +146,10 @@ const SaleHistory = () => {
             </div>
 
             <div className="header-actions">
-              <button className="btn">
+              <button className="btn" onClick={exportToCSV}>
                 <i className="bi bi-filetype-csv"></i> Export CSV
               </button>
-              <button className="btn">
+              <button className="btn" onClick={downloadPDF}>
                 <i className="bi bi-printer"></i> Print PDF
               </button>
             </div>
@@ -119,7 +166,7 @@ const SaleHistory = () => {
                 <span className="percent up">+12.5%</span>
               </div>
               <p className="title">Total Sales</p>
-              <h3>$1,429,500.00</h3>
+              <h3>${totalSales.toFixed(2)}</h3>
             </div>
 
             {/* Avg Order */}
@@ -199,72 +246,73 @@ const SaleHistory = () => {
           </div>
         </div>
 
-        
-          <div>
-            <table className="product-table">
-              <thead>
-                <tr>
-                  <th>Id</th>
-                  <th>invoiceId</th>
-                  <th>totalAmount</th>
-                  <th>paymentMethod</th>
-                  <th>productId</th>
-                  <th>quantity</th>
-                  <th>price</th>
-                  <th>image</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {paginatedSale.length > 0 ? (
-                  paginatedSale.map((Sale) => (
-                    <tr key={Sale.id}>
-                      <td>{Sale.id}</td>
-                      <td>{Sale.invoiceId || "-"}</td>
-                      <td>{Sale.totalAmount || "-"}</td>
-                      <td>{Sale.paymentMethod}</td>
-                      {
-                        Sale.saleItems.map((saleItem) => (
-                         <>
-                            <td>{saleItem.productId}</td>
-                            <td>{saleItem.quantity}</td>
-                            <td>{saleItem.price}</td>
-                            <td><img src={BaseURL + saleItem.product.image} alt="" style={{width: "30px", height: "30px"}} /></td>
-                         </>
-                        ))
-                      }
-                      <td className="actions">
-                        <button
-                          className="btn-edit"
-                          onClick={() => handleEditSale(Sale)}
-                        >
-                          ✎ Edit
-                        </button>
-                        <button
-                          className="btn-delete"
-                          onClick={() => handleDeleteSale(Sale.id)}
-                        >
-                          🗑 Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="6" className="no-data">
-                      No Sale found
+        <div>
+          <table className="product-table">
+            <thead>
+              <tr>
+                <th>Id</th>
+                <th>invoiceId</th>
+                <th>payment</th>
+                <th>productId</th>
+                <th>qty</th>
+                <th>price</th>
+                <th>total</th>
+                <th>image</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {paginatedSale.length > 0 ? (
+                paginatedSale.map((Sale) => (
+                  <tr key={Sale.id}>
+                    <td>{Sale.id}</td>
+                    <td>{Sale.invoiceId || "-"}</td>
+                    <td className="text-success fw-bold">{Sale.paymentMethod.toUpperCase()}</td>
+
+                    <td>{Sale.saleItems?.[0]?.productId || "-"}</td>
+                    <td>{Sale.saleItems?.[0]?.quantity || "-"}</td>
+                    <td className="text-success fw-bold">${Sale.saleItems?.[0]?.price || "-"}</td>
+                    <td><span className="text-success fw-bold">${Sale.totalAmount || "-"}</span></td>
+                    <td>
+                      {Sale.saleItems?.[0]?.product?.image && (
+                        <Image
+                          src={BaseURL + Sale.saleItems[0].product.image}
+                          alt="product"
+                          style={{ width: "30px", height: "30px" }}
+                        />
+                      )}
+                    </td>
+                    <td className="actions">
+                      <button
+                        className="btn-edit"
+                        onClick={() => handleViweDetail(Sale)}
+                      >
+                        ✎ View
+                      </button>
+                      <button
+                        className="btn-delete"
+                        onClick={() => handleDeleteSale(Sale)}
+                      >
+                        🗑 Delete
+                      </button>
                     </td>
                   </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="9" className="no-data">
+                    No Sale found
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
 
         {/* filter page current table  */}
         <div className="pagination-info">
-          Showing {startIndex + 1} to{" "}
-          {Math.min(endIndex, filteredSale.length)} of{" "}
-          {filteredSale.length} Sale
+          Showing {startIndex + 1} to {Math.min(endIndex, filteredSale.length)}{" "}
+          of {filteredSale.length} Sale
         </div>
 
         <div className="pagination-controls">
@@ -298,6 +346,115 @@ const SaleHistory = () => {
         </div>
         {/*end filter page current table  */}
       </div>
+
+      <Modal
+        open={showForm}
+        onCancel={() => setShowForm(false)}
+        title="Sale Detail"
+        footer={null}
+        ref={ref}
+      >
+        {/* Sale Info */}
+        <div className="mb-4" >
+          <h5 className="mb-3">Sale Information</h5>
+          <div className="table-responsive">
+            <table className="table table-bordered table-striped">
+              <thead className="table-dark">
+                <tr>
+                  <th>ID</th>
+                  <th>Invoice</th>
+                  <th>Total</th>
+                  <th>Tax</th>
+                  <th>Payment</th>
+                  <th>User</th>
+                  <th>Created At</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{ViweDetail?.id}</td>
+                  <td>{ViweDetail?.invoiceId}</td>
+                  <td>${ViweDetail?.totalAmount}</td>
+                  <td>${ViweDetail?.tax}</td>
+                  <td>
+                    <span className="badge bg-success">
+                      {ViweDetail?.paymentMethod}
+                    </span>
+                  </td>
+                  <td>{ViweDetail?.userId}</td>
+                  <td>{new Date(ViweDetail?.createdAt).toLocaleString()}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Sale Items */}
+        <div className="mb-4">
+          <h5 className="mb-3">Sale Items</h5>
+          <div className="table-responsive">
+            <table className="table table-bordered table-hover">
+              <thead className="table-primary">
+                <tr>
+                  <th>Product ID</th>
+                  <th>Quantity</th>
+                  <th>Price</th>
+                </tr>
+              </thead>
+              <tbody>
+                {ViweDetail?.saleItems?.map((item, index) => (
+                  <tr key={index}>
+                    <td>{item.productId}</td>
+                    <td>{item.quantity}</td>
+                    <td>${item.price}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Product Details */}
+        <div>
+          <h5 className="mb-3">Product Details</h5>
+          <div className="table-responsive">
+            <table className="table table-bordered">
+              <thead className="table-secondary">
+                <tr>
+                  <th>Name</th>
+                  <th>Description</th>
+                  <th>Image</th>
+                </tr>
+              </thead>
+              <tbody>
+                {ViweDetail?.saleItems?.map((item, index) => (
+                  <tr key={index}>
+                    <td>{item.product?.name}</td>
+                    <td>{item.product?.description}</td>
+                    <td>
+                      <Image
+                        src={BaseURL + item.product?.image}
+                        alt=""
+                        style={{
+                          width: "50px",
+                          height: "50px",
+                          objectFit: "cover",
+                        }}
+                        className="rounded"
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <Space className="d-flex justify-content-end align-item-end">
+          <Button type="primary" onClick={() => window.print()}>
+            Print PDF
+          </Button>
+        </Space>
+      </Modal>
     </>
   );
 };

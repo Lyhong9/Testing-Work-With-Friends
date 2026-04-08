@@ -45,7 +45,7 @@ const SalePos = () => {
       setProducts(products);
       fetchProducts();
     }
-  }, [Search, products]);
+  }, [Search]);
 
   const fetchProducts = async () => {
     try {
