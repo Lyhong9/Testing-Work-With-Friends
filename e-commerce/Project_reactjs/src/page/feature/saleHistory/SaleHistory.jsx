@@ -25,19 +25,51 @@ const SaleHistory = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [ViweDetail, setViweDetail] = useState(null);
   const [showForm, setShowForm] = useState(false);
+
+  const [filteredSale, setFilteredSale] = useState([]);
+  const [DatetimeTo, setDatetimeTo] = useState(null);
+  const [DateetimeFrom, setDatetimeFrom] = useState(null);  // Pagination calculation
   // Pagination calculation
-  // Pagination calculation
-  const filteredSale = useMemo(() => {
+  const finalFilteredSale = useMemo(() => {
+    let filtered = Sale;
+
+    // Apply search filter
     if (searchKeyword.trim()) {
-      return Sale.filter((sale) =>
+      filtered = filtered.filter((sale) =>
         sale.saleItems[0]?.product?.name
           ?.toLowerCase()
           .includes(searchKeyword.toLowerCase()),
       );
-    } else {
-      return Sale;
     }
-  }, [Sale, searchKeyword]);
+
+    // Apply date filter
+    if (DateetimeFrom || DatetimeTo) {
+      filtered = filtered.filter((sale) => {
+        const saleDate = new Date(sale.createdAt);
+        const fromDate = DateetimeFrom ? new Date(DateetimeFrom) : null;
+        const toDate = DatetimeTo ? new Date(DatetimeTo) : null;
+
+        if (fromDate && toDate) {
+          return saleDate >= fromDate && saleDate <= toDate;
+        } else if (fromDate) {
+          return saleDate >= fromDate;
+        } else if (toDate) {
+          return saleDate <= toDate;
+        }
+        return true;
+      });
+    }
+
+    return filtered;
+  }, [Sale, searchKeyword, DateetimeFrom, DatetimeTo]);
+
+
+  useEffect(() => {
+    setFilteredSale(finalFilteredSale);
+  }, [finalFilteredSale]);
+
+
+
 
   const totalPages = Math.ceil(filteredSale.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -220,7 +252,7 @@ const SaleHistory = () => {
                   </span>
                   From
                 </label>
-                <input type="date" />
+                <input type="date" onChange={(e) => setDatetimeFrom(e.target.value)}/>
               </div>
 
               <div className="filter-item">
@@ -230,7 +262,7 @@ const SaleHistory = () => {
                   </span>
                   To
                 </label>
-                <input type="date" />
+                <input type="date" onChange={(e) => setDatetimeTo(e.target.value)}/>
               </div>
             </div>
           </div>

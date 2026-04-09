@@ -55,6 +55,24 @@ const Sidebar = () => {
         },
       ],
     },
+    {
+      id: "settings",
+      label: "📈 Setting",
+      path: "/setting",
+      submenu: [
+        { id: "role", label: "Roles", path: "/role" },
+        {
+          id: "User-Management",
+          label: "User permission",
+          path: "/manageuser",
+        },
+        {
+          id: "Low-Stock-Alert",
+          label: "Low Stock Alert",
+          path: "/lowstockalert",
+        },
+      ],
+    },
   ];
 
   const handleNavigation = (path) => {

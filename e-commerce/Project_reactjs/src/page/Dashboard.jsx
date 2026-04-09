@@ -1,5 +1,8 @@
 import React from "react";
-
+import BasicPie from "../userContext/BasicPie";
+import BarCart from "../userContext/BarCart";
+import BarcartTwo from "../userContext/BarcartTwo";
+import SymlogScale from "../userContext/BarCartthree";
 const Dashboard = () => {
   return (
     <div className="page-container">
@@ -24,6 +27,21 @@ const Dashboard = () => {
           <h3>Low Stock Items</h3>
           <p className="stat-value">2</p>
           <span className="stat-change">↓ -1 item</span>
+        </div>
+      </div>
+
+      <div className="charts-grid">
+        <div>
+          <BasicPie />
+        </div>
+        <div>
+          <BarCart />
+        </div>
+        <div>
+          <BarcartTwo />
+        </div>
+        <div>
+          <SymlogScale />
         </div>
       </div>
     </div>

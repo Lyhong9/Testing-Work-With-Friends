@@ -1,5 +1,5 @@
 import React from 'react'
-
+import BasicPie from '../../../userContext/BasicPie'
 const Dashboard = () => {
   return (
      <div className="page-container">
@@ -25,6 +25,15 @@ const Dashboard = () => {
           <p className="stat-value">2</p>
           <span className="stat-change">↓ -1 item</span>
         </div>
+      </div>
+
+      <div>
+        <div>
+          <BasicPie />
+        </div>
+        <div></div>
+        <div></div>
+        <div></div>
       </div>
     </div>
   )

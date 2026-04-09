@@ -22,7 +22,7 @@ const getRole = async (req, res) => {
                     attributes: ["id", "name", "description"],
                     through: { attributes: [] },
                 }
-            ]
+            ],
         })
 
         return res.json({
@@ -54,7 +54,7 @@ const getRole = async (req, res) => {
 
 const createRole = async (req, res) => {
   try {
-    const { name, description } = req.body;
+    const { name, description} = req.body;
     if(!name){
         return res.status(400).json({
             success: false,

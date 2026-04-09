@@ -10,11 +10,13 @@ import Category from "./page/feature/Category/Category";
 import Brand from "./page/feature/Brand/Brand";
 import Products from "./page/feature/Products/Products";
 // import Dashboard from "./page/feature/Dashboard/Dashboard";
-import Role from "./page/feature/Role/Role";
 import Login from "./page/feature/User/Login";
 import SalePos from "./page/feature/SalePos/SalePos";
 import Register from "./page/feature/User/Register";
 import SaleHistory from "./page/feature/saleHistory/SaleHistory";
+import Role from "./page/feature/Setting/Role";
+import ManageUser from "./page/feature/Setting/ManageUser";
+import LowStockAlert from "./page/feature/Setting/LowStockAlert";
 
 const App = () => {
   return (
@@ -32,6 +34,8 @@ const App = () => {
         <Route path="/role" element={<Role />} />
         <Route path="/salepos" element={<SalePos />} />
         <Route path="/salehistory" element={<SaleHistory />} />
+        <Route path="/manageuser" element={<ManageUser />} />
+        <Route path="/lowstockalert" element={<LowStockAlert />} />
       </Route>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
