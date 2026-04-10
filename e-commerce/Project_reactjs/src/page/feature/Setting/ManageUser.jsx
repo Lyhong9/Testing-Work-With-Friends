@@ -26,10 +26,11 @@ const ManageUser = () => {
     id: null,
     username: "",
     email: "",
+    password: "",
     status: "",
     role_id: "",
   });
-
+  const [Role, setRole] = useState([]);
   // Pagination calculation
   const totalPages = Math.ceil(filteredUser.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -37,14 +38,9 @@ const ManageUser = () => {
   const paginatedUser = filteredUser.slice(startIndex, endIndex);
 
   useEffect(() => {
-    fetchUser();
-  }, []);
-  
-
-  useEffect(() => {
     if(searchKeyword.trim()) {
       const filtered =  User.filter(
-        (cate) => (cate.name && cate.name.toLowerCase().includes(searchKeyword.toLowerCase()))
+        (cate) => (cate.username && cate.username.toLowerCase().includes(searchKeyword.toLowerCase()))
       );
       setFilteredUser(filtered);
     }
@@ -53,11 +49,11 @@ const ManageUser = () => {
     }
   }, [searchKeyword, User]);
 
-  const fetchUser = async() => {
+  async function fetchUser() {
       try{
         setLoading(true);
       const res = await request("/api/user", "get")
-      console.log(res);
+      // console.log(res);
       setLoading(false);
       if(res) {
         setUser(res.users || []);
@@ -66,13 +62,34 @@ const ManageUser = () => {
         setLoading(false);
         alertError({text: error?.message || "Failed to fetch user"});
       }
-  };
-  const handleFormSubmit = () => {
+  }
+
+  async function fetchRole() {
+    try{
+      const res = await request("/api/role", "get")
+      console.log(res);
+      if(res) {
+        setRole(res.data || []);
+      }
+      }catch(error) {
+        alertError({text: error?.message || "Failed to fetch role"});
+      }
+  }
+
+  useEffect(() => {
+    fetchUser();
+    fetchRole();
+  }, []);
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
     try{
       const dataForm = {
-        name: formData.username,
-        description: formData.email,
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
         status: formData.status,
+        role_id: formData.role_id
       };
 
       let method = "post";
@@ -83,7 +100,7 @@ const ManageUser = () => {
       }
 
       setLoading(true);
-      const res = request(url, method, dataForm);
+      const res = await request(url, method, dataForm);
       if(res) {
         setShowForm(false);
         alertSuccess({title: "Success!", text: editingCode ? "User updated successfully" : "User created successfully"});
@@ -91,24 +108,34 @@ const ManageUser = () => {
         fetchUser();
       }
     }catch(error) {
+      setLoading(false);
       alertError({text: error?.message || "Failed to save user"});
     }
   };
   
-    const handleAddUser = () => {
+  const handleAddUser = () => {
     setShowForm(true);
     setEditingCode(null);
-    setFormData({});
+    setFormData({
+      id: null,
+      username: "",
+      email: "",
+      password: "",
+      status: "",
+      role_id: "",
+    });
   };
 
-  const handleEdituser = (cate) => {
+  const handleEdituser = (user) => {
     setShowForm(true);
-    setEditingCode(cate.id);
+    setEditingCode(user.id);
     setFormData({
-      id: cate.id,
-      name: cate.name || "",
-      desc: cate.description || "",
-      status: cate.status || "",
+      id: user.id,
+      username: user.username || "",
+      email: user.email || "",
+      password: user.password || "",
+      status: user.status || "",
+      role_id: user.role_id || "",
     });
   };
 
@@ -185,10 +212,10 @@ const ManageUser = () => {
                       <td>{user.email || "-"}</td>
                       <td>{
                           user.roles?.map((role) => (
-                            <span key={role}>{role.name}</span>
+                            <span  className="text-success fw-bold" key={role} >{role.name}</span>
                           ))
                         }</td>
-                      <td>{user.status ? "Active" : "Inactive"}</td>
+                      <td>{user.status ? <span className="text-primary fw-400">Active</span> : <span className="text-danger fw-400">Inactive</span>}</td>
                       <td className="actions">
                         <button
                           className="btn-edit"
@@ -272,41 +299,82 @@ const ManageUser = () => {
               <form onSubmit={handleFormSubmit}>
                 {/* name product  */}
                 <div className="form-group">
-                  <label>Name *</label>
+                  <label>Username *</label>
                   <input
                     type="text"
-                    value={formData.name}
+                    value={formData.username}
                     onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
+                      setFormData({ ...formData, username: e.target.value })
                     }
                     // disabled={!!editingCode}
-                    placeholder="Enter product name"
+                    placeholder="Enter product username"
                     required
                   />
                 </div>
-                {/* description  */}
+                {/* email  */}
                 <div className="form-group">
-                  <label>Description</label>
+                  <label>Email</label>
+                  <input
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) =>
+                      setFormData({ ...formData, email: e.target.value })
+                    }
+                    placeholder="Enter Email"
+                  />
+                </div>
+                  {/* password  */}
+                <div className="form-group">
+                  <label>Password</label>
                   <input
                     type="text"
-                    value={formData.desc}
+                    value={formData.password}
                     onChange={(e) =>
-                      setFormData({ ...formData, desc: e.target.value })
+                      setFormData({ ...formData, password: e.target.value })
                     }
-                    placeholder="Enter description"
+                    placeholder="Enter Password"
                   />
                 </div>
 
+                {/* role_id     */}
+                <div className="form-group">
+                  <Box>
+                    <FormControl fullWidth size="small">
+                      <InputLabel id="role-select-label">Role</InputLabel>
+                      <Select
+                        labelId="role-select-label"
+                        id="role-select"
+                        value={formData.role_id}
+                        label="Role"
+                        onChange={(e) =>
+                          setFormData({ ...formData, role_id: e.target.value })
+                        }
+                      >
+                        <MenuItem value="">
+                          <em>-- Select role --</em>
+                        </MenuItem>
+                       {
+                         Role?.map((role) => (
+                           <MenuItem key={role.id} value={role.id}>
+                             {role.name}
+                           </MenuItem>
+                         ))
+
+                       }
+                      </Select>
+                    </FormControl>
+                  </Box>
+                </div>
                 {/* select status (optional) */}
                 <div className="form-group">
                   <Box>
                     <FormControl fullWidth size="small">
-                      <InputLabel id="product-select-label">status</InputLabel>
+                      <InputLabel id="status-select-label">Status</InputLabel>
                       <Select
-                        labelId="product-select-label"
-                        id="product-select"
+                        labelId="status-select-label"
+                        id="status-select"
                         value={formData.status}
-                        label="status"
+                        label="Status"
                         onChange={(e) =>
                           setFormData({ ...formData, status: e.target.value })
                         }
@@ -321,22 +389,6 @@ const ManageUser = () => {
                   </Box>
                 </div>
 
-                {/* image  */}
-                {/* <div className="form-group">
-                  <label>image</label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handlePhotoChange}
-                  />
-                  {formData.image ? (
-                    <img
-                      src={formData.image}
-                      alt="Brand preview"
-                      className="product-photo-preview"
-                    />
-                  ) : null}
-                </div> */}
                 <div className="form-actions">
                   <button type="submit" className="btn-submit">
                     {editingCode ? "Update" : "Create"}

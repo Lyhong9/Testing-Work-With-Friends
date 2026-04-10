@@ -114,13 +114,6 @@ const updateUser = async (req, res) => {
       });
     }
 
-    if (!status) {
-      return res.status(400).json({
-        success: false,
-        message: "Status is required",
-      });
-    }
-
     if (!role_id) {
       return res.status(400).json({
         success: false,
@@ -174,13 +167,6 @@ const registerUser = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: "Password is required",
-      });
-    }
-
-    if (!status) {
-      return res.status(400).json({
-        success: false,
-        message: "Status is required",
       });
     }
 
