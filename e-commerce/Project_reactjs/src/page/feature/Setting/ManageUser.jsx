@@ -14,8 +14,8 @@ import GlobleData from "../../../store/GlobleData";
 const ManageUser = () => {  
   const MAX_PHOTO_SIZE_MB = 10;
   const MAX_PHOTO_SIZE_BYTES = MAX_PHOTO_SIZE_MB * 1024 * 1024;
-  const [Category, setCategory] = useState([]);
-  const [filteredCategory, setFilteredCategory] = useState([]);
+  const [User, setUser] = useState([]);
+  const [filteredUser, setFilteredUser] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
@@ -24,58 +24,59 @@ const ManageUser = () => {
   const [editingCode, setEditingCode] = useState(null);
   const [formData, setFormData] = useState({
     id: null,
-    name: "",
-    desc: "",
+    username: "",
+    email: "",
     status: "",
-
+    role_id: "",
   });
 
   // Pagination calculation
-  const totalPages = Math.ceil(filteredCategory.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredUser.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const paginatedCategory = filteredCategory.slice(startIndex, endIndex);
+  const paginatedUser = filteredUser.slice(startIndex, endIndex);
 
   useEffect(() => {
-    fetchCategory();
+    fetchUser();
   }, []);
   
 
   useEffect(() => {
     if(searchKeyword.trim()) {
-      const filtered =  Category.filter(
+      const filtered =  User.filter(
         (cate) => (cate.name && cate.name.toLowerCase().includes(searchKeyword.toLowerCase()))
       );
-      setFilteredCategory(filtered);
+      setFilteredUser(filtered);
     }
     else {
-      setFilteredCategory(Category);
+      setFilteredUser(User);
     }
-  }, [searchKeyword, Category]);
+  }, [searchKeyword, User]);
 
-  const fetchCategory = async() => {
+  const fetchUser = async() => {
       try{
         setLoading(true);
-      const res = await request("/api/category", "get")
+      const res = await request("/api/user", "get")
+      console.log(res);
       setLoading(false);
       if(res) {
-        setCategory(res.categories || []);
+        setUser(res.users || []);
       }
       }catch(error) {
         setLoading(false);
-        alertError({text: error?.message || "Failed to fetch category"});
+        alertError({text: error?.message || "Failed to fetch user"});
       }
   };
   const handleFormSubmit = () => {
     try{
       const dataForm = {
-        name: formData.name,
-        description: formData.desc,
+        name: formData.username,
+        description: formData.email,
         status: formData.status,
       };
 
       let method = "post";
-      let url = "/api/category";
+      let url = "/api/user";
       if(editingCode) {
         dataForm.id = editingCode;
         method = "put";
@@ -85,22 +86,22 @@ const ManageUser = () => {
       const res = request(url, method, dataForm);
       if(res) {
         setShowForm(false);
-        alertSuccess({title: "Success!", text: editingCode ? "Category updated successfully" : "Category created successfully"});
+        alertSuccess({title: "Success!", text: editingCode ? "User updated successfully" : "User created successfully"});
         setLoading(false);
-        fetchCategory();
+        fetchUser();
       }
     }catch(error) {
-      alertError({text: error?.message || "Failed to save category"});
+      alertError({text: error?.message || "Failed to save user"});
     }
   };
   
-    const handleAddCategory = () => {
+    const handleAddUser = () => {
     setShowForm(true);
     setEditingCode(null);
     setFormData({});
   };
 
-  const handleEditcategory = (cate) => {
+  const handleEdituser = (cate) => {
     setShowForm(true);
     setEditingCode(cate.id);
     setFormData({
@@ -111,11 +112,11 @@ const ManageUser = () => {
     });
   };
 
-  const handleDeletecategory = async (id) => {
+  const handleDeleteuser = async (id) => {
     await confirmDelete(async () => {
       setLoading(true);
-      await request(`/api/category/${id}`, "DELETE");
-      fetchCategory();
+      await request(`/api/user/${id}`, "DELETE");
+      fetchUser();
       setLoading(false);
     });
   };
@@ -123,11 +124,11 @@ const ManageUser = () => {
 
   return (
     <>
-      <div className="category-container">
-        <div className="category-header">
-          <h1 className="product-title">Category Management</h1>
-          <button className="btn-add-product" onClick={handleAddCategory}>
-            + Add New Category
+      <div className="user-container">
+        <div className="user-header">
+          <h1 className="product-title">User Management</h1>
+          <button className="btn-add-product" onClick={handleAddUser}>
+            + Add New User
           </button>
         </div>
 
@@ -146,18 +147,18 @@ const ManageUser = () => {
               <option value={20}>20</option>
               <option value={50}>50</option>
             </select>
-            <span>Category per page</span>
+            <span>User per page</span>
           </div>
 
           <div className="search-box">
-            <label>Search Category:</label>
+            <label>Search User:</label>
             <input
               type="text"
               placeholder="Search by code or description..."
               value={searchKeyword}
               onChange={(e) => setSearchKeyword(e.target.value)}
             />
-          </div>
+          </div>  
         </div>
 
         {loading ? (
@@ -168,30 +169,36 @@ const ManageUser = () => {
               <thead>
                 <tr>
                   <th>Id</th>
-                  <th>Name</th>
-                  <th>Description</th>
+                  <th>Username</th>
+                  <th>Email</th>
+                  <th>Role</th>
                   <th>Status</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {paginatedCategory.length > 0 ? (
-                  paginatedCategory.map((category) => (
-                    <tr key={category.id}>
-                      <td>{category.id}</td>
-                      <td>{category.name || "-"}</td>
-                      <td>{category.description || "-"}</td>
-                      <td>{category.status ? "Active" : "Inactive"}</td>
+                {paginatedUser.length > 0 ? (
+                  paginatedUser.map((user) => (
+                    <tr key={user.id}>
+                      <td>{user.id}</td>
+                      <td>{user.username || "-"}</td>
+                      <td>{user.email || "-"}</td>
+                      <td>{
+                          user.roles?.map((role) => (
+                            <span key={role}>{role.name}</span>
+                          ))
+                        }</td>
+                      <td>{user.status ? "Active" : "Inactive"}</td>
                       <td className="actions">
                         <button
                           className="btn-edit"
-                          onClick={() => handleEditcategory(category)}
+                          onClick={() => handleEdituser(user)}
                         >
                           ✎ Edit
                         </button>
                         <button
                           className="btn-delete"
-                          onClick={() => handleDeletecategory(category.id)}
+                          onClick={() => handleDeleteuser(user.id)}
                         >
                           🗑 Delete
                         </button>
@@ -201,7 +208,7 @@ const ManageUser = () => {
                 ) : (
                   <tr>
                     <td colSpan="6" className="no-data">
-                      No Category found
+                      No User found
                     </td>
                   </tr>
                 )}
@@ -213,8 +220,8 @@ const ManageUser = () => {
         {/* filter page current table  */}
         <div className="pagination-info">
           Showing {startIndex + 1} to{" "}
-          {Math.min(endIndex, filteredCategory.length)} of{" "}
-          {filteredCategory.length} Category
+          {Math.min(endIndex, filteredUser.length)} of{" "}
+          {filteredUser.length} User
         </div>
 
         <div className="pagination-controls">
