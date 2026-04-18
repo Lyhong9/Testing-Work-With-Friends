@@ -49,6 +49,9 @@ paymentRoute(app)
 const orderRoute = require("./routes/order.route")
 orderRoute(app)
 
+const PermissionRoute = require("./routes/permission.route")
+PermissionRoute(app)
+
 // Sync database
 db.sequelize.sync()
   .then(() => console.log("Database synced"))

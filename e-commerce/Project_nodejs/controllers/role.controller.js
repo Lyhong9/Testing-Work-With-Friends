@@ -1,4 +1,4 @@
-const { Role, Permission } = require("../models");
+const { Role, Permission , RolePermission, sequelize} = require("../models");
 const { logError } = require("../middleware/logError");
 const { Op } = require("sequelize");
 
@@ -46,15 +46,16 @@ const getRole = async (req, res) => {
       message: "Role fetched successfully",
       data: role,
     });
-  } catch (errr) {
-    logError("getRole", errr, res);
+  } catch (err) {
+    logError("getRole", err, res);
   }
 };
 
 
 const createRole = async (req, res) => {
   try {
-    const { name, description} = req.body;
+    const t = await sequelize.transaction();
+    const { name, description, roleId, permissionId  } = req.body;
     if(!name){
         return res.status(400).json({
             success: false,
@@ -64,7 +65,13 @@ const createRole = async (req, res) => {
     const role = await Role.create({
       name,
       description,
-    });
+    }, { transaction: t });
+
+    await RolePermission.create({
+        roleId,
+        permissionId
+    }, { transaction: t })
+    
     return res.json({
       success: true,
       message: "Role created successfully",
