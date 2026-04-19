@@ -1,3 +1,0 @@
-[08/04/2026 20:40:36] The argument passed to findOne must be an options object, use findByPk if you wish to pass a single primary key value
-[08/04/2026 20:40:57] The argument passed to findOne must be an options object, 
-use findByPk if you wish to pass a single primary key value

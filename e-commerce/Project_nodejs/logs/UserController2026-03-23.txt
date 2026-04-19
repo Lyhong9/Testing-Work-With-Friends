@@ -1,4 +1,0 @@
-[23/03/2026 23:45:25] nodemailer is not defined
-[23/03/2026 23:45:39] nodemailer is not defined
-[23/03/2026 23:47:35] nodemailer is not defined
-[23/03/2026 23:55:47] nodemailer is not defined

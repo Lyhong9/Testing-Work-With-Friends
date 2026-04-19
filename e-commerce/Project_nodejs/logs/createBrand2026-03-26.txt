@@ -1,2 +1,0 @@
-[26/03/2026 23:34:56] Incorrect integer value: 'undefined' for column 'status' at row 1
-[26/03/2026 23:38:20] Incorrect integer value: 'undefined' for column 'status' at row 1

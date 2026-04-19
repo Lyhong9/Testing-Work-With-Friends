@@ -7,7 +7,7 @@ const getPermission = async (req, res) => {
         if(search){
             const permission = await Permission.findAll({
                 where: {
-                    name: {
+                    description: {
                         [Op.like]: `%${search}%`
                     }
                 }

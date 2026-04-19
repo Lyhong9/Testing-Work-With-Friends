@@ -1,1 +1,0 @@
-[24/03/2026 22:37:10] Cannot add or update a child row: a foreign key constraint fails (`pos_e_commerce_db`.`payments`, CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`saleId`) REFERENCES `sales` (`id`) ON DELETE CASCADE)

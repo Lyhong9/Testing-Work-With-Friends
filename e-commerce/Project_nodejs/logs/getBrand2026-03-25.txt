@@ -1,8 +1,0 @@
-[25/03/2026 23:10:57] Unknown column 'categoryId' in 'field list'
-[25/03/2026 23:11:12] Unknown column 'categoryId' in 'field list'
-[25/03/2026 23:11:56] Unknown column 'categoryId' in 'field list'
-[25/03/2026 23:11:58] Unknown column 'categoryId' in 'field list'
-[25/03/2026 23:12:27] Unknown column 'categoryId' in 'field list'
-[25/03/2026 23:12:30] Unknown column 'categoryId' in 'field list'
-[25/03/2026 23:14:35] Unknown column 'categoryId' in 'field list'
-[25/03/2026 23:14:42] Unknown column 'categoryId' in 'field list'

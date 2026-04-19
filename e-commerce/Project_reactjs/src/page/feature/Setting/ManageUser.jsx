@@ -151,7 +151,7 @@ const ManageUser = () => {
 
   return (
     <>
-      <div className="user-container">
+      <div className="user-container">  
         <div className="user-header">
           <h1 className="product-title">User Management</h1>
           <button className="btn-add-product" onClick={handleAddUser}>

@@ -53,34 +53,58 @@ const getRole = async (req, res) => {
 
 
 const createRole = async (req, res) => {
+  const t = await sequelize.transaction();
   try {
-    const t = await sequelize.transaction();
-    const { name, description, roleId, permissionId  } = req.body;
-    if(!name){
-        return res.status(400).json({
-            success: false,
-            message: "Role name is required"
-        })
+    const { name, description, permissionIds } = req.body; // Assuming permissionIds is an array
+    if (!name) {
+      await t.rollback();
+      return res.status(400).json({
+        success: false,
+        message: "Role name is required"
+      });
     }
     const role = await Role.create({
       name,
       description,
     }, { transaction: t });
 
-    await RolePermission.create({
-        roleId,
+    // Assuming permissionIds is an array of permission IDs
+    if (permissionIds && Array.isArray(permissionIds)) {
+      const rolePermissions = permissionIds.map(permissionId => ({
+        roleId: role.id,
         permissionId
-    }, { transaction: t })
-    
+      }));
+      await RolePermission.bulkCreate(rolePermissions, { transaction: t });
+    }
+
+    await t.commit();
     return res.json({
       success: true,
       message: "Role created successfully",
       data: role,
     });
-  } catch (errr) {
-    logError("createRole", errr, res); 
+  } catch (err) {
+    await t.rollback();
+    logError("createRole", err, res);
   }
 };
+
+const AddMorePermission = async (req, res) => {
+  try {
+    const { roleId, permissionId } = req.body;
+    const rolePermission = await RolePermission.create({
+      roleId,
+      permissionId,
+    });
+    return res.json({
+      success: true,
+      message: "Permission added successfully",
+      data: rolePermission,
+    });
+  } catch (err) {
+    logError("AddMorePermission", err, res);
+  }
+}
 
 const updateRole = async (req, res) => {
   try {
@@ -102,17 +126,34 @@ const updateRole = async (req, res) => {
   }
 };
 const deleteRole = async (req, res) => {
+  const t = await sequelize.transaction();
+
   try {
     const { id } = req.params;
-    const role = await Role.destroy({ where: { id } });
+
+    // Remove relation first
+    await RolePermission.destroy({
+      where: { roleId: id },
+      transaction: t
+    });
+
+    // Then delete role
+    const role = await Role.destroy({
+      where: { id },
+      transaction: t
+    });
+
+    await t.commit();
+
     return res.json({
       success: true,
       message: "Role deleted successfully",
       data: role,
     });
-  } catch (errr) {
-    logError("deleteRole", errr, res);
+
+  } catch (err) {
+    await t.rollback();
+    logError("deleteRole", err, res);
   }
 };
-
-module.exports = { getRole, createRole, updateRole, deleteRole };
+module.exports = { getRole, createRole, updateRole, deleteRole,  AddMorePermission };

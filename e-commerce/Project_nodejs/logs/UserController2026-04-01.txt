@@ -1,1 +1,0 @@
-[01/04/2026 07:11:42] Access denied for user 'root'@'localhost' (using password: NO)
