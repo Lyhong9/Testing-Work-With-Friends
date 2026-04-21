@@ -141,7 +141,7 @@ const SalePos = () => {
                       </div>
 
                       {/* ✅ FIXED QTY CONTROL */}
-                      <div>
+                      <div  style={{display: "flex", alignItems: "center"}}>
                         <button
                           className="btn-secondary"
                           onClick={() => handleQty(item.id, -1)}

@@ -52,6 +52,9 @@ orderRoute(app)
 const PermissionRoute = require("./routes/permission.route")
 PermissionRoute(app)
 
+const RouteLowStock = require("./routes/lowStock.route")
+RouteLowStock(app)
+
 // Sync database
 db.sequelize.sync()
   .then(() => console.log("Database synced"))
