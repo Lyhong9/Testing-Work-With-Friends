@@ -85,24 +85,36 @@ const alertNewSale = async (sale, items) => {
   }
 };
 
-const alertLowStock = async (product) => {
-  const message =
-    `⚠️ <b>Low Stock Alert</b>\n\n` +
-    `<b>Product ID:</b> ${product.prd_id}\n` +
-    `<b>Name:</b> ${product.prd_name}\n` +
-    `<b>Quantity Left:</b> ${product.qty}\n` +
-    `<b>Status:</b> Low Stock (≤10 items)`;
+const alertLowStock = async (products) => {
+  if (!products || products.length === 0) return;
+
+  let message = `⚠️ <b>Low Stock Alert</b>\n\n`;
+
+  products.forEach((p, index) => {
+    message +=
+      `<b>${index + 1}. ${p.name}</b>\n` +
+      `ID: ${p.id}\n` +
+      `Stock Left: ${p.stockQuantity}\n\n`;
+  });
+
+  message += `<b>Status:</b> Low Stock (≤10 items)`;
 
   await sendTelegramMessage(message);
 };
 
-const alertOutOfStock = async (product) => {
-  const message =
-    `❌ <b>Out of Stock Alert</b>\n\n` +
-    `<b>Product ID:</b> ${product.prd_id}\n` +
-    `<b>Name:</b> ${product.prd_name}\n` +
-    `<b>Quantity:</b> ${product.qty}\n` +
-    `<b>Status:</b> OUT OF STOCK`;
+const alertOutOfStock = async (products) => {
+  if (!products || products.length === 0) return;
+
+  let message = `❌ <b>Out of Stock Alert</b>\n\n`;
+
+  products.forEach((p, index) => {
+    message +=
+      `<b>${index + 1}. ${p.name}</b>\n` +
+      `ID: ${p.id}\n` +
+      `Quantity: ${p.stockQuantity}\n\n`;
+  });
+
+  message += `<b>Status:</b> OUT OF STOCK`;
 
   await sendTelegramMessage(message);
 };
@@ -113,3 +125,142 @@ module.exports = {
   alertLowStock,
   alertOutOfStock,
 };
+
+// const axios = require("axios");
+
+// /* ===============================
+//    🔹 CORE: Send Telegram Message
+// ================================ */
+// const sendTelegramMessage = async (text) => {
+//   try {
+//     const token = process.env.TELEGRAM_BOT_TOKEN;
+//     const chatId = process.env.TELEGRAM_CHAT_ID;
+
+//     if (!token || !chatId) {
+//       console.log("⚠️ Missing Telegram config");
+//       return;
+//     }
+
+//     const res = await axios.post(
+//       `https://api.telegram.org/bot${token}/sendMessage`,
+//       {
+//         chat_id: chatId,
+//         text,
+//         parse_mode: "HTML",
+//       }
+//     );
+
+//     console.log("✅ Telegram sent:", res.data.result.message_id);
+//   } catch (error) {
+//     console.error("❌ Telegram error:", error.response?.data || error.message);
+//   }
+// };
+
+// /* ===============================
+//    🔹 API Controller (POST)
+// ================================ */
+// const sendTelegramController = async (req, res) => {
+//   try {
+//     const { text } = req.body;
+
+//     if (!text) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "text is required",
+//       });
+//     }
+
+//     await sendTelegramMessage(text);
+
+//     return res.json({
+//       success: true,
+//       message: "Message sent",
+//     });
+//   } catch (error) {
+//     return res.status(500).json({
+//       success: false,
+//       error: error.message,
+//     });
+//   }
+// };
+
+// /* ===============================
+//    🔹 Alert: New Sale
+// ================================ */
+// const alertNewSale = async (sale, items) => {
+//   try {
+//     const formattedDate = new Date(
+//       sale.createdAt || new Date()
+//     ).toLocaleString("en-US", {
+//       timeZone: "Asia/Phnom_Penh",
+//     });
+
+//     const message =
+//       `🧾 <b>New Sale</b>\n\n` +
+//       `<b>Sale ID:</b> ${sale.id}\n` +
+//       `<b>Invoice:</b> ${sale.invoiceId}\n` +
+//       `<b>Total:</b> $${parseFloat(sale.totalAmount || 0).toFixed(2)}\n` +
+//       `<b>Tax:</b> $${parseFloat(sale.tax || 0).toFixed(2)}\n` +
+//       `<b>Payment:</b> ${sale.paymentMethod}\n\n` +
+//       `<b>Items:</b>\n` +
+//       items.map(i =>
+//         `• ID:${i.productId} | Qty:${i.quantity} | $${i.price}`
+//       ).join("\n") +
+//       `\n\n<b>Date:</b> ${formattedDate}`;
+
+//     await sendTelegramMessage(message);
+//   } catch (err) {
+//     console.error("❌ alertNewSale:", err.message);
+//   }
+// };
+
+// /* ===============================
+//    🔹 Alert: Low Stock
+// ================================ */
+// const alertLowStock = async (products) => {
+//   if (!products || products.length === 0) return;
+
+//   let message = `⚠️ <b>Low Stock Alert</b>\n\n`;
+
+//   products.forEach((p, i) => {
+//     message +=
+//       `<b>${i + 1}. ${p.name}</b>\n` +
+//       `ID: ${p.id}\n` +
+//       `Stock: ${p.stockQuantity}\n\n`;
+//   });
+
+//   message += `<b>Status:</b> Low Stock (≤10 items)`;
+
+//   await sendTelegramMessage(message);
+// };
+
+// /* ===============================
+//    🔹 Alert: Out Of Stock
+// ================================ */
+// const alertOutOfStock = async (products) => {
+//   if (!products || products.length === 0) return;
+
+//   let message = `❌ <b>Out of Stock Alert</b>\n\n`;
+
+//   products.forEach((p, i) => {
+//     message +=
+//       `<b>${i + 1}. ${p.name}</b>\n` +
+//       `ID: ${p.id}\n` +
+//       `Quantity: ${p.stockQuantity}\n\n`;
+//   });
+
+//   message += `<b>Status:</b> OUT OF STOCK`;
+
+//   await sendTelegramMessage(message);
+// };
+
+// /* ===============================
+//    🔹 EXPORT
+// ================================ */
+// module.exports = {
+//   sendTelegramMessage,
+//   sendTelegramController,
+//   alertNewSale,
+//   alertLowStock,
+//   alertOutOfStock,
+// };

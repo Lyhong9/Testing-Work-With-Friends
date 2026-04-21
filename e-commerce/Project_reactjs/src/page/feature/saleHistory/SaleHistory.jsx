@@ -2,9 +2,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import request from "../../../utils/request";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-import {
-  confirmDelete,
-} from "../../../swertalert/AlertSuccess";
+import { confirmDelete } from "../../../swertalert/AlertSuccess";
 import { BaseURL } from "../../../utils/BaseURL";
 import "../../../style/feature.css";
 import "./salehistory.css";
@@ -28,7 +26,7 @@ const SaleHistory = () => {
 
   const [filteredSale, setFilteredSale] = useState([]);
   const [DatetimeTo, setDatetimeTo] = useState(null);
-  const [DateetimeFrom, setDatetimeFrom] = useState(null);  // Pagination calculation
+  const [DateetimeFrom, setDatetimeFrom] = useState(null); // Pagination calculation
   // Pagination calculation
   const finalFilteredSale = useMemo(() => {
     let filtered = Sale;
@@ -63,13 +61,9 @@ const SaleHistory = () => {
     return filtered;
   }, [Sale, searchKeyword, DateetimeFrom, DatetimeTo]);
 
-
   useEffect(() => {
     setFilteredSale(finalFilteredSale);
   }, [finalFilteredSale]);
-
-
-
 
   const totalPages = Math.ceil(filteredSale.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -102,13 +96,23 @@ const SaleHistory = () => {
       await request(`/api/sale/${sale.id}`, "DELETE");
       getSale();
     });
-  };  
+  };
 
-
-  // print TO CSV 
+  // print TO CSV
   const exportToCSV = () => {
     const filename = "sales_history.csv";
-    const headers = ["Sale ID", "Invoice ID", "Total Amount", "Tax", "Payment Method", "User ID", "Created At", "Product ID", "Quantity", "Price"];
+    const headers = [
+      "Sale ID",
+      "Invoice ID",
+      "Tax",
+      "Payment Method",
+      "User ID",
+      "Created At",
+      "Product ID",
+      "Quantity",
+      "Price",
+      "Total Amount",
+    ];
     let data = [headers.join(",")];
 
     Sale.forEach((sale) => {
@@ -116,7 +120,6 @@ const SaleHistory = () => {
         const row = [
           sale.id,
           `"${sale.invoiceId}"`,
-          sale.totalAmount,
           sale.tax,
           sale.paymentMethod,
           sale.userId,
@@ -124,6 +127,7 @@ const SaleHistory = () => {
           item.productId,
           item.quantity,
           item.price,
+          sale.totalAmount,
         ];
         data.push(row.join(","));
       });
@@ -137,8 +141,7 @@ const SaleHistory = () => {
     a.click();
   };
 
-
-  // print pdf 
+  // print pdf
   const ref = useRef();
 
   const downloadPDF = async () => {
@@ -150,8 +153,7 @@ const SaleHistory = () => {
     const imgProps = pdf.getImageProperties(data);
 
     const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight =
-      (imgProps.height * pdfWidth) / imgProps.width;
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
     pdf.addImage(data, "PNG", 0, 0, pdfWidth, pdfHeight);
     pdf.save("document.pdf");
@@ -162,10 +164,9 @@ const SaleHistory = () => {
     totalSales += parseFloat(sale.totalAmount);
   });
 
-
   return (
     <>
-      <div className="category-container"  ref={ref}>
+      <div className="category-container" ref={ref}>
         <div className="sales-container">
           {/* Header */}
           <div className="sales-header">
@@ -252,7 +253,10 @@ const SaleHistory = () => {
                   </span>
                   From
                 </label>
-                <input type="date" onChange={(e) => setDatetimeFrom(e.target.value)}/>
+                <input
+                  type="date"
+                  onChange={(e) => setDatetimeFrom(e.target.value)}
+                />
               </div>
 
               <div className="filter-item">
@@ -262,7 +266,10 @@ const SaleHistory = () => {
                   </span>
                   To
                 </label>
-                <input type="date" onChange={(e) => setDatetimeTo(e.target.value)}/>
+                <input
+                  type="date"
+                  onChange={(e) => setDatetimeTo(e.target.value)}
+                />
               </div>
             </div>
           </div>
@@ -299,12 +306,20 @@ const SaleHistory = () => {
                   <tr key={Sale.id}>
                     <td>{Sale.id}</td>
                     <td>{Sale.invoiceId || "-"}</td>
-                    <td className="text-success fw-bold">{Sale.paymentMethod.toUpperCase()}</td>
+                    <td className="text-success fw-bold">
+                      {Sale.paymentMethod.toUpperCase()}
+                    </td>
 
                     <td>{Sale.saleItems?.[0]?.productId || "-"}</td>
                     <td>{Sale.saleItems?.[0]?.quantity || "-"}</td>
-                    <td className="text-success fw-bold">${Sale.saleItems?.[0]?.price || "-"}</td>
-                    <td><span className="text-success fw-bold">${Sale.totalAmount || "-"}</span></td>
+                    <td className="text-success fw-bold">
+                      ${Sale.saleItems?.[0]?.price || "-"}
+                    </td>
+                    <td>
+                      <span className="text-success fw-bold">
+                        ${Sale.totalAmount || "-"}
+                      </span>
+                    </td>
                     <td>
                       {Sale.saleItems?.[0]?.product?.image && (
                         <Image
@@ -387,7 +402,7 @@ const SaleHistory = () => {
         ref={ref}
       >
         {/* Sale Info */}
-        <div className="mb-4" >
+        <div className="mb-4">
           <h5 className="mb-3">Sale Information</h5>
           <div className="table-responsive">
             <table className="table table-bordered table-striped">

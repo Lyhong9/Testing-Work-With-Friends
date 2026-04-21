@@ -1,7 +1,8 @@
-const {LowStock} = require("../controllers/LowStock.controller")
+const {LowStock, alertOfStock} = require("../controllers/LowStock.controller")
 
 const RouteLowStock =(app)=>{
-    app.post("/api/lowstock",LowStock);
+    app.get("/api/lowstock",LowStock);
+    app.get("/api/outofstock",alertOfStock);
 }
 
 module.exports = RouteLowStock
