@@ -17,7 +17,8 @@ import SaleHistory from "./page/feature/saleHistory/SaleHistory";
 import Role from "./page/feature/Setting/Role";
 import ManageUser from "./page/feature/Setting/ManageUser";
 import LowStockAlert from "./page/feature/Setting/LowStockAlert";
-
+import Expanse from "./page/feature/expanse/Expanse";
+import Inventory from "./page/feature/inventory/Inventory";
 const App = () => {
   return (
     <Routes>
@@ -36,6 +37,8 @@ const App = () => {
         <Route path="/salehistory" element={<SaleHistory />} />
         <Route path="/manageuser" element={<ManageUser />} />
         <Route path="/lowstockalert" element={<LowStockAlert />} />
+        <Route path="/expense" element={<Expanse />} />
+        <Route path="/inventory" element={<Inventory />} />
       </Route>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />

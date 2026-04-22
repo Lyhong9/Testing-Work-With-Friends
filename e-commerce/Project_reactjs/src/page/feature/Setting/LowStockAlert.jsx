@@ -1,11 +1,46 @@
 import React, {useEffect, useState } from "react";
 import "./LowStock.css";
 import tele from "../../../../public/telegram-logo-11 (1).png";
+import request  from "../../../utils/request";
+import { use } from "react";
 
 const LowStockAlert = () => {
 
   const [stockAlert, setStockAlert] = useState(true);
+  const [OutOfstockAlert, SetOutOfstockAlert] = useState(true);
 
+  // action low stock 
+  useEffect(() => {
+  const interval = setInterval(() => {
+    if (stockAlert) {
+      request("/api/lowstock", "get");
+    }
+  }, 3600000); // 1 hour
+
+  return () => clearInterval(interval); // cleanup
+}, [stockAlert]);
+
+// action out of stock alert 
+useEffect(() => {
+  const interval = setInterval(() => {
+    if (OutOfstockAlert) {
+      request("/api/outofstock", "get");
+    }
+  }, 3600000); // 1 hour
+
+  return () => clearInterval(interval); // cleanup
+  
+}, [OutOfstockAlert]);
+
+
+
+const handleToCheck = (e) => {
+  setStockAlert(e.target.checked);
+};
+
+const handleToCheckOut = (e) => {
+  SetOutOfstockAlert(e.target.checked);
+};
   
   return (
     <div className="telegram-container">
@@ -50,14 +85,14 @@ const LowStockAlert = () => {
         <div className="card right-card">
           <h3>Alert Logic</h3>
 
-          <div className="toggle">
-            <span>Critical Stock Alerts</span>
-            <input type="checkbox" onChange={(e) => setStockAlert(e.target.checked)} />
-          </div>
+          <label className="toggle">
+            <span>Low Stock Alerts</span>
+            <input type="checkbox" checked={stockAlert} onChange={handleToCheck}  />
+          </label>
 
           <div className="toggle">
-            <span>Low Threshold Warnings</span>
-            <input type="checkbox" />
+            <span>Out Of Stock Alert </span>
+            <input type="checkbox" checked={OutOfstockAlert} onChange={handleToCheckOut} />
           </div>
 
           <div className="toggle">

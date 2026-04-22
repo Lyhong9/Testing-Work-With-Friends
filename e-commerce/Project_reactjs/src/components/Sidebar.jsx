@@ -7,16 +7,9 @@ const Sidebar = () => {
   const location = useLocation();
   const [expandedMenu, setExpandedMenu] = useState(null);
 
-
-  //list menu item 
   const menuItems = [
     { id: "dashboard", label: "📊 Dashboard", path: "/dashboard" },
-    // {
-    //   id: "brand", label: "📦 Brand", path: "/brand",
-    // },
-    // {
-    //   id: "category", label: "📦 Category", path: "/category",
-    // },
+
     {
       id: "products",
       label: "📦 Product Management",
@@ -27,19 +20,22 @@ const Sidebar = () => {
         { id: "categories", label: "Categories", path: "/category" },
       ],
     },
+
     {
       id: "sales",
-      label: "💳 Point Of Sale",
+      label: "💳 Point of Sale",
       path: "/sales",
       submenu: [
         { id: "new-sale", label: "New Sale", path: "/salepos" },
         { id: "sales-list", label: "Sales History", path: "/salehistory" },
-      ],  
+      ],
     },
-    { id: "customers", label: "👥 Customer", path: "/customers" },
+
+    { id: "customers", label: "👥 Customers", path: "/customers" },
+
     {
       id: "reports",
-      label: "📈 Report",
+      label: "📈 Reports",
       path: "/reports",
       submenu: [
         { id: "sales-report", label: "Sales Report", path: "/reports/sales" },
@@ -55,23 +51,36 @@ const Sidebar = () => {
         },
       ],
     },
+
     {
       id: "settings",
-      label: "📈 Setting",
+      label: "⚙️ Settings",
       path: "/setting",
       submenu: [
         { id: "role", label: "Roles", path: "/role" },
         {
-          id: "User-Management",
-          label: "User permission",
+          id: "user-management",
+          label: "User Permission",
           path: "/manageuser",
         },
         {
-          id: "Low-Stock-Alert",
+          id: "low-stock-alert",
           label: "Low Stock Alert",
           path: "/lowstockalert",
         },
       ],
+    },
+
+    {
+      id: "expense",
+      label: "💵 Expense",
+      path: "/expense",
+    },
+
+    {
+      id: "inventory",
+      label: "📦 Inventory",
+      path: "/inventory",
     },
   ];
 
