@@ -1,0 +1,3 @@
+[23/04/2026 12:37:01] Access denied for user 'root'@'localhost' (using password: YES)
+[23/04/2026 12:37:04] Access denied for user 'root'@'localhost' (using password: YES)
+[23/04/2026 12:37:11] Access denied for user 'root'@'localhost' (using password: YES)

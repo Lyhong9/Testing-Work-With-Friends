@@ -76,8 +76,10 @@ const getCustomer = async (req, res) => {
           model: Address,
           as: "addresses",
           attributes: ["id", "street", "city", "state", "zipCode", "country"],
+          order: [["id", "DESC"]],
         },
       ],
+      order: [["id", "DESC"]],
     });
 
     res.json({

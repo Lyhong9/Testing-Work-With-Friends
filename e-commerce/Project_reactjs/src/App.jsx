@@ -4,7 +4,7 @@ import Layout from "./components/Layout";
 import Dashboard from "./page/Dashboard";
 import ProductsPage from "./page/ProductsPage";
 import SalesPage from "./page/SalesPage";
-import CustomersPage from "./page/CustomersPage";
+// import CustomersPage from "./page/CustomersPage";
 import ReportsPage from "./page/ReportsPage";
 import Category from "./page/feature/Category/Category";
 import Brand from "./page/feature/Brand/Brand";
@@ -19,6 +19,7 @@ import ManageUser from "./page/feature/Setting/ManageUser";
 import LowStockAlert from "./page/feature/Setting/LowStockAlert";
 import Expanse from "./page/feature/expanse/Expanse";
 import Inventory from "./page/feature/inventory/Inventory";
+import Customer from "./page/feature/Customer/Customer";
 const App = () => {
   return (
     <Routes>
@@ -27,7 +28,7 @@ const App = () => {
         <Route path="/dashboard" element={<Dashboard />} />
         {/* <Route path="/products" element={<ProductsPage />} />
         <Route path="/sales" element={<SalesPage />} /> */}
-        <Route path="/customers" element={<CustomersPage />} />
+        {/* <Route path="/customers" element={<CustomersPage />} /> */}
         <Route path="/reports" element={<ReportsPage />} />
         <Route path="/category" element={<Category />} />
         <Route path="/brand" element={<Brand />} />
@@ -39,6 +40,7 @@ const App = () => {
         <Route path="/lowstockalert" element={<LowStockAlert />} />
         <Route path="/expense" element={<Expanse />} />
         <Route path="/inventory" element={<Inventory />} />
+        <Route path="/customers" element={<Customer />} />
       </Route>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
