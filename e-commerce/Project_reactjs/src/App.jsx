@@ -21,6 +21,7 @@ import Expanse from "./page/feature/expanse/Expanse";
 import Inventory from "./page/feature/inventory/Inventory";
 import Customer from "./page/feature/Customer/Customer";
 
+// frontend pages
 import Homepage from "./page/frontend/Homepage/Homepage";
 import Navbar from "./page/frontend/Navbar/Navbar";
 import Footer from "./page/frontend/Footer/Footer";
@@ -30,11 +31,9 @@ const App = () => {
   return (
     <Routes>
       <Route element={<Layout />}>
+      {/* dashboard, products, sales, customers, reports routes */}
         <Route path="/" element={<Dashboard />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        {/* <Route path="/products" element={<ProductsPage />} />
-        <Route path="/sales" element={<SalesPage />} /> */}
-        {/* <Route path="/customers" element={<CustomersPage />} /> */}
         <Route path="/reports" element={<ReportsPage />} />
         <Route path="/category" element={<Category />} />
         <Route path="/brand" element={<Brand />} />
@@ -48,10 +47,18 @@ const App = () => {
         <Route path="/inventory" element={<Inventory />} />
         <Route path="/customers" element={<Customer />} />
       </Route>
+
+      {/* logout, login, register routes  */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+
       {/* Frontend Routes */}
-      <Route path="/index" element={<Homepage />} />
+      <Route path="/index" element={<LayoutFront />}>
+        <Route path="" element={<Homepage />} />
+        <Route path="product/:id" element={<Navbar />} />
+      </Route>
+
+      {/* page not found route */}
       <Route path="*" element={<h2>Page not found</h2>} />
     </Routes>
   );
