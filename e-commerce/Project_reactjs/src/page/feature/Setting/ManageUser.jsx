@@ -223,12 +223,16 @@ const ManageUser = () => {
                         >
                           ✎ Edit
                         </button>
-                        <button
-                          className="btn-delete"
-                          onClick={() => handleDeleteuser(user.id)}
-                        >
-                          🗑 Delete
-                        </button>
+                        {
+                          user.email == "Vothanarern@gmail.com" ? null : (
+                            <button
+                              className="btn-delete"
+                              onClick={() => handleDeleteuser(user.id)}
+                            >
+                              🗑 Delete
+                            </button>
+                          )
+                        }
                       </td>
                     </tr>
                   ))

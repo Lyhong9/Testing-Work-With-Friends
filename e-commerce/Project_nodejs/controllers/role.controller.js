@@ -1,6 +1,8 @@
 const { Role, Permission , RolePermission, sequelize} = require("../models");
 const { logError } = require("../middleware/logError");
 const { Op } = require("sequelize");
+const { before } = require("node:test");
+const { permission } = require("node:process");
 
 
 const getRole = async (req, res) => {
@@ -52,6 +54,7 @@ const getRole = async (req, res) => {
 };
 
 
+// create before create permission 
 const createRole = async (req, res) => {
   const t = await sequelize.transaction();
   try {
@@ -89,6 +92,7 @@ const createRole = async (req, res) => {
   }
 };
 
+// add permission to role after create role 
 const AddMorePermission = async (req, res) => {
   try {
     const { roleId, permissionId } = req.body;
@@ -106,6 +110,7 @@ const AddMorePermission = async (req, res) => {
   }
 }
 
+// update role and permission
 const updateRole = async (req, res) => {
   try {
     const {id, name, description } = req.body;

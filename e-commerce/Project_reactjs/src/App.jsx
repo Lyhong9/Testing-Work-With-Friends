@@ -20,6 +20,12 @@ import LowStockAlert from "./page/feature/Setting/LowStockAlert";
 import Expanse from "./page/feature/expanse/Expanse";
 import Inventory from "./page/feature/inventory/Inventory";
 import Customer from "./page/feature/Customer/Customer";
+
+import Homepage from "./page/frontend/Homepage/Homepage";
+import Navbar from "./page/frontend/Navbar/Navbar";
+import Footer from "./page/frontend/Footer/Footer";
+import LayoutFront from "./page/frontend/Layout/LayoutFront";
+
 const App = () => {
   return (
     <Routes>
@@ -44,6 +50,9 @@ const App = () => {
       </Route>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      {/* Frontend Routes */}
+      <Route path="/index" element={<Homepage />} />
+      <Route path="*" element={<h2>Page not found</h2>} />
     </Routes>
   );
 };

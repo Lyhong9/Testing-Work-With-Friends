@@ -52,12 +52,19 @@ const getOneCustomer = async (req, res) => {
 // ==============================
 const getCustomer = async (req, res) => {
   try {
-    const { keyword } = req.query;
+    const { keyword,customerId } = req.query;
 
     if (keyword) {
       const customers = await Customer.findAll({
+        include: [
+          {
+            model: Address,
+            as: "addresses",
+            attributes: ["id", "street", "city", "state", "zipCode", "country"],
+          }
+        ],
         where: {
-          name: {
+          email: {
             [Op.like]: `%${keyword}%`,
           },
         },
@@ -67,6 +74,24 @@ const getCustomer = async (req, res) => {
         success: true,
         message: "success",
         customers,
+      });
+    }
+    if(customerId){
+      const customer = await Customer.findOne({
+        include: [
+          {
+            model: Address,
+            as: "addresses",
+            attributes: ["id", "street", "city", "state", "zipCode", "country"],
+            order: [["id", "DESC"]],
+          },
+        ],
+        where: { id: customerId },
+      });
+      return res.json({
+        success: true,
+        message: "success",
+        customer,
       });
     }
 

@@ -82,6 +82,11 @@ const Sidebar = () => {
       label: "📦 Inventory",
       path: "/inventory",
     },
+    {
+      id: "index",
+      label: "🌐 View Website",
+      path: "/index",
+    },
   ];
 
   const handleNavigation = (path) => {

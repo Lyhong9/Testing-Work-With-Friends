@@ -27,6 +27,9 @@ const SaleHistory = () => {
   const [filteredSale, setFilteredSale] = useState([]);
   const [DatetimeTo, setDatetimeTo] = useState(null);
   const [DateetimeFrom, setDatetimeFrom] = useState(null); // Pagination calculation
+
+  const [Order, setOrder] = useState([]);
+
   // Pagination calculation
   const finalFilteredSale = useMemo(() => {
     let filtered = Sale;
@@ -70,11 +73,12 @@ const SaleHistory = () => {
   const endIndex = startIndex + itemsPerPage;
   const paginatedSale = filteredSale.slice(startIndex, endIndex);
 
+  // get sales from API and set value into Sale
   const getSale = async () => {
     try {
       const res = await request("/api/sale");
       if (res) {
-        console.log(res.sales);
+        // console.log(res.sales);
         setSale(res.sales || []);
       }
     } catch (error) {
@@ -82,8 +86,24 @@ const SaleHistory = () => {
     }
   };
 
+  // get order from api and set value into order
+  const getOrder = async () =>{
+    try{
+      const res = await request("/api/order", "GET");
+      // console.log(res);
+      if(res){
+        setOrder(res.order || []);
+      }
+    }catch(error){
+      console.error("Error fetching order:", error);
+    }
+  }
+
+
+
   useEffect(() => {
     getSale();
+    getOrder();
   }, []);
 
   const handleViweDetail = (sale) => {
@@ -143,7 +163,6 @@ const SaleHistory = () => {
 
   // print pdf
   const ref = useRef();
-
   const downloadPDF = async () => {
     const element = ref.current;
     const canvas = await html2canvas(element);
@@ -164,6 +183,10 @@ const SaleHistory = () => {
     totalSales += parseFloat(sale.totalAmount);
   });
 
+  let totalOrders = 0;
+  Order?.forEach((order) => {
+    totalOrders += parseFloat(order.totalAmount);
+  });
   return (
     <>
       <div className="category-container" ref={ref}>
@@ -178,6 +201,7 @@ const SaleHistory = () => {
               </p>
             </div>
 
+            {/* group print and export csv */}
             <div className="header-actions">
               <button className="btn" onClick={exportToCSV}>
                 <i className="bi bi-filetype-csv"></i> Export CSV
@@ -211,7 +235,7 @@ const SaleHistory = () => {
                 <span className="percent up">+4.2%</span>
               </div>
               <p className="title">Avg. Order Value</p>
-              <h3>$842.20</h3>
+              <h3>${totalOrders > 0 ? totalOrders.toFixed(2) : "0.00"}</h3>
             </div>
 
             {/* Sales Growth */}
@@ -228,6 +252,7 @@ const SaleHistory = () => {
           </div>
         </div>
 
+        {/* page Pagination and search and filter */}
         <div className="product-controls">
           <div className="items-per-page">
             <label>Show</label>
@@ -285,6 +310,7 @@ const SaleHistory = () => {
           </div>
         </div>
 
+        {/* Table data*/}
         <div>
           <table className="product-table">
             <thead>
