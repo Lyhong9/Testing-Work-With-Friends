@@ -5,7 +5,7 @@ import BarcartTwo from "../userContext/BarcartTwo";
 import SymlogScale from "../userContext/BarCartthree";
 const Dashboard = () => {
   return (
-    <div className="page-container">
+    <div className="page-container" style={{padding: "1rem"}}>
       <h1>Dashboard</h1>
       <div className="stats-grid">
         <div className="stat-card">

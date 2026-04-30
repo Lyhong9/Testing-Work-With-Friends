@@ -52,6 +52,7 @@ body {
     /* background-color: var(--coffee-200); */
     box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
     border-radius: 50px;
+    background-color: var(--coffee-200);
 }
 
 /* ================= PROFILE ================= */
@@ -176,21 +177,9 @@ body {
 /* ================= RIGHT SIDE ================= */
 .header-search {
     display: flex;
+    justify-content: center;
+    align-items: center;
     gap: 10px;
-}
-
-.header-search button {
-    border: none;
-    padding: 6px 12px;
-    border-radius: var(--radius-lg);
-    background: linear-gradient(90deg, var(--coffee-700), var(--coffee-600));
-    color: var(--white);
-    cursor: pointer;
-    transition: var(--transition-base);
-}
-
-.header-search button:hover {
-    opacity: 0.9;
 }
 
 .menu-toggle {
@@ -204,6 +193,22 @@ body {
     padding: 0px 5px;
 }
 
+.circle-cart {
+    width:20px;
+    height: 20px;
+    background: linear-gradient(90deg, var(--coffee-700), var(--coffee-600));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    cursor: pointer;
+    margin-top: -6px;
+    margin-left: 35px;
+    color: var(--white);
+    font-size: 12px;
+    font-weight: bold;
+}
 /* ================= RESPONSIVE ================= */
 @media screen and (max-width: 1199px) {
 

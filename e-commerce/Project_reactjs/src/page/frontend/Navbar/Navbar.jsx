@@ -3,6 +3,7 @@ import "./Navbar.css";
 import { NavLink } from "react-router-dom";
 import ReorderIcon from "@mui/icons-material/Reorder";
 import LocalMallIcon from "@mui/icons-material/LocalMall";
+import CancelIcon from '@mui/icons-material/Cancel';
 import { useState } from "react";
 const Navbar = () => {
   const [isActive, setIsActive] = useState(false);
@@ -60,14 +61,21 @@ const Navbar = () => {
 
       {/* Right Side */}
       <div className="header-search">
-        <div>
+        <div className="cart-toggle">
+          <div className="circle-cart"></div>
           <button>
             <LocalMallIcon />
           </button>
         </div>
         <div className="menu-toggle" onClick={handleToggle}>
           <button>
-            <ReorderIcon />
+            {
+              isActive ? (
+                <CancelIcon />
+              ) : (
+                <ReorderIcon />
+              )
+            }
           </button>
         </div>
       </div>
