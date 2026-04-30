@@ -14,7 +14,7 @@ const Navbar = () => {
     <header className="container header">
       {/* Profile */}
       <div className="header-profile">
-        <img src="https://via.placeholder.com/40" alt="Profile" />
+        <div className="brand-icon">☕</div>
         <div className="header-profile-text">
           <span>BrewHaven</span>
           <span>Specialty Coffee Market</span>

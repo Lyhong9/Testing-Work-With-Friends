@@ -5,7 +5,7 @@ import { FaInstagram, FaFacebookF, FaXTwitter, FaPinterestP } from "react-icons/
 const Footer = () => {
   return (
     <footer className="background-footer">
-      <div className="footer-card">
+      <div className="footer-card ">
         <div className="footer-main">
           <div className="footer-brand">
             <div className="brand-row">
