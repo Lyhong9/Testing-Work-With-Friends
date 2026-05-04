@@ -26,6 +26,13 @@ import Homepage from "./page/frontend/Homepage/Homepage";
 import Navbar from "./page/frontend/Navbar/Navbar";
 import Footer from "./page/frontend/Footer/Footer";
 import LayoutFront from "./page/frontend/Layout/LayoutFront";
+import Shop from "./page/frontend/Shop/Shop";
+import Profile from "./page/frontend/Profile/Profile";
+import Contact from "./page/frontend/Contact/Contact";
+import AboutPage from "./page/frontend/about/AboutPage";
+import ViewAllProduct from "./page/frontend/ViewAllProducts/ViewAllProduct";
+import ShopCartOnly from "./page/frontend/ShopCartOnly/ShopCartOnly";
+import ViewDetail from "./page/frontend/ViewDetial/ViewDetail";
 
 const App = () => {
   return (
@@ -55,7 +62,13 @@ const App = () => {
       {/* Frontend Routes */}
       <Route path="/index" element={<LayoutFront />}>
         <Route path="" element={<Homepage />} />
-        <Route path="product/:id" element={<Navbar />} />
+        <Route path="about" element={<AboutPage />} />
+        <Route path="shop" element={<Shop />} />
+        <Route path="profile" element={<Profile />} />
+        <Route path="contact" element={<Contact />} />
+        <Route path="shopcart" element={<ShopCartOnly />} />
+        <Route path="viewallproduct" element={<ViewAllProduct />} />
+        <Route path="viewdetail/:id" element={<ViewDetail />} />
       </Route>
 
       {/* page not found route */}

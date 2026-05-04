@@ -3,54 +3,10 @@ import "./BodyHome.css";
 import require from "../../../utils/request";
 import { useState, useEffect } from "react";
 import { Link, NavLink, Outlet } from "react-router-dom";
-import {alertError} from "../../../swertalert/AlertSuccess";
+import { useNavigate } from "react-router-dom";
+import { alertError } from "../../../swertalert/AlertSuccess";
 import { BaseURL } from "../../../utils/BaseURL";
-const products = [
-  {
-    tag: "Best Seller",
-    origin: "Colombia",
-    img: "https://images.unsplash.com/photo-1511920170033-f8396924c348?q=80&w=800",
-    type: "ESPRESSO",
-    name: "Midnight Espresso Blend",
-    price: "$18.50",
-    desc: "Dark cocoa notes, silky crema, and a deep caramel finish.",
-    rating: "4.9",
-    pop: "98% popularity",
-  },
-  {
-    tag: "Cafe Favorite",
-    origin: "Signature House",
-    img: "https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?q=80&w=800",
-    type: "LATTE",
-    name: "Velvet Vanilla Latte",
-    price: "$14.75",
-    desc: "Creamy microfoam with natural vanilla sweetness and warm spice.",
-    rating: "4.7",
-    pop: "92% popularity",
-  },
-  {
-    tag: "Single Origin",
-    origin: "Ethiopia",
-    img: "https://images.unsplash.com/photo-1447933601403-0c6688de566e?q=80&w=800",
-    type: "BEANS",
-    name: "Highland Whole Beans",
-    price: "$22.00",
-    desc: "Bright berry aroma with floral finish for pour-over and French press.",
-    rating: "4.8",
-    pop: "95% popularity",
-  },
-  {
-    tag: "Smooth",
-    origin: "Costa Rica",
-    img: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=800",
-    type: "LATTE",
-    name: "Sunrise Honey Latte",
-    price: "$15.50",
-    desc: "Golden honey, citrus lift, and a creamy finish built for slow mornings.",
-    rating: "4.8",
-    pop: "90% popularity",
-  },
-];
+import ViewDetail from "../ViewDetial/ViewDetail";
 
 const categories = [
   {
@@ -74,8 +30,19 @@ const categories = [
 ];
 
 const BodyHomepage = () => {
-  
-const [product, setProduct] = useState([]);
+  const [filteredProduct, setFilteredProduct] = useState([]);
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [itemsPerPage, setItemsPerPage] = useState(8);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Pagination calculation
+  const totalPages = Math.ceil(filteredProduct.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedProduct = filteredProduct.slice(startIndex, endIndex);
+  const [product, setProduct] = useState([]);
+
+  const navigate = useNavigate();
 
   const fetchProducts = async () => {
     try {
@@ -92,8 +59,26 @@ const [product, setProduct] = useState([]);
   useEffect(() => {
     fetchProducts();
   }, []);
+
+  useEffect(() => {
+    if(searchKeyword) {
+      setFilteredProduct(
+        product.filter((item) =>
+          item.name.toLowerCase().includes(searchKeyword.toLowerCase())
+        )
+      );
+    }
+    else {
+      setFilteredProduct(product);
+    }
+  }, [product, searchKeyword]);
+
+  const ViewDetail = (page) => {
+    navigate(`viewdetail/${page}`);
+  }
   return (
     <>
+    {/* header slide  */}
       <section className="body-homepage">
         <div className="body-homepage-left">
           <span>FEATURED PICKS</span>
@@ -110,40 +95,112 @@ const [product, setProduct] = useState([]);
             Designed to feel premium on desktop, quick on mobile, and easy to
             shop at a glance.
           </p>
-          <button>Browse all products</button>
+          <button onClick={() => navigate("viewallproduct")}>Browse all products</button>
         </div>
       </section>
-
-      <section className="body-product">
-        {product.map((item, index) => (
-          <div className="product-box" key={index}>
-            <div className="product-img">
-              <img src={BaseURL + item.image} alt={item.name} />
-              <div className="badge left text-dark">{item.stockQuantity}</div>
-              <div className="badge right">{item.brand.name}</div>
-            </div>
-
-            <div className="product-info">
-              <div className="product-top">
-                <span>{item.category.name}</span>
-                <strong>{item.price}</strong>
-              </div>
-
-              <h3>{item.name}</h3>
-              <p>{item.description}</p>
-
-              <div className="rating">
-                ★★★★★ <span></span>
-              </div>
-              {/* <div className="popularity">{item.pop}</div> */}
-
-              <button className="details-btn">View Details</button>
-              <button className="cart-btn">Add to Cart</button>
-            </div>
+      {/* end header slide  */}
+      
+      {/* body product slice  */}
+      <div className="brand-container">
+        {/* page page display filter  */}
+        <div className="d-flex justify-content-between align-items-center container" style={{"max-width": "1100px"}}>
+          <div className="items-per-page">
+            <label>Show</label>
+            <select
+              value={itemsPerPage}
+              onChange={(e) => {
+                setItemsPerPage(Number(e.target.value));
+                setCurrentPage(1);
+              }}
+            >
+              <option value={8}>8</option>
+              <option value={12}>12</option>
+              <option value={20}>20</option>
+              <option value={50}>50</option>
+            </select>
+            <span>product per page</span>
           </div>
-        ))}
-      </section>
 
+          <div className="search-box">
+            <label>Search product:</label>
+            <input
+              type="text"
+              placeholder="Search by code or description..."
+              value={searchKeyword}
+              onChange={(e) => setSearchKeyword(e.target.value)}
+            />
+          </div>
+        </div>
+        <section className="body-product">
+          {paginatedProduct.map((item, index) => (
+            <div className="product-box" key={index}>
+              <div className="product-img">
+                <img src={BaseURL + item.image} alt={item.name} />
+                <div className="badge left text-dark">{item.stockQuantity}</div>
+                <div className="badge right">{item.brand.name}</div>
+              </div>
+
+              <div className="product-info">
+                <div className="product-top">
+                  <span>{item.category.name}</span>
+                  <strong>{item.price}</strong>
+                </div>
+
+                <h3>{item.name}</h3>
+                <p>{item.description}</p>
+
+                <div className="rating">
+                  ★★★★★ <span></span>
+                </div>
+                {/* <div className="popularity">{item.pop}</div> */}
+
+                <button className="details-btn" onClick={()=>ViewDetail(index)}>View Details</button>
+                <button className="cart-btn">Add to Cart</button>
+              </div>
+            </div>
+          ))}
+        </section>
+        {/* filter page current table  */}
+        {/* <div className="body-homepage">
+          Showing {startIndex + 1} to{" "}
+          {Math.min(endIndex, filteredProduct.length)} of{" "}
+          {filteredProduct.length} product
+        </div> */}
+{/* 
+        <div className="pagination-controls ">
+          <button
+            className="btn-pagination"
+            onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </button>
+          <div className="page-numbers">
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i + 1}
+                className={`page-number ${currentPage === i + 1 ? "active" : ""}`}
+                onClick={() => setCurrentPage(i + 1)}
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
+          <button
+            className="btn-pagination"
+            onClick={() =>
+              setCurrentPage(Math.min(totalPages, currentPage + 1))
+            }
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </button>
+        </div> */}
+        {/*end filter page current table  */}
+      </div>
+      {/* body product slice  */}
+
+      {/* card category  */}
       <section className="body-card">
         <span>CATEGORIES</span>
         <h2>Find your perfect coffee mood</h2>
@@ -163,7 +220,9 @@ const [product, setProduct] = useState([]);
           ))}
         </div>
       </section>
+      {/* end card category  */}
 
+      {/* body offer last  */}
       <section className="body-box">
         <div className="offer-left">
           <span>SEASONAL OFFER</span>
@@ -191,6 +250,7 @@ const [product, setProduct] = useState([]);
           <button>Claim the offer</button>
         </div>
       </section>
+      {/* end body offer last  */}
     </>
   );
 };
