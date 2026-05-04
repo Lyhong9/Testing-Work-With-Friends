@@ -1,0 +1,74 @@
+:root {
+  --coffee-980: #140e0c;
+  --coffee-950: #1c1410;
+  --coffee-900: #261913;
+  --coffee-850: #332118;
+  --coffee-800: #4a3023;
+  --coffee-700: #6d4731;
+  --coffee-600: #95664a;
+  --coffee-500: #bc8b66;
+  --coffee-300: #e2c9b1;
+  --coffee-200: #f1dfcf;
+  --coffee-100: #fbf3ea;
+  --coffee-050: #fffaf5;
+  --ink-soft: #6d655d;
+  --ink-muted: #9a8f84;
+  --white: #ffffff;
+  --success: #2f6a4e;
+  --radius-2xl: 2rem;
+  --radius-xl: 1.6rem;
+  --radius-lg: 1.3rem;
+  --radius-md: 1rem;
+  --radius-sm: 0.8rem;
+  --shadow-soft: 0 18px 42px rgba(28, 20, 16, 0.08);
+  --shadow-card: 0 28px 60px rgba(28, 20, 16, 0.11);
+  --shadow-strong: 0 30px 80px rgba(18, 12, 9, 0.18);
+  --transition-base: 240ms ease;
+  --heading-font: 'Fraunces', serif;
+  --body-font: 'Manrope', sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.header-list span:nth-child(1) {
+  color: var(--coffee-700);
+  font-weight: bold;
+}
+
+.header-list span:nth-child(1):hover {
+    cursor: pointer;
+}
+
+.header-list span:nth-child(3):hover {
+    cursor: pointer;
+}
+
+
+.header-list span i {
+  color: var(--coffee-700);
+  font-weight: bold;
+}
+
+.header-list span:nth-child(2) {
+  color: var(--coffee-600);
+  font-weight: bold;
+}
+
+.header-list span:nth-child(3) {
+  color: var(--coffee-600);
+  font-weight: bold;
+}
+
+.header-list span:nth-child(4) {
+  color: var(--coffee-600);
+  font-weight: bold;
+}
+
+.header-list span:nth-child(5) {
+  color: var(--coffee-600);
+  font-weight: bold;
+}
