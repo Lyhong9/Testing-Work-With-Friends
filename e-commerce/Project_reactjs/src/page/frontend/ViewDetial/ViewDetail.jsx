@@ -4,6 +4,7 @@ import require from "../../../utils/request";
 import { useNavigate } from "react-router-dom";
 import "./ViewDtial.css";
 import  useStore from "../CustomHooks/HookS"
+import { BaseURL } from "../../../utils/BaseURL";
 const ViewDetail = () => {
   const { id } = useParams();
   const [products, setProducts] = useState([]);
@@ -49,7 +50,43 @@ const ViewDetail = () => {
               <span>/</span>
               <span>{filter?.name}</span>
             </div>
-            <div></div>
+            <div className="container">
+              <div className="only-cart">
+                <div className="only-body-cart">
+                  <div className="only-text-cart">
+
+                  </div>
+                  <div className="only-img">
+                    <img src={BaseURL+filter?.image} alt="" />
+                  </div>
+                </div>
+                <div  className="only-view-cart ">
+                  <span>{filter?.brand.name}</span>
+                  <p>{filter?.name}</p>
+                  <p>{filter?.description}</p>
+                  <div>
+                    <span>customize your order</span>
+                    <p>Choose size and suhar level</p>
+                    <div>
+                      <span>Small</span>
+                      <applet>/</applet>
+                      <span>50% sugar</span>
+                    </div>
+                    <div>
+                      <span>size</span>
+
+                    </div>
+                    <div>
+                      <div><span>Samll</span></div>
+                      <div><span>Medium</span></div>
+                      <div><span>large</span></div>
+                    </div>
+                  </div>
+                  <p>{filter?.price}</p>
+
+                </div>
+              </div>
+            </div>
           </>
         )}
       </div>
