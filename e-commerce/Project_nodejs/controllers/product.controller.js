@@ -58,7 +58,7 @@ const getProductOne = async (req, res) => {
 
     const product = await Product.findOne({
       where: {
-        name: {
+        id: {
           [Op.like]: `%${search}%`,
         },
       },

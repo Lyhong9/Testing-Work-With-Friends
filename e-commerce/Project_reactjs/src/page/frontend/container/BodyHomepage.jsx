@@ -6,7 +6,6 @@ import { Link, NavLink, Outlet } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { alertError } from "../../../swertalert/AlertSuccess";
 import { BaseURL } from "../../../utils/BaseURL";
-import ViewDetail from "../ViewDetial/ViewDetail";
 
 const categories = [
   {
@@ -73,9 +72,9 @@ const BodyHomepage = () => {
     }
   }, [product, searchKeyword]);
 
-  const ViewDetail = (page) => {
-    navigate(`viewdetail/${page}`);
-  }
+  const handleViewDetail = (productId) => {
+    navigate(`viewdetail/${productId}`);
+  };
   return (
     <>
     {/* header slide  */}
@@ -132,8 +131,8 @@ const BodyHomepage = () => {
           </div>
         </div>
         <section className="body-product">
-          {paginatedProduct.map((item, index) => (
-            <div className="product-box" key={index}>
+          {paginatedProduct.map((item) => (
+            <div className="product-box" key={item.id}>
               <div className="product-img">
                 <img src={BaseURL + item.image} alt={item.name} />
                 <div className="badge left text-dark">{item.stockQuantity}</div>
@@ -154,49 +153,12 @@ const BodyHomepage = () => {
                 </div>
                 {/* <div className="popularity">{item.pop}</div> */}
 
-                <button className="details-btn" onClick={()=>ViewDetail(index)}>View Details</button>
+                <button className="details-btn" onClick={() => handleViewDetail(item.id)}>View Details</button>
                 <button className="cart-btn">Add to Cart</button>
               </div>
             </div>
           ))}
         </section>
-        {/* filter page current table  */}
-        {/* <div className="body-homepage">
-          Showing {startIndex + 1} to{" "}
-          {Math.min(endIndex, filteredProduct.length)} of{" "}
-          {filteredProduct.length} product
-        </div> */}
-{/* 
-        <div className="pagination-controls ">
-          <button
-            className="btn-pagination"
-            onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-            disabled={currentPage === 1}
-          >
-            Previous
-          </button>
-          <div className="page-numbers">
-            {Array.from({ length: totalPages }, (_, i) => (
-              <button
-                key={i + 1}
-                className={`page-number ${currentPage === i + 1 ? "active" : ""}`}
-                onClick={() => setCurrentPage(i + 1)}
-              >
-                {i + 1}
-              </button>
-            ))}
-          </div>
-          <button
-            className="btn-pagination"
-            onClick={() =>
-              setCurrentPage(Math.min(totalPages, currentPage + 1))
-            }
-            disabled={currentPage === totalPages}
-          >
-            Next
-          </button>
-        </div> */}
-        {/*end filter page current table  */}
       </div>
       {/* body product slice  */}
 
