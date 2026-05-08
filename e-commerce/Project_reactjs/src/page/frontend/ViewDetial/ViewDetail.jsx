@@ -11,12 +11,23 @@ const ViewDetail = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { cate, setCate } = useStore();
+  const [Price, setPrice] = useState(0);
 
   const [bettleSize, setBettleSize] = useState(
     {
       small: false,
       medium: true,
       large: false
+    }
+  )
+
+  const [sugar, setSugar] = useState(
+    {
+      handle0: false,
+      handle25: false,
+      handle50: true,
+      handle75: false,
+      handle100: false
     }
   )
   useEffect(() => {
@@ -50,6 +61,7 @@ const ViewDetail = () => {
       medium: false,
       large: false
     })
+    setPrice(-1.50);
   }
 
   const handleMedium = () => {
@@ -65,7 +77,60 @@ const ViewDetail = () => {
       medium: false,
       large: true
     })
+
+    setPrice(2.50);
   }
+
+  const handle0 = () => {
+    setSugar({
+      handle0: true,
+      handle25: false,
+      handle50: false,
+      handle75: false,
+      handle100: false
+    })
+  }
+
+  const handle25 = () => {
+    setSugar({
+      handle0: false,
+      handle25: true,
+      handle50: false,
+      handle75: false,
+      handle100: false
+    })
+  }
+
+  const handle50 = () => {
+    setSugar({
+      handle0: false,
+      handle25: false,
+      handle50: true,
+      handle75: false,
+      handle100: false
+    })
+  }
+
+  const handle75 = () => {
+    setSugar({
+      handle0: false,
+      handle25: false,
+      handle50: false,
+      handle75: true,
+      handle100: false
+    })
+  }
+
+  const handle100 = () => {
+    setSugar({
+      handle0: false,
+      handle25: false,
+      handle50: false,
+      handle75: false,
+      handle100: true
+    })
+  }
+  
   return (
     <div className="detail-page">
       {loading ? (
@@ -162,11 +227,11 @@ const ViewDetail = () => {
 
                 <p>Sugar level</p>
                 <div className="sugar-grid">
-                  <button>0%</button>
-                  <button>25%</button>
-                  <button className="active">50%</button>
-                  <button>75%</button>
-                  <button>100%</button>
+                  <button onClick={handle0} className={sugar.handle0 ? "active" : ""}>0%</button>
+                  <button onClick={handle25} className={sugar.handle25 ? "active" : ""}>25%</button>
+                  <button  onClick={handle50} className={sugar.handle50 ? "active" : ""}>50%</button>
+                  <button  onClick={handle75} className={sugar.handle75 ? "active" : ""}>75%</button>
+                  <button onClick={handle100}  className={sugar.handle100 ? "active" : ""}>100%</button>
                 </div>
               </div>
 
