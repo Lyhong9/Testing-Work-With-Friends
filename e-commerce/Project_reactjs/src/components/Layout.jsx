@@ -7,7 +7,7 @@ import request from "../utils/request"
 import GlobleData from "../store/GlobleData";
 import { BaseURL } from "../utils/BaseURL";
 import { alertError } from "../swertalert/AlertSuccess";
-const Layout = () => {
+const Layout = ({stockAlert, OutOfstockAlert}) => {
   const {setBrand, setCategory, setRole} = GlobleData();
 
 
@@ -46,6 +46,27 @@ const Layout = () => {
       alertError({text: error?.message || "fetch Role Failed!"})
     }
   }
+
+  // action out of stock alert
+  useEffect(() => {
+  const interval = setInterval(() => {
+      if(OutOfstockAlert){
+        request("/api/outofstock", "get");
+      }
+  }, 3600000); // 1 hour
+
+  return () => clearInterval(interval); // cleanup
+  
+}, [OutOfstockAlert]);
+
+  // action low stock 
+  useEffect(() => {
+  const interval = setInterval(() => {
+      request("/api/lowstock", "get");
+  }, 3600000); // 1 hour
+
+  return () => clearInterval(interval); // cleanup
+}, [stockAlert]);
   return (  
     <div className="app-container">
       <div className="main-layout">

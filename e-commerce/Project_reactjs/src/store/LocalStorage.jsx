@@ -22,3 +22,20 @@ export const RemoveLocalStorage = () => {
   return localStorage.removeItem("token_key");
 };
 
+// export const SetProductLocal = (data) => {
+//   localStorage.setItem("productLocal", JSON.stringify(data));
+// };
+// Add/update many rows in localStorage
+export const SetProductLocal = (newRows) => {
+  const existingRows = JSON.parse(localStorage.getItem("productLocal")) || [];
+
+  // merge old + new rows
+  const updatedRows = [...existingRows, ...newRows];
+
+  localStorage.setItem("productLocal", JSON.stringify(updatedRows));
+};
+export const GetProductLocal = () => {
+  const data = localStorage.getItem("productLocal");
+  return data ? JSON.parse(data) : null;
+};
+

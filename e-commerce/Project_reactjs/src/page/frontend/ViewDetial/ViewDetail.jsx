@@ -5,14 +5,23 @@ import { useNavigate } from "react-router-dom";
 import "./ViewDtial.css";
 import useStore from "../CustomHooks/HookS";
 import { BaseURL } from "../../../utils/BaseURL";
+import {SetProductLocal, GetProductLocal} from "../../../store/LocalStorage";
 const ViewDetail = () => {
   const { id } = useParams();
   const [products, setProducts] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  // set cate back to shop 
   const { cate, setCate } = useStore();
+
+  // set price 
   const [Price, setPrice] = useState(0);
 
+  // set Medium 
+  const [MediumPrice, setMediumPrice] = useState(0);
+
+  // set  true false Size bettle  
   const [bettleSize, setBettleSize] = useState(
     {
       small: false,
@@ -21,6 +30,13 @@ const ViewDetail = () => {
     }
   )
 
+  // usestate size  cafe 
+  const [chooseSiz, setChooseSiz] = useState("Medium");
+
+  // usestate qty sugar  
+  const [qtySugar, setQtySugar] = useState(50);
+
+  // useState sugar 
   const [sugar, setSugar] = useState(
     {
       handle0: false,
@@ -30,6 +46,8 @@ const ViewDetail = () => {
       handle100: false
     }
   )
+
+  // fetch data products 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -47,40 +65,54 @@ const ViewDetail = () => {
     fetchProduct();
   }, [id]);
 
+
+  // back to  shop 
   const handleBack = () => {
     navigate("/index/shop");
   };
+
+  // back to shop with id category
   const handleBackByCate = (cate) => {
     setCate(cate);
     navigate("/index/shop");
   };
 
+  // size small  
   const handleSmall = () => {
     setBettleSize({
       small: true,
       medium: false,
       large: false
     })
-    setPrice(-1.50);
+    setPrice(1.50);
+    setChooseSiz("Small");
+    setMediumPrice(0)
   }
 
+  // size medium   
   const handleMedium = () => {
     setBettleSize({
       small: false,
       medium: true,
       large: false
     })
+    setChooseSiz("Medium")
+    setMediumPrice(products.price)
   }
+
+  // size large 
   const handleLarge = () => {
     setBettleSize({
       small: false,
       medium: false,
       large: true
     })
-
-    setPrice(2.50);
+    setChooseSiz("Large")
+    setPrice(-2.50);
+    setMediumPrice(0)
   }
 
+  // sugar 0 
   const handle0 = () => {
     setSugar({
       handle0: true,
@@ -91,6 +123,7 @@ const ViewDetail = () => {
     })
   }
 
+  // sugar 25
   const handle25 = () => {
     setSugar({
       handle0: false,
@@ -99,8 +132,10 @@ const ViewDetail = () => {
       handle75: false,
       handle100: false
     })
+    setQtySugar(25);
   }
 
+  // sugar 50
   const handle50 = () => {
     setSugar({
       handle0: false,
@@ -109,8 +144,10 @@ const ViewDetail = () => {
       handle75: false,
       handle100: false
     })
+    setQtySugar(50);
   }
 
+  // sugar 75 
   const handle75 = () => {
     setSugar({
       handle0: false,
@@ -119,8 +156,11 @@ const ViewDetail = () => {
       handle75: true,
       handle100: false
     })
+
+    setQtySugar(75);
   }
 
+  // sugar 100 
   const handle100 = () => {
     setSugar({
       handle0: false,
@@ -129,8 +169,25 @@ const ViewDetail = () => {
       handle75: false,
       handle100: true
     })
+
+    setQtySugar(100);
   }
   
+  // totalPrice order 
+  let  totalPrice = MediumPrice ? products?.price : products?.price - Price
+
+  const obj  =  [
+    {
+      ...products,
+      totalPrice :totalPrice,
+      chooseSiz:chooseSiz,
+      sugar:qtySugar
+    }
+  ]
+
+  const handleAddToCart = () => {
+    SetProductLocal(obj);
+  };
   return (
     <div className="detail-page">
       {loading ? (
@@ -204,7 +261,7 @@ const ViewDetail = () => {
                 <span>CUSTOMIZE YOUR ORDER</span>
                 <h3>Choose size and sugar level</h3>
 
-                <div className="pill">Medium / 50% sugar</div>
+                <div className="pill">{chooseSiz} / {qtySugar}% sugar</div>
 
                 <p>Size</p>
                 <div className="choice-grid">
@@ -238,11 +295,11 @@ const ViewDetail = () => {
               <div className="price-row">
                 <div>
                   <span>SELECTED CUP</span>
-                  <h2>${products?.price}</h2>
+                  <h2>${totalPrice}</h2>
                   <p>Medium size with 50% sugar</p>
                 </div>
 
-                <button className="cart-btn">
+                <button className="cart-btn" onClick={handleAddToCart}>
                   <i className="bi bi-bag"></i> Add to Cart
                 </button>
               </div>

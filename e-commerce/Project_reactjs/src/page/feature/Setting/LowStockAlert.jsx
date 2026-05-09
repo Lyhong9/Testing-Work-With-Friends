@@ -2,7 +2,7 @@ import React, {useEffect, useState } from "react";
 import "./LowStock.css";
 import tele from "../../../../public/telegram-logo-11 (1).png";
 import request  from "../../../utils/request";
-import { use } from "react";
+import Layout from "../../../components/Layout";
 
 const LowStockAlert = () => {
 
@@ -15,7 +15,7 @@ const LowStockAlert = () => {
     if (stockAlert) {
       request("/api/lowstock", "get");
     }
-  }, 3600000); // 1 hour
+  }, 36000); // 1 hour
 
   return () => clearInterval(interval); // cleanup
 }, [stockAlert]);
@@ -32,7 +32,7 @@ useEffect(() => {
   
 }, [OutOfstockAlert]);
 
-
+ <Layout stockAlert={stockAlert} OutOfstockAlert={OutOfstockAlert} /> 
 
 const handleToCheck = (e) => {
   setStockAlert(e.target.checked);
