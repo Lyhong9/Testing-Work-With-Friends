@@ -6,11 +6,15 @@ import "./ViewDtial.css";
 import useStore from "../CustomHooks/HookS";
 import { BaseURL } from "../../../utils/BaseURL";
 import {SetProductLocal, GetProductLocal} from "../../../store/LocalStorage";
+import { Alert } from 'antd';
+import Navbar from "../Navbar/Navbar";
+import AlertOrder from "../../../swertalert/AlertOrder";
 const ViewDetail = () => {
   const { id } = useParams();
   const [products, setProducts] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const [alertSuccess, setAlertSuccess] = useState(false);
 
   // set cate back to shop 
   const { cate, setCate } = useStore();
@@ -63,11 +67,12 @@ const ViewDetail = () => {
       }
     };
     fetchProduct();
-  }, [id]);
+  }, [id, alertSuccess]);
 
 
   // back to  shop 
-  const handleBack = () => {
+  const handleBack = (cate) => {
+    setCate(cate);
     navigate("/index/shop");
   };
 
@@ -176,6 +181,7 @@ const ViewDetail = () => {
   // totalPrice order 
   let  totalPrice = MediumPrice ? products?.price : products?.price - Price
 
+  // create object
   const obj  =  [
     {
       ...products,
@@ -184,10 +190,16 @@ const ViewDetail = () => {
       sugar:qtySugar
     }
   ]
-
   const handleAddToCart = () => {
+    setAlertSuccess(true);
     SetProductLocal(obj);
+    setCate(count => count + 1);
+    setInterval(() => {
+      setAlertSuccess(false);
+    }, 4500);
   };
+
+
   return (
     <div className="detail-page">
       {loading ? (
@@ -196,18 +208,28 @@ const ViewDetail = () => {
         <div>Product not found.</div>
       ) : (
         <div>
-          <div className="d-flex gap-2 header-list container">
-            <span onClick={handleBack}>
+          {alertSuccess ? (
+               <div>
+                 <AlertOrder />  
+               </div>
+          ) : (
+            ""
+          )}
+          <div className="d-flex gap-2 header-list ">
+            <span onClick={() => handleBack(products?.category?.name)} className="back-to-shop">
               <i className="bi bi-arrow-bar-left">Back to shop</i>
             </span>
-            <span>/</span>
-            <span onClick={() => handleBackByCate(products?.category?.name)}>
+            <span className="space">/</span>
+            <span
+              onClick={() => handleBackByCate(products?.category?.name)}
+              className="back-cate"
+            >
               {products?.category?.name}
             </span>
-            <span>/</span>
-            <span>{products?.name}</span>
+            <span className="space">/</span>
+            <span className="product-name">{products?.name}</span>
           </div>
-          <div className="detail-shell container">
+          <div className="detail-shell ">
             <div className="detail-image-card">
               <img src={BaseURL + products?.image} alt={products?.name} />
 
@@ -261,21 +283,32 @@ const ViewDetail = () => {
                 <span>CUSTOMIZE YOUR ORDER</span>
                 <h3>Choose size and sugar level</h3>
 
-                <div className="pill">{chooseSiz} / {qtySugar}% sugar</div>
+                <div className="pill">
+                  {chooseSiz} / {qtySugar}% sugar
+                </div>
 
                 <p>Size</p>
                 <div className="choice-grid">
-                  <button onClick={handleSmall} className={bettleSize.small ? "active" : ""}>
+                  <button
+                    onClick={handleSmall}
+                    className={bettleSize.small ? "active" : ""}
+                  >
                     Small
                     <br />
                     <small>-$1.50</small>
                   </button>
-                  <button className={bettleSize.medium ? "active" : ""} onClick={handleMedium}>
+                  <button
+                    className={bettleSize.medium ? "active" : ""}
+                    onClick={handleMedium}
+                  >
                     Medium
                     <br />
                     <small>Base price</small>
                   </button>
-                  <button onClick={handleLarge} className={bettleSize.large ? "active" : ""}>
+                  <button
+                    onClick={handleLarge}
+                    className={bettleSize.large ? "active" : ""}
+                  >
                     Large
                     <br />
                     <small>+$2.50</small>
@@ -284,11 +317,36 @@ const ViewDetail = () => {
 
                 <p>Sugar level</p>
                 <div className="sugar-grid">
-                  <button onClick={handle0} className={sugar.handle0 ? "active" : ""}>0%</button>
-                  <button onClick={handle25} className={sugar.handle25 ? "active" : ""}>25%</button>
-                  <button  onClick={handle50} className={sugar.handle50 ? "active" : ""}>50%</button>
-                  <button  onClick={handle75} className={sugar.handle75 ? "active" : ""}>75%</button>
-                  <button onClick={handle100}  className={sugar.handle100 ? "active" : ""}>100%</button>
+                  <button
+                    onClick={handle0}
+                    className={sugar.handle0 ? "active" : ""}
+                  >
+                    0%
+                  </button>
+                  <button
+                    onClick={handle25}
+                    className={sugar.handle25 ? "active" : ""}
+                  >
+                    25%
+                  </button>
+                  <button
+                    onClick={handle50}
+                    className={sugar.handle50 ? "active" : ""}
+                  >
+                    50%
+                  </button>
+                  <button
+                    onClick={handle75}
+                    className={sugar.handle75 ? "active" : ""}
+                  >
+                    75%
+                  </button>
+                  <button
+                    onClick={handle100}
+                    className={sugar.handle100 ? "active" : ""}
+                  >
+                    100%
+                  </button>
                 </div>
               </div>
 
@@ -296,7 +354,7 @@ const ViewDetail = () => {
                 <div>
                   <span>SELECTED CUP</span>
                   <h2>${totalPrice}</h2>
-                  <p>Medium size with 50% sugar</p>
+                  <p>{chooseSiz} size with {qtySugar}% sugar</p>
                 </div>
 
                 <button className="cart-btn" onClick={handleAddToCart}>
@@ -318,7 +376,7 @@ const ViewDetail = () => {
           </div>
         </div>
       )}
-      </div>
+    </div>
   );
 };
 

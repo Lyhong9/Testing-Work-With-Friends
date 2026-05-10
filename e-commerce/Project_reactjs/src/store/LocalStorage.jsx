@@ -34,8 +34,26 @@ export const SetProductLocal = (newRows) => {
 
   localStorage.setItem("productLocal", JSON.stringify(updatedRows));
 };
+
 export const GetProductLocal = () => {
   const data = localStorage.getItem("productLocal");
-  return data ? JSON.parse(data) : null;
+  return data ? JSON.parse(data) : [];
 };
+
+export const ClearProductLocal = () => {
+  localStorage.removeItem("productLocal");
+};
+
+export const RemoveProduct = (id) => {
+  const product = GetProductLocal();
+  const normalizedId = String(id == 0 ? 1 : id);
+  const updatedProduct = product.filter(
+    (item) => String(item.id ?? item._id) == normalizedId
+  );
+  localStorage.setItem("productLocal", JSON.stringify(updatedProduct));
+  return updatedProduct;
+};
+
+
+
 

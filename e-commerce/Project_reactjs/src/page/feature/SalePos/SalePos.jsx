@@ -88,7 +88,7 @@ const SalePos = () => {
                       <p className="product-price" style={{}}>
                         ${product.price}
                       </p>
-                      <span>Stock: {product.stockQuantity}</span>
+                      <span>Stock: {product.stockQuantity <0 ? 0 : product.stockQuantity}</span>
                     </div>
 
                     <p className="product-desc">{product.description}</p>

@@ -1,13 +1,14 @@
-import { create } from 'zustand'
+// import { create } from 'zustand'
 
-const DataStore = create((set) => ({
-  data: [],
-  setData: (data) => set({ data }),
+// const DataStore = create((set) => ({
+//   data: [],
+//   setData: (data) => set({ data }),
+  
 
-  addProduct: (product) =>
-    set((state) => ({
-      data: [...state.data, product],
-    })),
-}))
+//   addProduct: (product) =>
+//     set((state) => ({
+//       data: [...state.data, product],
+//     })),
+// }))
 
-export default DataStore
+// export default DataStore

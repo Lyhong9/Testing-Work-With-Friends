@@ -46,7 +46,7 @@ const BodyHomepage = () => {
   const fetchProducts = async () => {
     try {
       const res = await require("/api/product", "GET");
-      console.log(res);
+      // console.log(res);
       if (res) {
         setProduct(res.product);
       }
@@ -132,7 +132,7 @@ const BodyHomepage = () => {
         </div>
         <section className="body-product">
           {paginatedProduct.map((item) => (
-            <div className="product-box" key={item.id}>
+            <div className="product-box" key={item.id} onClick={()=>handleViewDetail(item.id)}>
               <div className="product-img">
                 <img src={BaseURL + item.image} alt={item.name} />
                 <div className="badge left text-dark">{item.stockQuantity}</div>
@@ -153,8 +153,8 @@ const BodyHomepage = () => {
                 </div>
                 {/* <div className="popularity">{item.pop}</div> */}
 
-                <button className="details-btn" onClick={() => handleViewDetail(item.id)}>View Details</button>
-                <button className="cart-btn">Add to Cart</button>
+                <button className="details-btn cart-btn " onClick={() => handleViewDetail(item.id)}>View Details</button>
+                {/* <button className="cart-btn">Add to Cart</button> */}
               </div>
             </div>
           ))}
