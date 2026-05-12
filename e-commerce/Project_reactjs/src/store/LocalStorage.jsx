@@ -46,9 +46,9 @@ export const ClearProductLocal = () => {
 
 export const RemoveProduct = (id) => {
   const product = GetProductLocal();
-  const normalizedId = String(id == 0 ? 1 : id);
+  const normalizedId = String(id);
   const updatedProduct = product.filter(
-    (item) => String(item.id ?? item._id) == normalizedId
+    (item) => String(item.id ?? item._id) !== normalizedId
   );
   localStorage.setItem("productLocal", JSON.stringify(updatedProduct));
   return updatedProduct;
