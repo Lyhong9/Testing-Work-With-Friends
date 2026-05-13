@@ -22,38 +22,73 @@ export const RemoveLocalStorage = () => {
   return localStorage.removeItem("token_key");
 };
 
-// export const SetProductLocal = (data) => {
-//   localStorage.setItem("productLocal", JSON.stringify(data));
-// };
-// Add/update many rows in localStorage
+
+
+// Set Product to LocalStorage    
 export const SetProductLocal = (newRows) => {
   const existingRows = JSON.parse(localStorage.getItem("productLocal")) || [];
 
-  // merge old + new rows
-  const updatedRows = [...existingRows, ...newRows];
+  const updatedRows = [...existingRows];
+
+  newRows.forEach((newItem) => {
+    const existingIndex = updatedRows.findIndex(
+      (item) => item.chooseSiz === newItem.chooseSiz && item.id === newItem.id,
+    );
+
+    if (existingIndex !== -1) {
+      updatedRows[existingIndex].quantity =
+        (updatedRows[existingIndex].quantity || 1) + (newItem.quantity || 1);
+    } else {
+      updatedRows.push({
+        ...newItem,
+        quantity: newItem.quantity || 1,
+      });
+    }
+  });
 
   localStorage.setItem("productLocal", JSON.stringify(updatedRows));
 };
 
+
+
+// Get Product from LocalStorage   
 export const GetProductLocal = () => {
   const data = localStorage.getItem("productLocal");
   return data ? JSON.parse(data) : [];
 };
 
+
+// clear localStorage   
 export const ClearProductLocal = () => {
   localStorage.removeItem("productLocal");
 };
 
-export const RemoveProduct = (id) => {
-  const product = GetProductLocal();
-  const normalizedId = String(id);
-  const updatedProduct = product.filter(
-    (item) => String(item.id ?? item._id) !== normalizedId
-  );
-  localStorage.setItem("productLocal", JSON.stringify(updatedProduct));
-  return updatedProduct;
+// remove  item   
+export const RemoveProduct = (size, id) => {
+  const products = JSON.parse(localStorage.getItem("productLocal")) || [];
+
+  const updatedProducts = products.filter((item) => item.id !== id && item.chooseSiz !== size);
+
+  localStorage.setItem("productLocal", JSON.stringify(updatedProducts));
+
+  return updatedProducts;
 };
 
 
+// update qty 
+export const UpdateQuantityProduct = (size, id, newQuantity) => {
+  const products = JSON.parse(localStorage.getItem("productLocal")) || [];
 
+  const updatedProducts = products.map((item) =>
+    item.chooseSiz === size && item.id === id
+      ? {
+          ...item,
+          quantity: newQuantity,
+        }
+      : item,
+  );
 
+  localStorage.setItem("productLocal", JSON.stringify(updatedProducts));
+
+  return updatedProducts;
+};

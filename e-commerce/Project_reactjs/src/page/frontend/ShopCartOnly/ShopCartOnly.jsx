@@ -1,12 +1,18 @@
-import React, {useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+
 import "./ShopCartOnly.css";
+
 import {
   GetProductLocal,
   ClearProductLocal,
   RemoveProduct,
+  UpdateQuantityProduct,
 } from "../../../store/LocalStorage";
+
 import { BaseURL } from "../../../utils/BaseURL";
+
 import { useNavigate } from "react-router-dom";
+
 import useStore from "../CustomHooks/HookS";
 
 const ShopCartOnly = () => {
@@ -18,33 +24,50 @@ const ShopCartOnly = () => {
 
   useEffect(() => {
     const updateProduct = () => setProduct(GetProductLocal());
+
     updateProduct();
-    window.addEventListener('storage', updateProduct);
-    return () => window.removeEventListener('storage', updateProduct);
+
+    window.addEventListener("storage", updateProduct);
+
+    return () => window.removeEventListener("storage", updateProduct);
   }, []);
 
   const clearCart = () => {
     ClearProductLocal();
+
     setProduct([]);
+
     setCate((count) => count + 1);
   };
 
-  const removeProduct = (id) => {
-    if (id == null) return;
-    const updatedProduct = RemoveProduct(id);
+  const removeProduct = (size, id) => {
+    if (size == null) return;
+
+    const updatedProduct = RemoveProduct(size, id);
+
     setProduct(updatedProduct);
+
     setCate((count) => count + 1);
   };
 
-  const updateQuantity = (id, newQuantity) => {
-    if (newQuantity < 1) return; // Don't allow quantity less than 1
-    const updatedProducts = product.map(item => 
-      item.id === id ? { ...item, quantity: newQuantity } : item
-    );
-    localStorage.setItem("productLocal", JSON.stringify(updatedProducts));
-    setProduct(updatedProducts);
-  }
+  const updateQuantity = (size,id, newQuantity) => {
+    if (newQuantity < 1) return;
 
+    const updatedProducts = UpdateQuantityProduct(size, id, newQuantity);
+
+    setProduct(updatedProducts);
+
+    setCate((count) => count + 1);
+  };
+
+  const subtotal = product.reduce(
+    (sum, item) => sum + Number(item.totalPrice || 0) * (item.quantity || 1),
+    0,
+  );
+
+  const tax = subtotal * 0.08;
+
+  const total = subtotal + tax;
 
   return (
     <>
@@ -53,13 +76,10 @@ const ShopCartOnly = () => {
           <div className="shop-cart-container">
             <p className="cart-label">Cart</p>
 
-            <h1 className="cart-title">
-              Your coffee cart
-            </h1>
+            <h1 className="cart-title">Your coffee cart</h1>
 
             <p className="cart-description">
-              Review your selected products,
-              adjust quantities, and see the
+              Review your selected products, adjust quantities, and see the
               frontend-only totals update instantly.
             </p>
 
@@ -68,31 +88,23 @@ const ShopCartOnly = () => {
                 {product.length} items in your cart
               </h2>
 
-              <button
-                className="clear-btn"
-                onClick={clearCart}
-              >
+              <button className="clear-btn" onClick={clearCart}>
                 Clear cart
               </button>
             </div>
 
             <div className="cart-layout">
+              {/* CART LIST */}
               <div className="cart-card">
-                {product.map((item, index) => {
-                  const itemPrice = Number(
-                    item.totalPrice || 0
-                  );
+                {product.map((item) => {
+                  const itemPrice = Number(item.totalPrice || 0);
 
                   const itemQuantity = item.quantity || 1;
 
-                  const itemTotal =
-                    itemPrice * itemQuantity;
+                  const itemTotal = itemPrice * itemQuantity;
 
                   return (
-                    <div
-                      className="cart-item"
-                      key={item.id}
-                    >
+                    <div className="cart-item" key={item.id}>
                       <img
                         src={BaseURL + item.image}
                         alt={item.name}
@@ -101,18 +113,13 @@ const ShopCartOnly = () => {
 
                       <div className="product-info">
                         <p className="product-category">
-                          {item.category?.name ||
-                            "Coffee"}
+                          {item.category?.name || "Coffee"}
                         </p>
 
-                        <h3 className="product-title">
-                          {item.name}
-                        </h3>
+                        <h3 className="product-title">{item.name}</h3>
 
                         <div className="product-badge">
-                          {item?.chooseSiz} ·{" "}
-                          {item?.sugar ||
-                            "50% sugar"}
+                          {item?.chooseSiz} · {item?.sugar || "50% sugar"}
                         </div>
 
                         <p className="product-description">
@@ -122,35 +129,30 @@ const ShopCartOnly = () => {
                       </div>
 
                       <div className="product-meta">
-                        <p className="meta-label">
-                          Price
-                        </p>
+                        <p className="meta-label">Price</p>
 
-                        <p className="meta-value">
-                          $
-                          {itemPrice.toFixed(2)}
-                        </p>
+                        <p className="meta-value">${itemPrice.toFixed(2)}</p>
                       </div>
 
                       <div className="product-meta">
-                        <p className="meta-label">
-                          Quantity
-                        </p>
+                        <p className="meta-label">Quantity</p>
 
                         <div className="quantity-box">
                           <button
-                            onClick={() => updateQuantity(item.id, itemQuantity - 1)}
+                            onClick={() =>
+                              updateQuantity(item.chooseSiz, item.id, itemQuantity - 1)
+                            }
                             className="qty-btn"
                           >
                             -
                           </button>
 
-                          <span className="qty-value">
-                            {itemQuantity}
-                          </span>
+                          <span className="qty-value">{itemQuantity}</span>
 
                           <button
-                            onClick={() => updateQuantity(item.id, itemQuantity + 1)}
+                            onClick={() =>
+                              updateQuantity(item.chooseSiz, item.id, itemQuantity + 1)
+                            }
                             className="qty-btn"
                           >
                             +
@@ -159,18 +161,13 @@ const ShopCartOnly = () => {
                       </div>
 
                       <div className="product-total">
-                        <p className="meta-label">
-                          Total
-                        </p>
+                        <p className="meta-label">Total</p>
 
-                        <p className="total-price">
-                          $
-                          {itemTotal.toFixed(2)}
-                        </p>
+                        <p className="total-price">${itemTotal.toFixed(2)}</p>
 
                         <button
                           className="remove-btn"
-                          onClick={() => removeProduct(index)}
+                          onClick={() => removeProduct(item.chooseSiz, item.id)}
                         >
                           Remove
                         </button>
@@ -180,61 +177,44 @@ const ShopCartOnly = () => {
                 })}
               </div>
 
+              {/* SUMMARY */}
               <div className="summary-card">
-                <h2 className="summary-title">
-                  Order Summary
-                </h2>
+                <h2 className="summary-title">Order Summary</h2>
 
                 <div className="summary-content">
                   <div className="summary-row">
-                    <span className="soft-text">
-                      Subtotal
-                    </span>
+                    <span className="soft-text">Subtotal</span>
 
                     <span className="summary-value">
-                      ${product.reduce((sum, item) => sum + (Number(item.totalPrice || 0) * (item.quantity || 1)), 0).toFixed(2)}
+                      ${subtotal.toFixed(2)}
                     </span>
                   </div>
 
                   <div className="summary-row">
-                    <span className="soft-text">
-                      Estimated tax
-                    </span>
+                    <span className="soft-text">Estimated tax</span>
 
-                    <span className="summary-value">
-                      ${(product.reduce((sum, item) => sum + (Number(item.totalPrice || 0) * (item.quantity || 1)), 0) * 0.08).toFixed(2)}
-                    </span>
+                    <span className="summary-value">${tax.toFixed(2)}</span>
                   </div>
 
                   <div className="summary-row">
-                    <span className="soft-text">
-                      Shipping
-                    </span>
+                    <span className="soft-text">Shipping</span>
 
-                    <span className="summary-value">
-                      Free
-                    </span>
+                    <span className="summary-value">Free</span>
                   </div>
 
                   <div className="summary-total">
                     <span>Total</span>
 
-                    <span>
-                      ${(product.reduce((sum, item) => sum + (Number(item.totalPrice || 0) * (item.quantity || 1)), 0) * 1.08).toFixed(2)}
-                    </span>
+                    <span>${total.toFixed(2)}</span>
                   </div>
                 </div>
 
                 <div className="summary-actions">
-                  <button className="checkout-btn">
-                    Proceed to Checkout
-                  </button>
+                  <button className="checkout-btn">Proceed to Checkout</button>
 
                   <button
                     className="secondary-btn"
-                    onClick={() =>
-                      navigate("/index/shop")
-                    }
+                    onClick={() => navigate("/index/shop")}
                   >
                     Continue Shopping
                   </button>
@@ -245,26 +225,18 @@ const ShopCartOnly = () => {
         </div>
       ) : (
         <div className="empty-cart mt-3">
-          <div className="empty-cart-icon">
-            ☕
-          </div>
+          <div className="empty-cart-icon">☕</div>
 
-          <h2 className="empty-cart-title">
-            Your cart is empty
-          </h2>
+          <h2 className="empty-cart-title">Your cart is empty</h2>
 
           <p className="empty-cart-description">
-            Looks like you haven’t added any
-            coffee yet. Start exploring our
-            premium blends and discover your
-            perfect cup.
+            Looks like you haven’t added any coffee yet. Start exploring our
+            premium blends and discover your perfect cup.
           </p>
 
           <button
             className="empty-cart-btn"
-            onClick={() =>
-              navigate("/index/shop")
-            }
+            onClick={() => navigate("/index/shop")}
           >
             Continue Shopping
           </button>
