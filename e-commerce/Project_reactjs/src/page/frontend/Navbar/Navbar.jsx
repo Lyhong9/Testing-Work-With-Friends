@@ -58,6 +58,9 @@ const Navbar = ({AlertSuccess}) => {
           <li onClick={handleMenu}>
             <NavLink to="profile">Profile</NavLink>
           </li>
+          <li onClick={handleMenu}>
+            <NavLink to="login">Login</NavLink>
+          </li>
         </ul>
 
         {/* Search */}

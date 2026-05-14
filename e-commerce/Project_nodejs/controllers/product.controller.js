@@ -78,6 +78,28 @@ const getProductOne = async (req, res) => {
   }
 };
 
+
+const getProductByLimit = async (req, res) => {
+  try {
+    const { limit = 10 } = req.query;
+
+    const products = await Product.findAll({
+      limit: parseInt(limit, 10) || 10,
+      include: [
+        { model: Category, as: "category" },
+        { model: Brand, as: "brand" },
+      ],
+    });
+
+    res.json({
+      success: true,
+      message: "success",
+      products,
+    });
+  } catch (err) {
+    logError("getProductByLimit", err, res);
+  }
+};
 // ✅ CREATE
 const createProduct = async (req, res) => {
   try {
@@ -202,4 +224,5 @@ module.exports = {
   createProduct,
   updateProduct,
   deleteProduct,
+  getProductByLimit
 };

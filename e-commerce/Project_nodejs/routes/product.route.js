@@ -4,11 +4,13 @@ const {
   createProduct,
   updateProduct,
   deleteProduct,
-  getProductOne
+  getProductOne,
+  getProductByLimit
 } = require("../controllers/product.controller");
 const {uploadAny} = require("../middleware/uploads/upload");
 const  { validate_token } = require("../middleware/auth");
 const productRouter = (app) => {
+  app.get("/api/product/limit", validate_token(), getProductByLimit);
   app.get("/api/product", validate_token(), getProduct);
   app.get("/api/product/one", validate_token(), getProductOne);
   app.post("/api/product", validate_token(), uploadAny, createProduct);

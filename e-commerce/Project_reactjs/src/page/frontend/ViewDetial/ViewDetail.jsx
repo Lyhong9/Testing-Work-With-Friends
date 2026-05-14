@@ -126,6 +126,8 @@ const ViewDetail = () => {
       handle75: false,
       handle100: false
     })
+
+    setQtySugar(0);
   }
 
   // sugar 25

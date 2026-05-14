@@ -33,6 +33,7 @@ import AboutPage from "./page/frontend/about/AboutPage";
 import ViewAllProduct from "./page/frontend/ViewAllProducts/ViewAllProduct";
 import ShopCartOnly from "./page/frontend/ShopCartOnly/ShopCartOnly";
 import ViewDetail from "./page/frontend/ViewDetial/ViewDetail";
+import LoginPage from "./page/frontend/UserAccount/LoginPage";
 
 const App = () => {
   return (
@@ -69,6 +70,7 @@ const App = () => {
         <Route path="shopcart" element={<ShopCartOnly />} />
         <Route path="viewallproduct" element={<ViewAllProduct />} />
         <Route path="viewdetail/:id" element={<ViewDetail />} />
+        <Route path="login" element={<LoginPage />} />
       </Route>
 
       {/* page not found route */}
