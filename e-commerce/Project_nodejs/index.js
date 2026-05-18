@@ -55,6 +55,9 @@ PermissionRoute(app)
 const RouteLowStock = require("./routes/lowStock.route")
 RouteLowStock(app)
 
+const khrqRoute = require("./routes/khrq.route")
+khrqRoute(app)
+
 // Sync database
 db.sequelize.sync()
   .then(() => console.log("Database synced"))
