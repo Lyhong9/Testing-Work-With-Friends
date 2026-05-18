@@ -34,12 +34,13 @@ import ViewAllProduct from "./page/frontend/ViewAllProducts/ViewAllProduct";
 import ShopCartOnly from "./page/frontend/ShopCartOnly/ShopCartOnly";
 import ViewDetail from "./page/frontend/ViewDetial/ViewDetail";
 import LoginPage from "./page/frontend/UserAccount/LoginPage";
+import Protected from "./page/frontend/protected/Protected";
 
 const App = () => {
   return (
     <Routes>
       <Route element={<Layout />}>
-      {/* dashboard, products, sales, customers, reports routes */}
+        {/* dashboard, products, sales, customers, reports routes */}
         <Route path="/" element={<Dashboard />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/reports" element={<ReportsPage />} />
@@ -62,15 +63,19 @@ const App = () => {
 
       {/* Frontend Routes */}
       <Route path="/index" element={<LayoutFront />}>
-        <Route path="" element={<Homepage />} />
+        <Route index element={<Homepage />} />
         <Route path="about" element={<AboutPage />} />
         <Route path="shop" element={<Shop />} />
         <Route path="profile" element={<Profile />} />
         <Route path="contact" element={<Contact />} />
-        <Route path="shopcart" element={<ShopCartOnly />} />
         <Route path="viewallproduct" element={<ViewAllProduct />} />
         <Route path="viewdetail/:id" element={<ViewDetail />} />
         <Route path="login" element={<LoginPage />} />
+
+        {/* Protected Routes */}
+        <Route element={<Protected />}>
+          <Route path="shopcart" element={<ShopCartOnly />} />
+        </Route>
       </Route>
 
       {/* page not found route */}

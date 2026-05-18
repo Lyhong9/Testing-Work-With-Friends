@@ -22,6 +22,18 @@ export const RemoveLocalStorage = () => {
   return localStorage.removeItem("token_key");
 };
 
+export const SetLocalCustomer = (date) => {
+  localStorage.setItem("customer", date);
+}
+
+export const GetLocalCustomer = () => {
+  return localStorage.getItem("customer");
+}
+
+export const RemoveLocalCustomer = () => {
+  return localStorage.removeItem("customer");
+}
+
 
 
 // Set Product to LocalStorage    

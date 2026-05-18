@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-
 import "./ShopCartOnly.css";
 
 import {
@@ -69,6 +68,10 @@ const ShopCartOnly = () => {
 
   const total = subtotal + tax;
 
+  const handlToBackShop =(cate) =>{
+    setCate(cate)
+    navigate("/index/shop")
+  }
   return (
     <>
       {product?.length > 0 ? (
@@ -119,7 +122,7 @@ const ShopCartOnly = () => {
                         <h3 className="product-title">{item.name}</h3>
 
                         <div className="product-badge">
-                          {item?.chooseSiz} · {item?.sugar || "50% sugar"}
+                          {item?.chooseSiz} · {item?.sugar}% sugar
                         </div>
 
                         <p className="product-description">
@@ -214,7 +217,7 @@ const ShopCartOnly = () => {
 
                   <button
                     className="secondary-btn"
-                    onClick={() => navigate("/index/shop")}
+                    onClick={() => handlToBackShop("All")}
                   >
                     Continue Shopping
                   </button>

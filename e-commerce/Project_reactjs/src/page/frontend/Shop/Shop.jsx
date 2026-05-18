@@ -149,7 +149,7 @@ const Shop = () => {
   // RESET FILTERS
   // =========================
   const resetFilter = () => {
-    setSearch("");
+    setSearch(""); 
     setCategory("All");
     setPriceRange("All Prices");
     setSortBy("Popularity");
