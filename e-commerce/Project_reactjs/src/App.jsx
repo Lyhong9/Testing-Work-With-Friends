@@ -34,6 +34,7 @@ import ViewAllProduct from "./page/frontend/ViewAllProducts/ViewAllProduct";
 import ShopCartOnly from "./page/frontend/ShopCartOnly/ShopCartOnly";
 import ViewDetail from "./page/frontend/ViewDetial/ViewDetail";
 import LoginPage from "./page/frontend/UserAccount/LoginPage";
+import RegisterPage from "./page/frontend/UserAccount/RegisterPage";
 import Protected from "./page/frontend/protected/Protected";
 
 const App = () => {
@@ -71,7 +72,7 @@ const App = () => {
         <Route path="viewallproduct" element={<ViewAllProduct />} />
         <Route path="viewdetail/:id" element={<ViewDetail />} />
         <Route path="login" element={<LoginPage />} />
-
+        <Route path="registerpage" element={<RegisterPage />} />
         {/* Protected Routes */}
         <Route element={<Protected />}>
           <Route path="shopcart" element={<ShopCartOnly />} />
