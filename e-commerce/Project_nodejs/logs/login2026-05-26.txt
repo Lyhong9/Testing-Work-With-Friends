@@ -1,0 +1,8 @@
+[26/05/2026 00:29:51] Cannot destructure property 'email' of 'req.body' as it is undefined.
+[26/05/2026 00:29:55] Cannot destructure property 'email' of 'req.body' as it is undefined.
+[26/05/2026 00:30:05] Cannot destructure property 'email' of 'req.body' as it is undefined.
+[26/05/2026 00:33:02] Cannot destructure property 'email' of 'req.body' as it is undefined.
+[26/05/2026 00:34:21] Cannot destructure property 'email' of 'req.body' as it is undefined.
+[26/05/2026 00:34:31] Cannot destructure property 'email' of 'req.body' as it is undefined.
+[26/05/2026 00:37:35] Cannot destructure property 'email' of 'req.body' as it is undefined.
+[26/05/2026 00:40:34] WHERE parameter "email" has invalid "undefined" value

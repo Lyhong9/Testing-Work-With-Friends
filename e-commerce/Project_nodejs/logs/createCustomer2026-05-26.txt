@@ -1,0 +1,1 @@
+[26/05/2026 00:36:48] data must be a string or Buffer and salt must either be a salt string or a number of rounds

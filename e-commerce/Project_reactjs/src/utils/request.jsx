@@ -47,7 +47,7 @@ const request = async (path = "", method = "GET", data = {}) => {
     }
 
     if (res.data.status === "success") {
-      console.log(res.data.message);
+      return res.data;
     }
 
     return res.data;

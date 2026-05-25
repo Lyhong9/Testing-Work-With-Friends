@@ -121,7 +121,7 @@ const Register = async (req, res) => {
   const t = await sequelize.transaction();
 
   try {
-    const { name, email, password, phone } = req.body;
+    const { name, email, password, phone } = req.body || {};
     const file = req.files?.[0];
     const image = buildPhotoPath(file);
 
@@ -185,8 +185,20 @@ const Register = async (req, res) => {
 // ==============================
 const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password } = req.body || {};
 
+    if(!email){
+      return res.status(400).json({
+        success: false,
+        message: "Customer email is required",
+      });
+    }
+    if(!password){
+      return res.status(400).json({
+        success: false,
+        message: "Customer password is required",
+      });
+    }
     // 1. Check customer
     const customer = await Customer.findOne({ where: { email } });
 
@@ -223,7 +235,6 @@ const login = async (req, res) => {
       access_token: await getAccessToken({ ...customerObj }),
     });
   } catch (error) {
-    t.rollback();
     logError("login", error, res);
   }
 };
@@ -242,7 +253,7 @@ const getAccessToken = async (paramData) => {
 // ==============================
 const updateCustomer = async (req, res) => {
   try {
-    const { id, name, email, password, phone } = req.body;
+    const { id, name, email, password, phone } = req.body || {};
     const file = req.files?.[0];
     const image = file ? buildPhotoPath(file) : null;
 
@@ -316,7 +327,7 @@ const VERIFIED_EXPIRE_MS = 10 * 60 * 1000;
 
 const sendOTP = async (req, res) => {
   try {
-    const { email } = req.body;
+    const { email } = req.body || {};
     if (!email) {
       return res.status(400).json({
         success: false,
@@ -375,7 +386,7 @@ const sendOTP = async (req, res) => {
 
 const verifyOtp = async (req, res) => {
   try{
-    const { email, otp } = req.body;
+    const { email, otp } = req.body || {};
 
     if(!(email) || !(otp)){
       return res.status(400).json({
@@ -432,7 +443,7 @@ const verifyOtp = async (req, res) => {
 
 const resetPassword = async (req, res) => {
   try{
-    const { email, newPassword } = req.body;
+    const { email, newPassword } = req.body || {};
 
     if(!(email) || !(newPassword)){
       return res.status(400).json({

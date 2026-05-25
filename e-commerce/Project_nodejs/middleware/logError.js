@@ -10,7 +10,7 @@ const logError = async (controller,err,res) => {
         const filePath = `${folderPath}/${controller + moment().format("YYYY-MM-DD") }.txt`;
         // Create "logs" folder if missing
         await fs.mkdir(folderPath, { recursive: true });
-        const logMessage = `[${timestamp}] ${err.message}\n`;
+        const logMessage = `[${timestamp}] [${controller}] ${err.message}\n${err.stack || ''}\n`;
 
         await fs.appendFile(filePath, logMessage);
 

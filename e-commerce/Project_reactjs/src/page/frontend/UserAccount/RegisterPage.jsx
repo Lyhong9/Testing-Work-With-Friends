@@ -20,13 +20,14 @@ const RegisterPage = () => {
 
   const navigate = useNavigate();
 
-  const formData = new FormData();
+
 
   const MAX_PHOTO_SIZE_BYTES = 50 * 1024 * 1024; // 5MB in bytes
   const MAX_PHOTO_SIZE_MB = 50;
 
   const handleAdd = async (e) => {
     e.preventDefault();
+      const formData = new FormData();
     try{
       formData.append("name", state.username);
       formData.append("email", state.email);
@@ -39,7 +40,7 @@ const RegisterPage = () => {
       const res = await request("/api/customer", "POST", formData);
       if(res){
         alertSuccess({text: res.message});
-        // navigate("/login");
+        navigate("/index/login");
       }
     }catch(err){
       alertError({text: err.message});
