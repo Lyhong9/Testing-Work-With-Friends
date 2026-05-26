@@ -4,11 +4,12 @@ import { GetLocalStorage, RemoveLocalStorage } from "../store/LocalStorage";
 
 const request = async (path = "", method = "GET", data = {}) => {
   const token = GetLocalStorage();
-  let headers = []
+  let headers = {};
   try {
     if(data instanceof FormData){
+      // ✅ For FormData, don't set Content-Type manually
+      // Let axios handle it with the boundary parameter
       headers = {
-        "Content-Type": "multipart/form-data",
         Authorization: token ? "Bearer " + token : "",
       }
     }

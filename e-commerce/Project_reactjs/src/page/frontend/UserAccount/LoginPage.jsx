@@ -4,31 +4,35 @@ import "./Register.css";
 import request from "../../../utils/request";
 import { useNavigate } from "react-router-dom";
 import { alertSuccess, alertError } from "../../../swertalert/AlertSuccess";
+import {SetLocalCustomer} from "../../../store/LocalStorage";
+import { setProfileCustomer } from "../../../store/ProfileUser";
 
 const LoginPage = () => {
+  
   const [state, setState] = useState({
     email: "",
     password: "",
-  });
+  })
 
   const navigate = useNavigate();
 
-  const handleAdd = async (e) => {
+
+
+  const handleAddLogin = async (e) => {
     e.preventDefault();
 
-    const formData = new FormData();
-
     try {
-      formData.append("email", state.email);
-      formData.append("password", state.password);
-
-      console.log("Form Data:", {
+      const loginData = {
         email: state.email,
         password: state.password,
-      });
-      const res = await request("/api/customer/login", "post", formData);
+      };
+
+      const res = await request("/api/customer/login", "post", loginData);
+      console.log(JSON.stringify(res));
 
       if (res) {
+        SetLocalCustomer(res.access_token)
+        setProfileCustomer(res)
         alertSuccess({
           text: res.message || "Login successful",
         });
@@ -36,7 +40,7 @@ const LoginPage = () => {
         // save token if backend sends one
         // localStorage.setItem("token", res.token);
 
-        navigate("/index");
+        navigate("/index/shopcart");
       }
     } catch (err) {
       alertError({
@@ -57,21 +61,20 @@ const LoginPage = () => {
           <button className="edit-btn">Frontend editable</button>
         </div>
 
-        <form className="Login-form" onSubmit={handleAdd}>
+        <form className="Login-form" onSubmit={handleAddLogin}>
           <div className="form-group">
             <label>Email</label>
-
+            
             <input
-              type="email"
-              placeholder="Enter email"
-              value={state.email}
-              onChange={(e) =>
-                setState({
-                  email: e.target.value,
-                })
-              }
-              required
-            />
+                type="email"
+                placeholder="Enter email"
+                onChange={(e) =>
+                  setState((pre) => ({
+                    ...pre,
+                    email: e.target.value,
+                  }))
+                }
+              />
 
             <label>Password</label>
 
@@ -80,9 +83,10 @@ const LoginPage = () => {
               placeholder="Enter password"
               value={state.password}
               onChange={(e) =>
-                setState({
+                setState((pre) => ({
+                  ...pre,
                   password: e.target.value,
-                })
+                }))
               }
               required
             />

@@ -73,6 +73,7 @@ const App = () => {
         <Route path="viewdetail/:id" element={<ViewDetail />} />
         <Route path="login" element={<LoginPage />} />
         <Route path="registerpage" element={<RegisterPage />} />
+        {/* <Route path="shopcart" element={<ShopCartOnly />} />   */}
         {/* Protected Routes */}
         <Route element={<Protected />}>
           <Route path="shopcart" element={<ShopCartOnly />} />
