@@ -7,12 +7,13 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import { useState } from "react";
 import {GetProductLocal} from "../../../store/LocalStorage";
 import useStore from "../CustomHooks/HookS";
-
+import {GetLocalCustomer, RemoveLocalCustomer} from "../../../store/LocalStorage";
+import { useNavigate } from "react-router-dom";
 const Navbar = ({AlertSuccess}) => {
   const [isActive, setIsActive] = useState(false);
   const [product, setProduct] = useState(GetProductLocal());
   const { cate, setCate } = useStore();
-
+  const navigate = useNavigate();
   const handleToggle = () => {
     setIsActive(!isActive);
   };
@@ -27,6 +28,12 @@ const Navbar = ({AlertSuccess}) => {
   const handleMenu = () => {
     setIsActive(false);
   };
+
+  const hanldeLogout = () =>{
+    setCate(1)
+    RemoveLocalCustomer();
+    navigate("/index/login");
+  }
   return (
     <header className="container header">
       {/* Profile */}
@@ -59,7 +66,13 @@ const Navbar = ({AlertSuccess}) => {
             <NavLink to="profile">Profile</NavLink>
           </li>
           <li onClick={handleMenu}>
-            <NavLink to="login">Login</NavLink>
+            {
+              GetLocalCustomer() ? (
+                <NavLink onClick={hanldeLogout}>Logout</NavLink>
+              ) : (
+                <NavLink to="login">Login</NavLink>
+              )
+            }
           </li>
         </ul>
 

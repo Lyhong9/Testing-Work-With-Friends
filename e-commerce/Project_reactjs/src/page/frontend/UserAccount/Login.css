@@ -184,3 +184,18 @@
 .register-footer p:hover{
     cursor: pointer;
 }
+
+.forgot-password{
+    text-align: right;
+}
+
+.forgot-password a{
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.forgot-password a:hover{
+    text-decoration: underline;
+    color:rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+}
