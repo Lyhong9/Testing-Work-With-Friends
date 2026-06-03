@@ -1,9 +1,25 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Login.css";
 import "./Register.css";
 import Hookslogin from "../UserAccount/Hookslogin";
 const LoginPage = () => {
-  const { handleForgot, forgotPassword,setState,state,handleAddLogin } = Hookslogin();
+  const {
+    handleForgot,
+    forgotPassword,
+    setState,
+    state,
+    handleLogin,
+    handleOPT,
+    loadingOtp,
+    handleVerifyOTP,
+    loadingVerifyOtp,
+    loadingVerify,
+    loadingVerifySuccess,
+    handleResetPassword
+  } = Hookslogin();
+
+  const navigate = useNavigate();
 
   return (
     <div className="register-container">
@@ -17,7 +33,7 @@ const LoginPage = () => {
           <button className="edit-btn">Frontend editable</button>
         </div>
 
-        <form className="Login-form" onSubmit={handleAddLogin}>
+        <form className="Login-form">
           <div className="form-group">
             <label>Email</label>
             <input
@@ -31,21 +47,57 @@ const LoginPage = () => {
               }
             />
             {forgotPassword ? (
-              <>
-                <label>Send OTP</label>
-                <input
-                  type="password"
-                  placeholder="Enter OTP"
-                  value={state.OTP}
-                  onChange={(e) =>
-                    setState((pre) => ({
-                      ...pre,
-                      OTP: e.target.value,
-                    }))
-                  }
-                  required
-                />
-              </>
+              loadingVerifyOtp ? (
+                loadingVerifySuccess ? (
+                  <>
+                  <label>Reset Password</label>
+                  <input
+                    type="password"
+                    placeholder="Enter Reset Password"
+                    value={state.newPass}
+                    onChange={(e) =>
+                      setState((pre) => ({
+                        ...pre,
+                        newPass: e.target.value,
+                      }))
+                    }
+                    required
+                  />
+                </>
+                ):(
+                  <>
+                  <label>Verify OTP</label>
+                  <input
+                    type="password"
+                    placeholder="Enter Verify OTP"
+                    value={state.verifyOTP}
+                    onChange={(e) =>
+                      setState((pre) => ({
+                        ...pre,
+                        verifyOTP: e.target.value,
+                      }))
+                    }
+                    required
+                  />
+                </>
+                )
+              ) : (
+                <>
+                  <label>Send OTP</label>
+                  <input
+                    type="password"
+                    placeholder="Enter OTP"
+                    value={state.OTP}
+                    onChange={(e) =>
+                      setState((pre) => ({
+                        ...pre,
+                        OTP: e.target.value,
+                      }))
+                    }
+                    required
+                  />
+                </>
+              )
             ) : (
               <>
                 <label>Password</label>
@@ -69,9 +121,35 @@ const LoginPage = () => {
             <a onClick={handleForgot}>forgot password</a>
           </div>
 
-          <button className="save-btn" type="submit">
-            Login
-          </button>
+          {forgotPassword ? (
+            loadingVerifyOtp ? (
+              loadingVerifySuccess ?(<button
+                className="save-btn"
+                type="submit"
+                onClick={handleResetPassword}
+              >
+                Reset Password
+              </button>):(
+                <button
+                className="save-btn"
+                type="submit"
+                onClick={handleVerifyOTP}
+              >
+                {
+                  loadingVerify ? "Verifying OTP..." : "Verify OTP"
+                }
+              </button>
+              )
+            ) : (
+              <button className="save-btn" type="submit" onClick={handleOPT}>
+                {loadingOtp ? "Sending OTP..." : "Send OTP"}
+              </button>
+            )
+          ) : (
+            <button className="save-btn" type="submit" onClick={handleLogin}>
+              Login
+            </button>
+          )}
 
           <div className="register-footer">
             <p>

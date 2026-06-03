@@ -32,6 +32,7 @@ const Navbar = ({AlertSuccess}) => {
   const hanldeLogout = () =>{
     setCate(1)
     RemoveLocalCustomer();
+    window.location.reload();
     navigate("/index/login");
   }
   return (

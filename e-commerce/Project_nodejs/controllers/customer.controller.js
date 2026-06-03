@@ -335,7 +335,7 @@ const sendOTP = async (req, res) => {
       });
     }
 
-    const uesr = await UserActivation.findOne({
+    const uesr = await Customer.findOne({
       where: {
         email: email,
       },
@@ -344,7 +344,7 @@ const sendOTP = async (req, res) => {
     if (!uesr) {
       return res.status(404).json({
         success: false,
-        message: "User not found",
+        message: "Customer not found",
       });
     }
 
@@ -354,7 +354,7 @@ const sendOTP = async (req, res) => {
       service: "gmail",
       auth: {
         user: "Vothanarern@gmail.com",
-        pass: "oafy ihyj qlzt qrzm", // Use environment variable for security
+        pass: "gigy tbom hquw ofmi", // Use environment variable for security
       },
     });
 
@@ -395,11 +395,11 @@ const verifyOtp = async (req, res) => {
       });
     }
 
-    const user = await UserActivation.findOne({ where: { email: email } });
+    const user = await Customer.findOne({ where: { email: email } });
     if(!user){
       return res.status(404).json({
         success: false,
-        message: "User not found",
+        message: "Customer not found",
       });
     }
 
@@ -452,11 +452,11 @@ const resetPassword = async (req, res) => {
       });
     }
 
-    const user = await User.findOne({ where: { email: email } });
+    const user = await Customer.findOne({ where: { email: email } });
     if(!user){
       return res.status(404).json({
         success: false,
-        message: "User not found",
+        message: "Customer not found",
       });
     }
 
@@ -478,7 +478,10 @@ const resetPassword = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    await User.update({password: hashedPassword})
+    await Customer.update(
+      { password: hashedPassword },
+      { where: { email } },
+    );
     otpStore.delete(email);
 
     res.json({
