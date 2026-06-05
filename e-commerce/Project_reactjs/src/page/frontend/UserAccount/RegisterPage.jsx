@@ -40,7 +40,7 @@ const RegisterPage = () => {
       const res = await request("/api/customer", "POST", formData);
       if(res){
         alertSuccess({text: res.message});
-        navigate("/index/login");
+        navigate("/index/loginpage");
       }
     }catch(err){
       alertError({text: err.message});
@@ -157,7 +157,7 @@ const RegisterPage = () => {
           <div className="register-footer">
             <p>
               Do you have an account?{" "}
-              <span onClick={() => navigate("/index/login")}>
+              <span onClick={() => navigate("/index/loginpage")}>
                 Login
               </span>
             </p>

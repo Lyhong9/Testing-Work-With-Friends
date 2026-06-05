@@ -34,7 +34,6 @@ const Hookslogin = () => {
       };
 
       const res = await request("/api/customer/login", "post", loginData);
-      console.log(JSON.stringify(res));
 
       if (res) {
         SetLocalCustomer(res.access_token);
@@ -46,7 +45,7 @@ const Hookslogin = () => {
         // save token if backend sends one
         // localStorage.setItem("token", res.token);
 
-        navigate("/index/shopcart");
+        navigate("/index");
       }
     } catch (err) {
       alertError({

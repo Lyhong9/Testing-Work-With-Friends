@@ -32,7 +32,6 @@ const Navbar = ({AlertSuccess}) => {
   const hanldeLogout = () =>{
     setCate(1)
     RemoveLocalCustomer();
-    window.location.reload();
     navigate("/index/login");
   }
   return (
@@ -69,9 +68,9 @@ const Navbar = ({AlertSuccess}) => {
           <li onClick={handleMenu}>
             {
               GetLocalCustomer() ? (
-                <NavLink onClick={hanldeLogout}>Logout</NavLink>
+                <NavLink onClick={hanldeLogout} to="loginpage">Logout</NavLink>
               ) : (
-                <NavLink to="login">Login</NavLink>
+                <NavLink to="loginpage">Login</NavLink>
               )
             }
           </li>

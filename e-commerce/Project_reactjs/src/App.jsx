@@ -65,18 +65,18 @@ const App = () => {
       {/* Frontend Routes */}
       <Route path="/index" element={<LayoutFront />}>
         <Route index element={<Homepage />} />
-        <Route path="about" element={<AboutPage />} />
         <Route path="shop" element={<Shop />} />
-        <Route path="profile" element={<Profile />} />
-        <Route path="contact" element={<Contact />} />
-        <Route path="viewallproduct" element={<ViewAllProduct />} />
-        <Route path="viewdetail/:id" element={<ViewDetail />} />
-        <Route path="login" element={<LoginPage />} />
+        <Route path="loginpage" element={<LoginPage />} />
         <Route path="registerpage" element={<RegisterPage />} />
         {/* <Route path="shopcart" element={<ShopCartOnly />} />   */}
         {/* Protected Routes */}
         <Route element={<Protected />}>
+          <Route path="about" element={<AboutPage />} />
           <Route path="shopcart" element={<ShopCartOnly />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="contact" element={<Contact />} />
+          <Route path="viewallproduct" element={<ViewAllProduct />} />
+          <Route path="viewdetail/:id" element={<ViewDetail />} />
         </Route>
       </Route>
 

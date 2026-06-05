@@ -102,7 +102,7 @@ const BodyHomepage = () => {
       {/* body product slice  */}
       <div className="brand-container">
         {/* page page display filter  */}
-        <div className="d-flex justify-content-between align-items-center container" style={{"max-width": "1100px"}}>
+        <div className="d-flex justify-content-between align-items-center container" style={{"max-width": "1100px", "flex-wrap": "wrap"}}>
           <div className="items-per-page">
             <label>Show</label>
             <select
@@ -130,6 +130,8 @@ const BodyHomepage = () => {
             />
           </div>
         </div>
+
+        {/* product cart  */}
         <section className="body-product">
           {paginatedProduct.map((item) => (
             <div className="product-box" key={item.id} onClick={()=>handleViewDetail(item.id)}>

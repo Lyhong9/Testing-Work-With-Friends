@@ -1,9 +1,46 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "./profile.css";
 import { Mail, Phone, MapPin, ShoppingBag, Star, Award } from "lucide-react";
-import { getProfileUser, removeProfileUser } from "../../../store/ProfileUser";
+import {
+  getProfileCustomer,
+  removeProfileCustomer,
+} from "../../../store/ProfileUser";
+import { BaseURL } from "../../../utils/BaseURL";
+import { alertError, alertSuccess } from "../../../swertalert/AlertSuccess";
+import request from "../../../utils/request";
+import dayjs from "dayjs";
+
 const Profile = () => {
-  useEffect(() => {}, []);
+  const profileCustomer = getProfileCustomer();
+
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState({});
+  const [state, setState] = useState({
+    username: "",
+    email: "",
+    password: "",
+    phone: "",
+    image: "",
+  });
+
+  const getCustomer = async (customer) => {
+    try {
+      setLoading(true);
+      const res = await request("/api/customer?search=" + customer, "get");
+      console.log(res);
+      setLoading(false);
+      if (res) {
+        setData(res.customers[0]);
+      }
+    } catch (err) {
+      alertError({
+        text: err.response?.data?.message || err.message || "Login failed",
+      });
+    }
+  };
+  useEffect(() => {
+    getCustomer(profileCustomer.customer?.id);
+  }, []);
   return (
     <>
       <section className="profile-page">
@@ -40,11 +77,18 @@ const Profile = () => {
             {/* LEFT PROFILE CARD */}
             <div className="user-card">
               <div className="avatar-row">
-                <div className="avatar">NP</div>
+                <div className="avatar">
+                  <img
+                    src={BaseURL + data.image}
+                    alt="Avatar"
+                    width={60}
+                    height={60}
+                  />
+                </div>
                 <span>COFFEE ACCOUNT</span>
               </div>
 
-              <h2>Nora Patel</h2>
+              <h2>{data.name}</h2>
 
               <p>
                 Gold Member who prefers flat white and keeps deliveries smooth
@@ -54,17 +98,28 @@ const Profile = () => {
               <ul>
                 <li>
                   <Mail size={14} />
-                  nora@brewhaven.coffee
+                  {data.email}
                 </li>
 
                 <li>
                   <Phone size={14} />
-                  +66 555 0188
+                  +855 {data.phone}
                 </li>
 
                 <li>
                   <MapPin size={14} />
-                  Home, Bangkok
+                  {data.addresses?.map(
+                    (address) =>
+                      address.street +
+                      ", " +
+                      address.city +
+                      ", " +
+                      address.state +
+                      ", " +
+                      address.zipCode +
+                      ", " +
+                      address.country,
+                  )}
                 </li>
               </ul>
 
@@ -102,38 +157,66 @@ const Profile = () => {
                 <div className="profile-input-row">
                   <div className="profile-input-group">
                     <label>Full name</label>
-                    <input type="text" defaultValue="Nora Patel" />
+                    <input type="text" defaultValue={data.name} />
                   </div>
 
                   <div className="profile-input-group">
-                    <label>Membership</label>
-                    <input type="text" defaultValue="Gold Member" />
+                    <label>Email</label>
+                    <input type="email" defaultValue={data.email} />
                   </div>
                 </div>
 
                 <div className="profile-input-row">
                   <div className="profile-input-group">
-                    <label>Email</label>
-                    <input type="email" defaultValue="nora@brewhaven.coffee" />
+                    <label>password</label>
+                    <input type="email" defaultValue={data.password} />
                   </div>
 
                   <div className="profile-input-group">
                     <label>Phone</label>
-                    <input type="text" defaultValue="+66 555 0188" />
+                    <input type="text" defaultValue={data.phone} />
                   </div>
                 </div>
 
-                <div className="profile-input-group small-field">
-                  <label>Preferred brew</label>
-                  <input type="text" defaultValue="Flat White" />
+                <div className="profile-input-row">
+                  <div className="profile-input-group">
+                    <label>created_at</label>
+                    <input
+                      type="text"
+                      disabled
+                      defaultValue={dayjs(data.createdAt).format("YYYY-MM-DD")}
+                    />
+                  </div>
+
+                  <div className="profile-input-group">
+                    <label>Phone</label>
+                    <input
+                      type="text"
+                      disabled
+                      defaultValue={dayjs(data.updatedAt).format("YYYY-MM-DD")}
+                    />
+                  </div>
                 </div>
 
-                <div className="profile-input-group">
-                  <label>Delivery note</label>
-                  <textarea
-                    rows="5"
-                    defaultValue="Please leave the order at the front desk after 6 PM."
-                  ></textarea>
+                <div className="profile-input-row">
+                  <div className="profile-input-group">
+                    <label>created_at</label>
+                    <input type="file" />
+                  </div>
+                  <div className="profile-input-group">
+                    <label>
+                      {data.image ? (
+                        <img
+                          src={BaseURL + data.image}
+                          alt="Avatar"
+                          width={80}
+                          height={80}
+                        />
+                      ) : (
+                        "No Image"
+                      )}
+                    </label>
+                  </div>
                 </div>
 
                 <button type="submit">Save profile</button>
