@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./profile.css";
 import { Mail, Phone, MapPin, ShoppingBag, Star, Award } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import {
   getProfileCustomer,
   removeProfileCustomer,
@@ -12,9 +13,10 @@ import dayjs from "dayjs";
 
 const Profile = () => {
   const profileCustomer = getProfileCustomer();
-
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState({});
+  const [CurrentImage, setCurrentImage] = useState(null);
   const [state, setState] = useState({
     username: "",
     email: "",
@@ -41,6 +43,60 @@ const Profile = () => {
   useEffect(() => {
     getCustomer(profileCustomer.customer?.id);
   }, []);
+
+  const SaveProfil = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    try {
+      formData.append("id", data.id);
+      formData.append("name", state.username);
+      formData.append("email", state.email);
+      formData.append("password", state.password);
+      formData.append("phone", state.phone);
+      if (CurrentImage) {
+        formData.append("image", CurrentImage);
+      }
+
+      const res = await request("/api/customer", "PUT", formData);
+      if (res) {
+        alertSuccess({
+          text: res.message || "Update successful",
+        });
+      }
+    } catch (err) {
+      alertError({
+        text: err.response?.data?.message || err.message || "Login failed",
+      });
+    }
+  };
+
+  const MAX_PHOTO_SIZE_BYTES = 50 * 1024 * 1024; // 5MB in bytes
+  const MAX_PHOTO_SIZE_MB = 50;
+  const handleImage = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
+    if (file.size > MAX_PHOTO_SIZE_BYTES) {
+      alertError({
+        text: `Image too large. Please choose a file smaller than ${MAX_PHOTO_SIZE_MB}MB.`,
+      });
+      event.target.value = "";
+      return;
+    }
+    setCurrentImage(file);
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setState((prev) => ({ ...prev, image: reader.result || "" }));
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleAddAddress = async () => {
+    navigate("/index/address");
+  };
+
   return (
     <>
       <section className="profile-page">
@@ -108,18 +164,20 @@ const Profile = () => {
 
                 <li>
                   <MapPin size={14} />
-                  {data.addresses?.map(
-                    (address) =>
-                      address.street +
-                      ", " +
-                      address.city +
-                      ", " +
-                      address.state +
-                      ", " +
-                      address.zipCode +
-                      ", " +
-                      address.country,
-                  )}
+                  {data.addresses?.length
+                    ? data.addresses?.map(
+                        (address) =>
+                          address.street +
+                          ", " +
+                          address.city +
+                          ", " +
+                          address.state +
+                          ", " +
+                          address.zipCode +
+                          ", " +
+                          address.country,
+                      )
+                    : "No Address"}
                 </li>
               </ul>
 
@@ -153,28 +211,58 @@ const Profile = () => {
 
               <h2>Customer information</h2>
 
-              <form className="profile-form">
+              <form className="profile-form" onSubmit={SaveProfil}>
                 <div className="profile-input-row">
                   <div className="profile-input-group">
                     <label>Full name</label>
-                    <input type="text" defaultValue={data.name} />
+                    <input
+                      type="text"
+                      defaultValue={data.name}
+                      onChange={(e) =>
+                        setState((prev) => ({
+                          ...prev,
+                          username: e.target.value,
+                        }))
+                      }
+                    />
                   </div>
 
                   <div className="profile-input-group">
                     <label>Email</label>
-                    <input type="email" defaultValue={data.email} />
+                    <input
+                      type="email"
+                      defaultValue={data.email}
+                      onChange={(e) =>
+                        setState((prev) => ({ ...prev, email: e.target.value }))
+                      }
+                    />
                   </div>
                 </div>
 
                 <div className="profile-input-row">
                   <div className="profile-input-group">
                     <label>password</label>
-                    <input type="email" defaultValue={data.password} />
+                    <input
+                      type="password"
+                      defaultValue={data.password}
+                      onChange={(e) =>
+                        setState((prev) => ({
+                          ...prev,
+                          password: e.target.value,
+                        }))
+                      }
+                    />
                   </div>
 
                   <div className="profile-input-group">
                     <label>Phone</label>
-                    <input type="text" defaultValue={data.phone} />
+                    <input
+                      type="text"
+                      defaultValue={data.phone}
+                      onChange={(e) =>
+                        setState((prev) => ({ ...prev, phone: e.target.value }))
+                      }
+                    />
                   </div>
                 </div>
 
@@ -189,7 +277,7 @@ const Profile = () => {
                   </div>
 
                   <div className="profile-input-group">
-                    <label>Phone</label>
+                    <label>Updated_at</label>
                     <input
                       type="text"
                       disabled
@@ -200,14 +288,16 @@ const Profile = () => {
 
                 <div className="profile-input-row">
                   <div className="profile-input-group">
-                    <label>created_at</label>
-                    <input type="file" />
+                    <label>Upload Image</label>
+                    <input type="file" onChange={handleImage} />
                   </div>
                   <div className="profile-input-group">
                     <label>
                       {data.image ? (
                         <img
-                          src={BaseURL + data.image}
+                          src={
+                            CurrentImage ? state.image : BaseURL + data.image
+                          }
                           alt="Avatar"
                           width={80}
                           height={80}
@@ -219,7 +309,9 @@ const Profile = () => {
                   </div>
                 </div>
 
-                <button type="submit">Save profile</button>
+                <button type="submit" onClick={SaveProfil}>
+                  Save profile
+                </button>
               </form>
             </div>
           </div>
@@ -237,7 +329,9 @@ const Profile = () => {
             </p>
           </div>
 
-          <button className="add-address-btn">+ Add address</button>
+          <button className="add-address-btn" onClick={handleAddAddress}>
+            + Add address
+          </button>
         </div>
 
         <div className="address-grid ">
@@ -258,12 +352,25 @@ const Profile = () => {
             <div className="address-info">
               <p>
                 <MapPin size={17} />
-                88 Roast Street, Watthana, Bangkok 10110, Thailand
+                {data.addresses?.length
+                  ? data.addresses?.map(
+                      (address) =>
+                        address.street +
+                        ", " +
+                        address.city +
+                        ", " +
+                        address.state +
+                        ", " +
+                        address.zipCode +
+                        ", " +
+                        address.country,
+                    )
+                  : "No Address"}
               </p>
 
               <p>
                 <Phone size={17} />
-                +66 555 0188
+                +885 {data.phone}
               </p>
             </div>
 
@@ -286,12 +393,25 @@ const Profile = () => {
             <div className="address-info">
               <p>
                 <MapPin size={17} />
-                16 Arabica Lane, Creative District, Bangkok 10330, Thailand
+                {data.addresses?.length
+                  ? data.addresses?.map(
+                      (address) =>
+                        address.street +
+                        ", " +
+                        address.city +
+                        ", " +
+                        address.state +
+                        ", " +
+                        address.zipCode +
+                        ", " +
+                        address.country,
+                    )
+                  : "No Address"}
               </p>
 
               <p>
                 <Phone size={17} />
-                +66 555 0116
+                +885 {data.phone}
               </p>
             </div>
 

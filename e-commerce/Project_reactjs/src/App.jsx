@@ -36,7 +36,7 @@ import ViewDetail from "./page/frontend/ViewDetial/ViewDetail";
 import LoginPage from "./page/frontend/UserAccount/LoginPage";
 import RegisterPage from "./page/frontend/UserAccount/RegisterPage";
 import Protected from "./page/frontend/protected/Protected";
-
+import Address from "./page/frontend/address/Address";
 const App = () => {
   return (
     <Routes>
@@ -76,7 +76,9 @@ const App = () => {
           <Route path="profile" element={<Profile />} />
           <Route path="contact" element={<Contact />} />
           <Route path="viewallproduct" element={<ViewAllProduct />} />
+          <Route path="address" element={<Address />} />
           <Route path="viewdetail/:id" element={<ViewDetail />} />
+
         </Route>
       </Route>
 

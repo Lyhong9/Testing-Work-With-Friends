@@ -89,9 +89,8 @@ const getOneAddress = async (req, res) => {
 };
 
 const createAddresses = async (req, res) => {
-    const t = await sequelize.transaction();
   try {
-    const { customerID, street, city, state, zipCode, country } = req.body;
+    const { customerID, street, city, state, zipCode, country } = req.body || {};
 
     if (!customerID)
       return res.status(400).json({ message: "Customer ID is required" });
@@ -103,16 +102,15 @@ const createAddresses = async (req, res) => {
       state,
       zipCode,
       country,
-    }, { transaction: t });
+    });
 
-    await t.commit();
     res.status(200).json({
       message: "Addresses created successfully",
       success: true,
       addresses: addresses,
     });
   } catch (error) {
-    t.rollback();
+  
     logError("createAddresses", error, res);
   }
 };

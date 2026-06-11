@@ -273,7 +273,7 @@ const updateCustomer = async (req, res) => {
 
     const ProtectedFieldsEmail = customer.email;
 
-    if (ProtectedFieldsEmail !== email) {
+    if (ProtectedFieldsEmail != email) {
       return res.status(400).json({
         success: false,
         message: "Customer email is protected",
