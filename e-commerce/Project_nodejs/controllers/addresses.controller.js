@@ -60,7 +60,6 @@ const getAddresses = async (req, res) => {
 const getOneAddress = async (req, res) => {
   try {
     const { id } = req.params;
-
     const address = await Address.findByPk(id, {
       include: [
         {
@@ -117,7 +116,9 @@ const createAddresses = async (req, res) => {
 
 const updateAddresses = async (req, res) => {
   try {
-    const { id, customer_id, street, city, state, zipCode, country } = req.body;
+    const {customer_id, street, city, state, zipCode, country } = req.body;
+
+    const { id } = req.params;
     if (!id) return res.status(400).json({ message: "Address ID is required" });
     
     const addresses = await Address.update(

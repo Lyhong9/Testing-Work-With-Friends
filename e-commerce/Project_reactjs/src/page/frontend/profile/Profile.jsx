@@ -4,12 +4,13 @@ import { Mail, Phone, MapPin, ShoppingBag, Star, Award } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
   getProfileCustomer,
-  removeProfileCustomer,
+
 } from "../../../store/ProfileUser";
 import { BaseURL } from "../../../utils/BaseURL";
 import { alertError, alertSuccess } from "../../../swertalert/AlertSuccess";
 import request from "../../../utils/request";
 import dayjs from "dayjs";
+import useStore from "../CustomHooks/HookS";
 
 const Profile = () => {
   const profileCustomer = getProfileCustomer();
@@ -25,6 +26,16 @@ const Profile = () => {
     image: "",
   });
 
+  const { setArress } = useStore();
+
+  const [addressAlready, setAddressAlready] = useState(false);
+
+  const handleUpdateAddress = () => {
+    setArress(data?.addresses[0]?.id);
+    navigate("/index/address");
+    // alert(data?.addresses[0]?.id);
+  };
+
   const getCustomer = async (customer) => {
     try {
       setLoading(true);
@@ -33,6 +44,12 @@ const Profile = () => {
       setLoading(false);
       if (res) {
         setData(res.customers[0]);
+        if (res.customers[0].addresses.length > 0) {
+          setAddressAlready(true);
+          // alertSuccess({
+          //   text: "You already have an address",
+          // });
+        }
       }
     } catch (err) {
       alertError({
@@ -329,9 +346,15 @@ const Profile = () => {
             </p>
           </div>
 
-          <button className="add-address-btn" onClick={handleAddAddress}>
-            + Add address
-          </button>
+          {addressAlready ? (
+            <button className="add-address-btn" onClick={handleUpdateAddress}>
+              + Update address
+            </button>
+          ) : (
+            <button className="add-address-btn" onClick={handleAddAddress}>
+              + Add address
+            </button>
+          )}
         </div>
 
         <div className="address-grid ">

@@ -2,11 +2,9 @@ import React, { useState, useEffect } from "react";
 import "./address.css";
 import request from "../../../utils/request";
 import { useNavigate } from "react-router-dom";
-import {
-  alertSuccess,
-  alertError,
-} from "../../../swertalert/AlertSuccess";
+import { alertSuccess, alertError } from "../../../swertalert/AlertSuccess";
 import { getProfileCustomer } from "../../../store/ProfileUser";
+import useStore from "../CustomHooks/HookS";
 
 const Address = () => {
   const [data, setData] = useState(null);
@@ -19,17 +17,31 @@ const Address = () => {
     country: "",
   });
 
+  const { address } = useStore();
+
+  const [editId, setEditId] = useState(null);
+
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
   const profileCustomer = getProfileCustomer();
+  const [addressAlready, setAddressAlready] = useState(false);
 
   useEffect(() => {
     if (profileCustomer?.customer) {
       setData(profileCustomer.customer);
     }
-  }, [profileCustomer]);
+    if(address){
+      setAddressAlready(true);
+    }
+  }, [profileCustomer, address]);
+
+  useEffect(() =>{  
+    if(window.location.pathname === "/index/address"){
+      navigate("/index/profile");
+    }
+  }, []);
 
   const handleAdd = async (e) => {
     e.preventDefault();
@@ -52,30 +64,66 @@ const Address = () => {
         country: state.country,
       };
 
-      const res = await request(
-        "/api/addresses",
-        "POST",
-        payload
-      );
+      let payloadId = null;
+      let Method = "POST";
+      let URL = "/api/addresses";
+      if (address) {
+        payloadId = address;
+        Method = "PUT";
+        URL = "/api/addresses/" + payloadId;
+      }
+
+      const res = await request(URL , Method, payload);
 
       if (res) {
         alertSuccess({
           text: res.message || "Address added successfully",
         });
-
-        navigate("/index/loginpage");
+        // window.location.reload();
+        setState({
+          street: "",
+          city: "",
+          state: "",
+          zipCode: "",
+          country: "",
+        })
       }
     } catch (err) {
       alertError({
         text:
-          err?.response?.data?.message ||
-          err.message ||
-          "Something went wrong",
+          err?.response?.data?.message || err.message || "Something went wrong",
       });
     } finally {
       setLoading(false);
     }
   };
+
+    useEffect(() => {
+    if (address) {
+      getAddress(address);
+    }
+  }, [address]);
+  const getAddress = async (id) => {
+    try {
+      const res = await request("/api/addresses/" + id, "GET");
+      if (res) {
+        setState({
+          street: res.data.street,
+          city: res.data.city,
+          state: res.data.state,
+          zipCode: res.data.zipCode,
+          country: res.data.country,
+        });
+      }
+    } catch (err) {
+      alertError({
+        text:
+          err?.response?.data?.message || err.message || "Something went wrong",
+      });
+    }
+  }
+
+
 
   return (
     <div className="register-container">
@@ -89,7 +137,6 @@ const Address = () => {
 
         <form className="register-form" onSubmit={handleAdd}>
           <div className="form-grid">
-
             <div className="form-group">
               <label>Street</label>
               <input
@@ -171,27 +218,15 @@ const Address = () => {
             </div>
           </div>
 
-          <button
-            className="save-btn"
-            type="submit"
-            disabled={loading}
-          >
-            {loading ? "Saving..." : "Save"}
-          </button>
-
-          <div className="register-footer">
-            <p>
-              Do you have an account?{" "}
-              <span
-                style={{ cursor: "pointer" }}
-                onClick={() =>
-                  navigate("/index/loginpage")
-                }
-              >
-                Login
-              </span>
-            </p>
-          </div>
+            <div className="register-footer">
+              <p>
+                <button className="save-btn" type="submit" disabled={loading}>
+                  {loading ? "Saving..." : 
+                    addressAlready ? "Update Address" : "Save Address"
+                  }
+                </button>
+              </p>
+            </div>
         </form>
       </div>
     </div>
