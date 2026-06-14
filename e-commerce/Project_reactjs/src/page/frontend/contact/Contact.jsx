@@ -1,8 +1,35 @@
 import React from "react";
 import "./contact.css";
 import { Mail, Phone, MapPin, Clock } from "lucide-react";
-
+import {useState, useEffect} from 'react'
+import request from "../../../utils/request";
+import { alertError, alertSuccess } from "../../../swertalert/AlertSuccess";
 const Contact = () => {
+  const [state, setState] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+
+  const handleSubmit = async (e) =>{
+    e.preventDefault();
+    try{
+      const data={
+        emailUser: state.email,
+        message: state.message,
+        name: state.name
+      }
+      const res = await request("/api/contact", "POST", data);
+      if(res){
+        alertSuccess({text: res.message});
+        setState({name: "", email: "", message: ""});
+      }
+    }catch(err){
+      alertError({text: err.message});
+    }
+  }
+
+
   return (
     <section className="contact-page">
       <div className="contact-container">
@@ -77,28 +104,28 @@ const Contact = () => {
             your backend or API hookup later.
           </p>
 
-          <form className="contact-form">
+          <form className="contact-form" >
             <div className="input-row">
               <div className="input-group">
                 <label>Name</label>
 
-                <input type="text" placeholder="Your name" />
+                <input type="text" value={state.name} placeholder="Your name" onChange={(e) => setState({...state, name: e.target.value})} />
               </div>
 
               <div className="input-group">
                 <label>Email</label>
 
-                <input type="email" placeholder="Your email" />
+                <input type="email" value={state.email} placeholder="Your email" onChangeCapture={(e) => setState({...state, email: e.target.value})} />
               </div>
             </div>
 
             <div className="input-group">
               <label>Message</label>
 
-              <textarea rows="5" placeholder="Write your message..."></textarea>
+              <textarea rows="5" value={state.message} placeholder="Write your message..." onChangeCapture={(e) => setState({...state, message: e.target.value})}></textarea>
             </div>
 
-            <button type="submit">Send Message</button>
+            <button type="" onClick={handleSubmit}>Send Message</button>
           </form>
         </div>
       </div>

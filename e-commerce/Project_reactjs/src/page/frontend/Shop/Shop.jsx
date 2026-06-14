@@ -6,7 +6,6 @@ import request from "../../../utils/request";
 import { BaseURL } from "../../../utils/BaseURL";
 import { useNavigate } from "react-router-dom";
 import { alertError } from "../../../swertalert/AlertSuccess";
-
 const Shop = () => {
   const { cate } = useStore();
 
@@ -54,6 +53,7 @@ const Shop = () => {
   useEffect(() => {
     fetchProduct();
   }, [fetchProduct]);
+
 
   // =========================
   // FILTER + SORT PRODUCTS

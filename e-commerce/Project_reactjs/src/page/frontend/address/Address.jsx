@@ -17,9 +17,8 @@ const Address = () => {
     country: "",
   });
 
+  // address get from profile by set in Hooks page
   const { address } = useStore();
-
-  const [editId, setEditId] = useState(null);
 
   const [loading, setLoading] = useState(false);
 
@@ -32,16 +31,14 @@ const Address = () => {
     if (profileCustomer?.customer) {
       setData(profileCustomer.customer);
     }
-    if(address){
+    if (address) {
       setAddressAlready(true);
     }
-  }, [profileCustomer, address]);
 
-  useEffect(() =>{  
-    if(window.location.pathname === "/index/address"){
-      navigate("/index/profile");
+    if(window.location.pathname === "/index/address") {
+        navigate("/index/profile");
     }
-  }, []);
+  }, [profileCustomer, address, navigate]);
 
   const handleAdd = async (e) => {
     e.preventDefault();
@@ -67,45 +64,54 @@ const Address = () => {
       let payloadId = null;
       let Method = "POST";
       let URL = "/api/addresses";
+
       if (address) {
         payloadId = address;
         Method = "PUT";
         URL = "/api/addresses/" + payloadId;
       }
 
-      const res = await request(URL , Method, payload);
+      const res = await request(URL, Method, payload);
 
       if (res) {
         alertSuccess({
           text: res.message || "Address added successfully",
         });
-        // window.location.reload();
+
         setState({
           street: "",
           city: "",
           state: "",
           zipCode: "",
           country: "",
-        })
+        });
+
+        setTimeout(() => {
+          window.location.href = "/index/profile";
+        }, 1500);
       }
     } catch (err) {
       alertError({
         text:
-          err?.response?.data?.message || err.message || "Something went wrong",
+          err?.response?.data?.message ||
+          err.message ||
+          "Something went wrong",
       });
     } finally {
       setLoading(false);
     }
   };
 
-    useEffect(() => {
+  useEffect(() => {
     if (address) {
       getAddress(address);
     }
   }, [address]);
+
   const getAddress = async (id) => {
     try {
       const res = await request("/api/addresses/" + id, "GET");
+
       if (res) {
         setState({
           street: res.data.street,
@@ -118,14 +124,15 @@ const Address = () => {
     } catch (err) {
       alertError({
         text:
-          err?.response?.data?.message || err.message || "Something went wrong",
+          err?.response?.data?.message ||
+          err.message ||
+          "Something went wrong",
       });
     }
-  }
-
-
+  };
 
   return (
+    <>
     <div className="register-container">
       <div className="register-card">
         <div className="register-header">
@@ -218,18 +225,34 @@ const Address = () => {
             </div>
           </div>
 
-            <div className="register-footer">
-              <p>
-                <button className="save-btn" type="submit" disabled={loading}>
-                  {loading ? "Saving..." : 
-                    addressAlready ? "Update Address" : "Save Address"
-                  }
-                </button>
-              </p>
-            </div>
+          <div className="register-footer">
+            <p>
+              <button
+                className="save-btn"
+                type="submit"
+                disabled={loading}
+              >
+                {loading
+                  ? "Saving..."
+                  : addressAlready
+                  ? "Update Address"
+                  : "Save Address"}
+              </button>
+
+            </p>
+          </div>
+          <div className="register-footer">
+            <p>
+              Do you have an address?{" "}
+              <span onClick={() => window.location.replace("/index/profile")}>
+                go back
+              </span>
+            </p>
+          </div>
         </form>
       </div>
     </div>
+    </>
   );
 };
 

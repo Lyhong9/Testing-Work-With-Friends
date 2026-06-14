@@ -5,7 +5,7 @@ import ReorderIcon from "@mui/icons-material/Reorder";
 import LocalMallIcon from "@mui/icons-material/LocalMall";
 import CancelIcon from '@mui/icons-material/Cancel';
 import { useState } from "react";
-import {GetProductLocal} from "../../../store/LocalStorage";
+import {GetProductLocal, ClearProductLocal} from "../../../store/LocalStorage";
 import useStore from "../CustomHooks/HookS";
 import {GetLocalCustomer, RemoveLocalCustomer} from "../../../store/LocalStorage";
 import { useNavigate } from "react-router-dom";
@@ -31,6 +31,7 @@ const Navbar = ({AlertSuccess}) => {
 
   const hanldeLogout = () =>{
     setCate(1)
+    ClearProductLocal();
     RemoveLocalCustomer();
     navigate("/index/login");
   }

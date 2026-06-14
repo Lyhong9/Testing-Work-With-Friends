@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./profile.css";
 import { Mail, Phone, MapPin, ShoppingBag, Star, Award } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   getProfileCustomer,
 
@@ -29,6 +29,7 @@ const Profile = () => {
   const { setArress } = useStore();
 
   const [addressAlready, setAddressAlready] = useState(false);
+  const location = useLocation();
 
   const handleUpdateAddress = () => {
     setArress(data?.addresses[0]?.id);
@@ -58,8 +59,17 @@ const Profile = () => {
     }
   };
   useEffect(() => {
-    getCustomer(profileCustomer.customer?.id);
-  }, []);
+    if (profileCustomer.customer?.id) {
+      getCustomer(profileCustomer.customer?.id);
+    }
+  }, [profileCustomer.customer?.id]);
+
+  // Refetch when returning to profile page
+  useEffect(() => {
+    if (location.pathname === "/index/profile" && profileCustomer.customer?.id) {
+      getCustomer(profileCustomer.customer?.id);
+    }
+  }, [location.pathname, profileCustomer.customer?.id]);
 
   const SaveProfil = async (e) => {
     e.preventDefault();
@@ -140,8 +150,8 @@ const Profile = () => {
               </p>
 
               <div className="quick-buttons">
-                <button>Browse coffees</button>
-                <button>View cart</button>
+                <button onClick={() => navigate("/index/shop")}>Browse coffees</button>
+                <button onClick={() => navigate("/index/shopcart")}>View cart</button>
               </div>
             </div>
           </div>

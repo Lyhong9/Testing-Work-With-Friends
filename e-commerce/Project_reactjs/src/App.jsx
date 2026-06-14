@@ -78,7 +78,6 @@ const App = () => {
           <Route path="viewallproduct" element={<ViewAllProduct />} />
           <Route path="address" element={<Address />} />
           <Route path="viewdetail/:id" element={<ViewDetail />} />
-
         </Route>
       </Route>
 

@@ -55,6 +55,9 @@ PermissionRoute(app)
 const RouteLowStock = require("./routes/lowStock.route")
 RouteLowStock(app)
 
+const ContactRoute = require("./routes/contact.route")
+ContactRoute(app)
+
 // const khrqRoute = require("./routes/khrq.route")
 // khrqRoute(app)
 
