@@ -354,7 +354,7 @@ const sendOTP = async (req, res) => {
       service: "gmail",
       auth: {
         user: "Vothanarern@gmail.com",
-        pass: "gigy tbom hquw ofmi", // Use environment variable for security
+        pass: "ezhr tkbv meqp iige", // Use environment variable for security
       },
     });
 

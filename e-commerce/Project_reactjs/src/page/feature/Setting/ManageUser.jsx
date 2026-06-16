@@ -53,7 +53,7 @@ const ManageUser = () => {
       try{
         setLoading(true);
       const res = await request("/api/user", "get")
-      // console.log(res);
+      console.log(res);
       setLoading(false);
       if(res) {
         setUser(res.users || []);

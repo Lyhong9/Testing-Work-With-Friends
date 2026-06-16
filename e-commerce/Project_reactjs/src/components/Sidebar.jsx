@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "../style/Sidebar.css";
+import { getProfileUser } from "../store/ProfileUser";
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -8,6 +9,7 @@ const Sidebar = () => {
   const [expandedMenu, setExpandedMenu] = useState(null);
 
   const menuItems = [
+
     { id: "dashboard", label: "📊 Dashboard", path: "/dashboard" },
 
     {
@@ -89,6 +91,51 @@ const Sidebar = () => {
     },
   ];
 
+  const [items, setItems] = useState(menuItems);
+  const profileUser = getProfileUser();
+  const roles = profileUser?.roles ? (Array.isArray(profileUser.roles) ? profileUser.roles : [profileUser.roles]) : [];
+  const permissions = roles.flatMap((role) => {
+    if (!role) return [];
+    if (Array.isArray(role.permissions)) return role.permissions;
+    return role.permissions ? [role.permissions] : [];
+  });
+
+  useEffect(() => {
+    renderPermission();
+  }, [permissions.length]);
+
+  const hasPermissionForPath = (path) =>
+    permissions.some((perm) => {
+      const value = perm?.description;
+      return value && (path === `/${value}` || path === value);
+    });
+
+  const renderPermission = () => {
+    if (!permissions || permissions.length === 0) {
+      setItems(menuItems);
+      return;
+    }
+
+    const allowedMenu = [];
+
+    menuItems.forEach((item) => {
+      const hasTopLevelPermission = hasPermissionForPath(item.path);
+
+      const allowedSubmenu = item.submenu?.filter((subitem) =>
+        hasPermissionForPath(subitem.path),
+      );
+      if (hasTopLevelPermission) {
+        allowedMenu.push(item);
+      } else if (allowedSubmenu && allowedSubmenu.length > 0) {
+        allowedMenu.push({ ...item, submenu: allowedSubmenu });
+      }
+    });
+
+    setItems(allowedMenu);
+  };
+
+
+
   const handleNavigation = (path) => {
     navigate(path);
   };
@@ -104,7 +151,7 @@ const Sidebar = () => {
       </div>
 
       <nav className="sidebar-nav">
-        {menuItems.map((item) => (
+        {items.map((item) => (
           <div key={item.id} className="nav-item-wrapper">
             <button
               className={`nav-item ${location.pathname === item.path ? "active" : ""}`}

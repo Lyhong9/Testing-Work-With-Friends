@@ -144,10 +144,11 @@ const updateUser = async (req, res) => {
 };
 
 const registerUser = async (req, res) => {
+  const t = await sequelize.transaction();  
   try {
     const t = await sequelize.transaction();
     // ✅ prevent crash
-    const { username, email, password, status, role_id } = req.body || {};
+    const { username, email, password, status, role_id} = req.body || {};
 
     if (!username) {
       return res.status(400).json({
@@ -337,7 +338,7 @@ const sendOTP = async (req, res) => {
       service: "gmail",
       auth: {
         user: "Vothanarern@gmail.com",
-        pass: "gigy tbom hquw ofmi", // Use environment variable for security
+        pass: "ezhr tkbv meqp iige", // Use environment variable for security
       },
     });
 
