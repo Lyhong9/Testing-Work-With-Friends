@@ -9,7 +9,7 @@ const getUsers = async (req, res) => {
   try {
     const { search } = req.query;
     if (search) {
-      users = await User.findAll({
+      const users = await User.findAll({
         where: {
           [Op.or]: [
             { username: { [Op.like]: `%${search}%` } },
@@ -40,7 +40,7 @@ const getUsers = async (req, res) => {
       });
     }
 
-    users = await User.findAll({
+    const users = await User.findAll({
       include: [
         {
           model: Role,
@@ -86,6 +86,7 @@ const deleteUser = async (req, res) => {
 const updateUser = async (req, res) => {
   try {
     const { id, username, email, password, status, role_id } = req.body || {};
+
     if (!id) {
       return res.status(400).json({
         success: false,
@@ -93,62 +94,67 @@ const updateUser = async (req, res) => {
       });
     }
 
-    if (!username) {
-      return res.status(400).json({
+    const t = await sequelize.transaction();
+    const updateData = {
+      username,
+      email,
+      status,
+    };
+
+    if (password) {
+      updateData.password = await bcrypt.hash(password, 10);
+    }
+
+    if (role_id) {
+      updateData.role_id = role_id;
+    }
+
+    const [updatedRows] = await User.update(updateData, {
+      where: { id },
+      transaction: t,
+    });
+
+    if (updatedRows === 0) {
+      await t.rollback();
+
+      return res.status(404).json({
         success: false,
-        message: "Username is required",
+        message: "User not found",
       });
     }
 
-    if (!email) {
-      return res.status(400).json({
-        success: false,
-        message: "Email is required",
-      });
+    if (role_id) {
+      await UserRole.update(
+        {
+          roleId: role_id,
+        },
+        {
+          where: { userId: id },
+          transaction: t,
+        }
+      );
     }
 
-    if (!password) {
-      return res.status(400).json({
-        success: false,
-        message: "Password is required",
-      });
-    }
+    const updatedUser = await User.findByPk(id, {
+      transaction: t,
+    });
 
-    if (!role_id) {
-      return res.status(400).json({
-        success: false,
-        message: "Role is required",
-      });
-    }
+    await t.commit();
 
-    const hashPassword = await bcrypt.hash(password, 10);
-
-    const updated = await User.update(
-      {
-        username,
-        email,
-        password: hashPassword,
-        status,
-        role_id,
-      },
-      { where: { id } },
-    );
-    res.json({
+    return res.status(200).json({
       success: true,
       message: "User updated successfully",
-      updated,
+      updated: updatedUser,
     });
   } catch (error) {
+    await t.rollback();
     logError("updateUser", error, res);
   }
 };
 
 const registerUser = async (req, res) => {
-  const t = await sequelize.transaction();  
   try {
-    const t = await sequelize.transaction();
-    // ✅ prevent crash
-    const { username, email, password, status, role_id} = req.body || {};
+    const { username, email, password, status, role_id } = req.body || {};
 
     if (!username) {
       return res.status(400).json({
@@ -186,7 +192,8 @@ const registerUser = async (req, res) => {
       });
     }
 
-    const passwordHash = await bcrypt.hash(password, 10); // bcrypt.hash(password, 10);
+    const t = await sequelize.transaction();
+    const passwordHash = await bcrypt.hash(password, 10);
 
     const user = await User.create(
       {
@@ -195,7 +202,7 @@ const registerUser = async (req, res) => {
         password: passwordHash,
         status,
       },
-      { transaction: t },
+      { transaction: t }
     );
 
     await UserRole.create(
@@ -203,7 +210,7 @@ const registerUser = async (req, res) => {
         userId: user.id,
         roleId: role_id,
       },
-      { transaction: t },
+      { transaction: t }
     );
 
     await t.commit();
@@ -214,8 +221,10 @@ const registerUser = async (req, res) => {
       user,
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error" });
+    if (err && err.rollback) {
+      await err.rollback();
+    }
+    logError("registerUser", err, res);
   }
 };
 
@@ -286,10 +295,15 @@ const userLogin = async (req, res) => {
       permissions: uniquePermissions,
     };
 
+    const sanitizedUser = {
+      ...ObjUser,
+      roles: user.roles,
+    };
+
     res.json({
       success: true,
       message: "success",
-      user,
+      user: sanitizedUser,
       access_token: await getAccessToken({ ...ObjUser }),
     });
   } catch (err) {
@@ -337,13 +351,13 @@ const sendOTP = async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "Vothanarern@gmail.com",
-        pass: "ezhr tkbv meqp iige", // Use environment variable for security
+        user: process.env.OTP_EMAIL_USER || "Vothanarern@gmail.com",
+        pass: process.env.OTP_EMAIL_PASS || "ezhr tkbv meqp iige",
       },
     });
 
     const mailOptions = {
-      from: "Vothanarern@gmail.com",
+      from: process.env.OTP_EMAIL_USER || "Vothanarern@gmail.com",
       to: user.email,
       subject: "Your OTP Code",
       text: `Your OTP code is ${otp}`,
@@ -361,7 +375,6 @@ const sendOTP = async (req, res) => {
     res.json({
       success: true,
       message: "OTP sent successfully",
-      otp: otp,
     });
   } catch (error) {
     logError("UserController", error, res);

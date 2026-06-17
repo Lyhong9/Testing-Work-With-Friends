@@ -20,6 +20,7 @@ import LowStockAlert from "./page/feature/Setting/LowStockAlert";
 import Expanse from "./page/feature/expanse/Expanse";
 import Inventory from "./page/feature/inventory/Inventory";
 import Customer from "./page/feature/Customer/Customer";
+import Permission from "./page/feature/Setting/Permission";
 
 // frontend pages
 import Homepage from "./page/frontend/Homepage/Homepage";
@@ -56,6 +57,7 @@ const App = () => {
         <Route path="/expense" element={<Expanse />} />
         <Route path="/inventory" element={<Inventory />} />
         <Route path="/customers" element={<Customer />} />
+        <Route path="/permission" element={<Permission />} />
       </Route>
 
       {/* logout, login, register routes  */}

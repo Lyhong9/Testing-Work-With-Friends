@@ -93,7 +93,6 @@ const Role = () => {
     const fetchFilteredPermissions = async () => {
       try {
         const res = await request(`/api/permission?search=${formDataPermission.search}`, "GET");
-        console.log("search", res);
         if (res.success) {
           setSubPermissions(res.data);
         }

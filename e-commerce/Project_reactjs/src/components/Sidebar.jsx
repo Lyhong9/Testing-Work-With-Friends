@@ -26,7 +26,7 @@ const Sidebar = () => {
     {
       id: "sales",
       label: "💳 Point of Sale",
-      path: "/sales",
+      path: "/salespos",
       submenu: [
         { id: "new-sale", label: "New Sale", path: "/salepos" },
         { id: "sales-list", label: "Sales History", path: "/salehistory" },
@@ -40,16 +40,16 @@ const Sidebar = () => {
       label: "📈 Reports",
       path: "/reports",
       submenu: [
-        { id: "sales-report", label: "Sales Report", path: "/reports/sales" },
+        { id: "sales-report", label: "Sales Report", path: "/sales" },
         {
           id: "inventory-report",
           label: "Inventory Report",
-          path: "/reports/inventory",
+          path: "/inventory",
         },
         {
           id: "customer-report",
           label: "Customer Report",
-          path: "/reports/customer",
+          path: "/customer",
         },
       ],
     },
@@ -57,13 +57,18 @@ const Sidebar = () => {
     {
       id: "settings",
       label: "⚙️ Settings",
-      path: "/setting",
+      path: "/settings",
       submenu: [
         { id: "role", label: "Roles", path: "/role" },
         {
           id: "user-management",
-          label: "User Permission",
+          label: "User",
           path: "/manageuser",
+        },
+        {
+          id: "role-permission",
+          label: "Permission",
+          path: "/permission",
         },
         {
           id: "low-stock-alert",
