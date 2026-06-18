@@ -94,7 +94,7 @@ const BodyHomepage = () => {
             Designed to feel premium on desktop, quick on mobile, and easy to
             shop at a glance.
           </p>
-          <button onClick={() => navigate("viewallproduct")}>Browse all products</button>
+          <button onClick={() => navigate("shopcart")}>Browse all products</button>
         </div>
       </section>
       {/* end header slide  */}

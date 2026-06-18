@@ -49,7 +49,7 @@ const Sidebar = () => {
         {
           id: "customer-report",
           label: "Customer Report",
-          path: "/customer",
+          path: "/customerReport",
         },
       ],
     },
