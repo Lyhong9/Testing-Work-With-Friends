@@ -1,6 +1,0 @@
-[17/06/2026 15:53:46] [updateUser] Missing where attribute in the options parameter
-AssertionError [ERR_ASSERTION]: Missing where attribute in the options parameter
-    at UserRole._optionsMustContainWhere (D:\GitRepo\Testing-Work-With-Friends\e-commerce\Project_nodejs\node_modules\sequelize\lib\model.js:2130:5)
-    at UserRole.update (D:\GitRepo\Testing-Work-With-Friends\e-commerce\Project_nodejs\node_modules\sequelize\lib\model.js:1896:10)
-    at updateUser (D:\GitRepo\Testing-Work-With-Friends\e-commerce\Project_nodejs\controllers\users.controller.js:140:20)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)

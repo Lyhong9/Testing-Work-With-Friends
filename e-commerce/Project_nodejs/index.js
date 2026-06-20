@@ -58,6 +58,9 @@ RouteLowStock(app)
 const ContactRoute = require("./routes/contact.route")
 ContactRoute(app)
 
+const ExpenseRoute = require("./routes/expense.route")
+ExpenseRoute(app)
+
 // const khrqRoute = require("./routes/khrq.route")
 // khrqRoute(app)
 
