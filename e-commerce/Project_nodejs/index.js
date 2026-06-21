@@ -61,6 +61,9 @@ ContactRoute(app)
 const ExpenseRoute = require("./routes/expense.route")
 ExpenseRoute(app)
 
+const InventoryRoute = require("./routes/inventory.route")
+InventoryRoute(app)
+
 // const khrqRoute = require("./routes/khrq.route")
 // khrqRoute(app)
 

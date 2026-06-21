@@ -1,0 +1,4 @@
+[20/06/2026 16:06:26] [createInventory] transaction is not defined
+ReferenceError: transaction is not defined
+    at createInventory (D:\React js\Clone_Project\Testing-Work-With-Friends\e-commerce\Project_nodejs\controllers\inventory.controller.js:103:29)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
