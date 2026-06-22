@@ -66,7 +66,7 @@ const Category = () => {
         alertError({text: error?.message || "Failed to fetch category"});
       }
   };
-  const handleFormSubmit = () => {
+  const handleFormSubmit = async () => {
     try{
       const dataForm = {
         name: formData.name,
@@ -82,7 +82,7 @@ const Category = () => {
       }
 
       setLoading(true);
-      const res = request(url, method, dataForm);
+      const res = await request(url, method, dataForm);
       if(res) {
         setShowForm(false);
         alertSuccess({title: "Success!", text: editingCode ? "Category updated successfully" : "Category created successfully"});

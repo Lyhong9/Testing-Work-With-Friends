@@ -1,0 +1,14 @@
+[21/06/2026 11:28:37] [getRole] Operation timeout
+SequelizeConnectionAcquireTimeoutError: Operation timeout
+    at ConnectionManager.getConnection (D:\React js\Clone_Project\Testing-Work-With-Friends\e-commerce\Project_nodejs\node_modules\sequelize\lib\dialects\abstract\connection-manager.js:206:15)
+    at async D:\React js\Clone_Project\Testing-Work-With-Friends\e-commerce\Project_nodejs\node_modules\sequelize\lib\sequelize.js:305:26
+    at async MySQLQueryInterface.select (D:\React js\Clone_Project\Testing-Work-With-Friends\e-commerce\Project_nodejs\node_modules\sequelize\lib\dialects\abstract\query-interface.js:407:12)
+    at async Role.findAll (D:\React js\Clone_Project\Testing-Work-With-Friends\e-commerce\Project_nodejs\node_modules\sequelize\lib\model.js:1140:21)
+    at async getRole (D:\React js\Clone_Project\Testing-Work-With-Friends\e-commerce\Project_nodejs\controllers\role.controller.js:36:18)
+[21/06/2026 11:28:50] [getRole] Operation timeout
+SequelizeConnectionAcquireTimeoutError: Operation timeout
+    at ConnectionManager.getConnection (D:\React js\Clone_Project\Testing-Work-With-Friends\e-commerce\Project_nodejs\node_modules\sequelize\lib\dialects\abstract\connection-manager.js:206:15)
+    at async D:\React js\Clone_Project\Testing-Work-With-Friends\e-commerce\Project_nodejs\node_modules\sequelize\lib\sequelize.js:305:26
+    at async MySQLQueryInterface.select (D:\React js\Clone_Project\Testing-Work-With-Friends\e-commerce\Project_nodejs\node_modules\sequelize\lib\dialects\abstract\query-interface.js:407:12)
+    at async Role.findAll (D:\React js\Clone_Project\Testing-Work-With-Friends\e-commerce\Project_nodejs\node_modules\sequelize\lib\model.js:1140:21)
+    at async getRole (D:\React js\Clone_Project\Testing-Work-With-Friends\e-commerce\Project_nodejs\controllers\role.controller.js:36:18)

@@ -1,0 +1,17 @@
+[21/06/2026 11:28:37] [getInventory] Operation timeout
+SequelizeConnectionAcquireTimeoutError: Operation timeout
+    at ConnectionManager.getConnection (D:\React js\Clone_Project\Testing-Work-With-Friends\e-commerce\Project_nodejs\node_modules\sequelize\lib\dialects\abstract\connection-manager.js:206:15)
+    at runNextTicks (node:internal/process/task_queues:64:5)
+    at listOnTimeout (node:internal/timers:547:9)
+    at process.processTimers (node:internal/timers:521:7)
+    at async D:\React js\Clone_Project\Testing-Work-With-Friends\e-commerce\Project_nodejs\node_modules\sequelize\lib\sequelize.js:305:26
+    at async MySQLQueryInterface.select (D:\React js\Clone_Project\Testing-Work-With-Friends\e-commerce\Project_nodejs\node_modules\sequelize\lib\dialects\abstract\query-interface.js:407:12)
+    at async Inventory.findAll (D:\React js\Clone_Project\Testing-Work-With-Friends\e-commerce\Project_nodejs\node_modules\sequelize\lib\model.js:1140:21)
+    at async getInventory (D:\React js\Clone_Project\Testing-Work-With-Friends\e-commerce\Project_nodejs\controllers\inventory.controller.js:30:23)
+[21/06/2026 11:28:50] [getInventory] Operation timeout
+SequelizeConnectionAcquireTimeoutError: Operation timeout
+    at ConnectionManager.getConnection (D:\React js\Clone_Project\Testing-Work-With-Friends\e-commerce\Project_nodejs\node_modules\sequelize\lib\dialects\abstract\connection-manager.js:206:15)
+    at async D:\React js\Clone_Project\Testing-Work-With-Friends\e-commerce\Project_nodejs\node_modules\sequelize\lib\sequelize.js:305:26
+    at async MySQLQueryInterface.select (D:\React js\Clone_Project\Testing-Work-With-Friends\e-commerce\Project_nodejs\node_modules\sequelize\lib\dialects\abstract\query-interface.js:407:12)
+    at async Inventory.findAll (D:\React js\Clone_Project\Testing-Work-With-Friends\e-commerce\Project_nodejs\node_modules\sequelize\lib\model.js:1140:21)
+    at async getInventory (D:\React js\Clone_Project\Testing-Work-With-Friends\e-commerce\Project_nodejs\controllers\inventory.controller.js:30:23)

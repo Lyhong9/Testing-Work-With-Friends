@@ -1,6 +1,7 @@
 const { Inventory, InventoryTransaction, sequelize } = require("../models");
 const { Op } = require("sequelize");
 const { logError } = require("../middleware/logError");
+const { Where } = require("sequelize/lib/utils");
 
 // GET /inventory?search=towel
 const getInventory = async (req, res) => {
@@ -33,7 +34,7 @@ const getInventory = async (req, res) => {
           model: InventoryTransaction,
           as: "inventoryTransactions",
         },
-      ],
+      ],order: [["id", "DESC"]],
     });
 
     return res.json({
@@ -142,35 +143,12 @@ const updateInventory = async (req, res) => {
     const {
       product_id,
       item_name,
-      quantity,
       supplier,
       unit_price,
       transaction_type,
       transaction_date,
       transaction_quantity,
     } = req.body;
-
-    if (!id) {
-      return res.status(400).json({
-        success: false,
-        message: "Inventory id is required",
-      });
-    }
-
-    const error = validateInventory(
-      product_id,
-      item_name,
-      quantity,
-      supplier,
-      unit_price,
-    );
-
-    if (error) {
-      return res.status(400).json({
-        success: false,
-        message: error,
-      });
-    }
 
     const inventory = await Inventory.findByPk(id);
 
@@ -181,30 +159,46 @@ const updateInventory = async (req, res) => {
       });
     }
 
+    let newQuantity = inventory.quantity;
+
+    if (transaction_type === "Out") {
+      if (inventory.quantity < transaction_quantity) {
+        return res.status(400).json({
+          success: false,
+          message: "Inventory quantity is not enough",
+        });
+      }
+
+      newQuantity -= Number(transaction_quantity);
+    }
+
+    if (transaction_type === "In") {
+      newQuantity += Number(transaction_quantity);
+    }
+
     await inventory.update(
       {
-        productId: product_id,
+        product_id,
         item_name,
-        quantity,
+        quantity: newQuantity,
         supplier,
         unit_price,
-      },
-      { Where: id },
+      },{Where: {id: id}},
       {
         transaction: t,
-      },
+      }
     );
 
-    await InventoryTransaction.update(
+    const inventoryTransaction = await InventoryTransaction.create(
       {
+        inventory_id: id,
         transaction_type,
         quantity: transaction_quantity,
         transaction_date: transaction_date || new Date(),
       },
-      { Where: { inventory_id: id } },
       {
         transaction: t,
-      },
+      }
     );
 
     await t.commit();
@@ -213,6 +207,7 @@ const updateInventory = async (req, res) => {
       success: true,
       message: "Inventory updated successfully",
       inventory,
+      inventoryTransaction,
     });
   } catch (err) {
     await t.rollback();
