@@ -126,7 +126,7 @@ const Inventory = () => {
     setEditingCode(inventory.id);
     setFormData({
       id: inventory.id,
-      product_id: inventory.product_id || "",
+      product_id: inventory.productId || "",
       item_name: inventory.item_name || "",
       quantity: inventory.quantity || "",
       unit_price: inventory.unit_price || "",
@@ -337,12 +337,15 @@ const Inventory = () => {
                           size="small"
                           className="inventory-select-field"
                         >
-                          <InputLabel id="product-id-label">Product ID</InputLabel>
+                          <InputLabel id="product-id-label">
+                            Product ID
+                          </InputLabel>
                           <Select
                             labelId="product-id-label"
                             id="product-id-select"
                             value={formData.product_id || ""}
                             label="Product ID"
+                            required
                             onChange={(e) =>
                               setFormData({
                                 ...formData,
@@ -370,8 +373,11 @@ const Inventory = () => {
                           size="small"
                           className="inventory-select-field"
                         >
-                          <InputLabel id="product-name-label">Product Name</InputLabel>
+                          <InputLabel id="product-name-label">
+                            Product Name
+                          </InputLabel>
                           <Select
+                            required
                             labelId="product-name-label"
                             id="product-name-select"
                             value={formData.item_name || ""}
@@ -400,6 +406,7 @@ const Inventory = () => {
                       <div className="col-md-6 mb-3">
                         <label className="form-label">Quantity</label>
                         <input
+                          required
                           type="number"
                           className="form-control"
                           value={formData.quantity || ""}
@@ -417,6 +424,7 @@ const Inventory = () => {
                         <label className="form-label">Unit Price</label>
                         <input
                           type="number"
+                          required
                           className="form-control"
                           value={formData.unit_price || ""}
                           onChange={(e) =>
@@ -432,6 +440,7 @@ const Inventory = () => {
                       <div className="col-md-6 mb-3">
                         <label className="form-label">Supplier</label>
                         <input
+                          required
                           type="text"
                           className="form-control"
                           value={formData.supplier || ""}
@@ -455,6 +464,7 @@ const Inventory = () => {
                             Transaction Type
                           </InputLabel>
                           <Select
+                            required
                             labelId="transaction-type-label"
                             id="transaction-type-select"
                             value={formData.transaction_type || ""}
@@ -477,22 +487,27 @@ const Inventory = () => {
                       </div>
 
                       {/* Transaction Quantity */}
-                      <div className="col-md-6 mb-3">
-                        <label className="form-label">
-                          Transaction Quantity
-                        </label>
-                        <input
-                          type="number"
-                          className="form-control"
-                          value={formData.transaction_quantity || ""}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              transaction_quantity: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
+                      {editingCode ? (
+                        <div className="col-md-6 mb-3">
+                          <label className="form-label">
+                            Transaction Quantity
+                          </label>
+                          <input
+                            required={editingCode ? true : false}
+                            type="number"
+                            className="form-control"
+                            value={formData.transaction_quantity || ""}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                transaction_quantity: e.target.value,
+                              })
+                            }
+                          />
+                        </div>
+                      ) : (
+                        ""
+                      )}
 
                       {/* Transaction Date */}
                       <div className="col-md-6 mb-3">
