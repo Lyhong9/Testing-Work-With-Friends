@@ -158,6 +158,14 @@ const updateInventory = async (req, res) => {
         message: "Inventory not found",
       });
     }
+    if(!transaction_type){
+     
+      return res.status(400).json({
+        success: false,
+        message: "transaction type is required!",
+      });
+  
+    }
 
     let newQuantity = inventory.quantity;
 

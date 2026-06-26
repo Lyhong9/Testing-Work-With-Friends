@@ -162,7 +162,7 @@ const UseSalePos = () => {
 
     if (type === "qr") {
       setPaymentMethod("qr");
-      setCountMinutes(10); // reset timer when QR opens
+      setCountMinutes(260); // reset timer when QR opens
     }
 
     if (type === "cash") {

@@ -64,8 +64,8 @@ ExpenseRoute(app)
 const InventoryRoute = require("./routes/inventory.route")
 InventoryRoute(app)
 
-// const khrqRoute = require("./routes/khrq.route")
-// khrqRoute(app)
+const khrqRoute = require("./routes/khrq.route")
+khrqRoute(app)
 
 // Sync database
 db.sequelize.sync()

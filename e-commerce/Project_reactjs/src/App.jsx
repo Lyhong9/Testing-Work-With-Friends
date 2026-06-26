@@ -66,13 +66,13 @@ const App = () => {
 
       {/* Frontend Routes */}
       <Route path="/index" element={<LayoutFront />}>
-        <Route index element={<Homepage />} />
-        <Route path="shop" element={<Shop />} />
-        <Route path="loginpage" element={<LoginPage />} />
-        <Route path="registerpage" element={<RegisterPage />} />
-        {/* <Route path="shopcart" element={<ShopCartOnly />} />   */}
+          <Route path="loginpage" element={<LoginPage />} />
+          <Route path="registerpage" element={<RegisterPage />} />
         {/* Protected Routes */}
         <Route element={<Protected />}>
+          <Route index element={<Homepage />} />
+          <Route path="shop" element={<Shop />} />
+          {/* <Route path="shopcart" element={<ShopCartOnly />} />   */}
           <Route path="about" element={<AboutPage />} />
           <Route path="shopcart" element={<ShopCartOnly />} />
           <Route path="profile" element={<Profile />} />

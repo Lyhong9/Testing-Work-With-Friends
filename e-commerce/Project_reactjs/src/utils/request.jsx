@@ -1,9 +1,10 @@
 import axios from "axios";
 import { BaseURL } from "./BaseURL";
-import { GetLocalStorage, RemoveLocalStorage } from "../store/LocalStorage";
+import { GetLocalStorage, RemoveLocalStorage, GetLocalCustomer } from "../store/LocalStorage";
 
 const request = async (path = "", method = "GET", data = {}) => {
   const token = GetLocalStorage();
+  const token_client = GetLocalCustomer();
   let headers = {};
   try {
     if(data instanceof FormData){
@@ -16,7 +17,7 @@ const request = async (path = "", method = "GET", data = {}) => {
     else{
       headers = {
         "Content-Type": "application/json",
-        Authorization: token ? "Bearer " + token : "",
+        Authorization: token ? "Bearer " + token : token_client ? "Bearer " + token_client : "",
       }
     }
     const res = await axios({

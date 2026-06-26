@@ -39,7 +39,7 @@ const Expanse = () => {
 
   useEffect(() => {
     fetchExpense();
-  }, [formData]);
+  }, []);
   
 
   useEffect(() => {
@@ -57,8 +57,8 @@ const Expanse = () => {
   const fetchExpense = async() => {
       try{
         setLoading(true);
-      const res = await request("/api/expense", "get")
-      setLoading(false);
+        const res = await request("/api/expense", "get")
+        setLoading(false);
       if(res) {
         setExpense(res.expense || []);
       }
@@ -79,8 +79,8 @@ const Expanse = () => {
       let method = "post";
       let url = "/api/expense";
       if(editingCode) {
-        dataForm.id = editingCode;
         method = "put";
+        url = `/api/expense/${editingCode}`;
       }
 
       setLoading(true);
@@ -313,6 +313,7 @@ const Expanse = () => {
                   <label className="form-label">Expense Date</label>
                   <input
                     type="date"
+                    required
                     className="form-control"
                     value={formData.expense_date || ""}
                     onChange={(e) =>

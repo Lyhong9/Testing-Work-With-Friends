@@ -15,9 +15,8 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import GlobleData from "../../../store/GlobleData";
 import dayjs from "dayjs";
+import { Space, Table, Modal, Button } from "antd";
 const Inventory = () => {
-  const MAX_PHOTO_SIZE_MB = 10;
-  const MAX_PHOTO_SIZE_BYTES = MAX_PHOTO_SIZE_MB * 1024 * 1024;
   const [inventory, setinventory] = useState([]);
   const [filteredinventory, setFilteredinventory] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState("");
@@ -26,6 +25,9 @@ const Inventory = () => {
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editingCode, setEditingCode] = useState(null);
+  const [transactionData, setTransactionData] = useState([]);
+  const [showTransaction, setShowTransaction] = useState(false);
+
   const [formData, setFormData] = useState({
     id: null,
     product_id: "",
@@ -46,14 +48,15 @@ const Inventory = () => {
 
   useEffect(() => {
     fetchinventory();
-  }, []);7
+  }, []);
+  7;
 
   useEffect(() => {
     if (searchKeyword.trim()) {
       const filtered = inventory.filter(
         (ex) =>
-          ex.category &&
-          ex.category.toLowerCase().includes(searchKeyword.toLowerCase()),
+          ex.item_name &&
+          ex.item_name.toLowerCase().includes(searchKeyword.toLowerCase()),
       );
       setFilteredinventory(filtered);
     } else {
@@ -163,7 +166,53 @@ const Inventory = () => {
     fetchProduct();
   }, []);
 
-  const transaction = async (inventory) => {};
+  const transaction = async (inventory) => {
+    setShowTransaction(true);
+    setTransactionData(inventory);
+  };
+
+  const handleCancel = () => {
+    setShowTransaction(false);
+  };
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const columns = [
+    {
+      title: "ID",
+      align: "center",
+      dataIndex: "id",
+      key: "id",
+    },
+    {
+      title: "Inventory ID",
+      align: "center",
+      dataIndex: "inventory_id",
+      key: "inventory_id",
+      render: (index, data) => <span>{transactionData.item_name}</span>,
+    },
+    {
+      title: "Quantity",
+      align: "center",
+      dataIndex: "quantity",
+      key: "quantity",
+    },
+    {
+      title: "Transaction Type",
+      align: "center",
+      dataIndex: "transaction_type",
+      key: "transaction_type",
+    },
+    {
+      title: "Transaction Date",
+      align: "center",
+      dataIndex: "transaction_date",
+      key: "transaction_date",
+      render: (text) => dayjs(text).format("YYYY-MM-DD"),
+    },
+  ];
   return (
     <>
       <div className="inventory-container">
@@ -308,244 +357,273 @@ const Inventory = () => {
         {/* Modal alert add  */}
 
         {showForm && (
-          <div
-            className="modal fade show d-block"
-            tabIndex="-1"
-            style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
-          >
-            <div className="modal-dialog modal-xl modal-dialog-centered">
-              <div className="modal-content shadow">
-                <div className="modal-header">
-                  <h5 className="modal-title">
-                    {editingCode ? "Edit Inventory" : "Add New Inventory"}
-                  </h5>
-
-                  <button
-                    type="button"
-                    className="btn-close"
-                    onClick={() => setShowForm(false)}
-                  ></button>
-                </div>
-
-                <form onSubmit={handleFormSubmit}>
-                  <div className="modal-body">
-                    <div className="row">
-                      {/* Product ID */}
-                      <div className="col-md-6 mb-3">
-                        <FormControl
-                          fullWidth
-                          size="small"
-                          className="inventory-select-field"
-                        >
-                          <InputLabel id="product-id-label">
-                            Product ID
-                          </InputLabel>
-                          <Select
-                            labelId="product-id-label"
-                            id="product-id-select"
-                            value={formData.product_id || ""}
-                            label="Product ID"
-                            required
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                product_id: e.target.value,
-                              })
-                            }
-                          >
-                            <MenuItem value="">
-                              <em>-- Select Product --</em>
-                            </MenuItem>
-
-                            {products.map((product) => (
-                              <MenuItem key={product.id} value={product.id}>
-                                {product.id} - {product.name}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                      </div>
-
-                      {/* Product Name */}
-                      <div className="col-md-6 mb-3">
-                        <FormControl
-                          fullWidth
-                          size="small"
-                          className="inventory-select-field"
-                        >
-                          <InputLabel id="product-name-label">
-                            Product Name
-                          </InputLabel>
-                          <Select
-                            required
-                            labelId="product-name-label"
-                            id="product-name-select"
-                            value={formData.item_name || ""}
-                            label="Product Name"
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                item_name: e.target.value,
-                              })
-                            }
-                          >
-                            <MenuItem value="">
-                              <em>-- Select Product --</em>
-                            </MenuItem>
-
-                            {products.map((product) => (
-                              <MenuItem key={product.id} value={product.name}>
-                                {product.name}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                      </div>
-
-                      {/* Quantity */}
-                      <div className="col-md-6 mb-3">
-                        <label className="form-label">Quantity</label>
-                        <input
+          <div className="modal-overlay" onClick={() => setShowForm(false)}>
+            <div
+              className="modal-content"
+              onClick={(e) => e.stopPropagation()}
+              style={{ width: "100%" }}
+            >
+              <div className="modal-header">
+                <h2>{editingCode ? "Edit inventory" : "Add New inventory"}</h2>
+                <button
+                  className="btn-close"
+                  onClick={() => setShowForm(false)}
+                >
+                  ×
+                </button>
+              </div>
+              <form onSubmit={handleFormSubmit}>
+                <div className="modal-body p-3">
+                  <div className="row">
+                    {/* Product ID */}
+                    <div className="col-md-6 mb-3">
+                      <FormControl
+                        fullWidth
+                        size="small"
+                        className="inventory-select-field"
+                      >
+                        <InputLabel id="product-id-label">
+                          Product ID
+                        </InputLabel>
+                        <Select
+                          labelId="product-id-label"
+                          id="product-id-select"
+                          value={formData.product_id || ""}
+                          label="Product ID"
                           required
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              product_id: e.target.value,
+                            })
+                          }
+                        >
+                          <MenuItem value="">
+                            <em>-- Select Product --</em>
+                          </MenuItem>
+
+                          {products.map((product) => (
+                            <MenuItem key={product.id} value={product.id}>
+                              {product.id} - {product.name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </div>
+
+                    {/* Product Name */}
+                    <div className="col-md-6 mb-3">
+                      <FormControl
+                        fullWidth
+                        size="small"
+                        className="inventory-select-field"
+                      >
+                        <InputLabel id="product-name-label">
+                          Product Name
+                        </InputLabel>
+                        <Select
+                          required
+                          labelId="product-name-label"
+                          id="product-name-select"
+                          value={formData.item_name || ""}
+                          label="Product Name"
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              item_name: e.target.value,
+                            })
+                          }
+                        >
+                          <MenuItem value="">
+                            <em>-- Select Product --</em>
+                          </MenuItem>
+
+                          {products.map((product) => (
+                            <MenuItem key={product.id} value={product.name}>
+                              {product.name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </div>
+
+                    {/* Quantity */}
+                    <div className="col-md-6 mb-3">
+                      <label className="form-label">Quantity</label>
+                      <input
+                        required
+                        type="number"
+                        className="form-control"
+                        value={formData.quantity || ""}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            quantity: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+
+                    {/* Unit Price */}
+                    <div className="col-md-6 mb-3">
+                      <label className="form-label">Unit Price</label>
+                      <input
+                        type="number"
+                        required
+                        className="form-control"
+                        value={formData.unit_price || ""}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            unit_price: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+
+                    {/* Supplier */}
+                    <div className="col-md-6 mb-3">
+                      <label className="form-label">Supplier</label>
+                      <input
+                        required
+                        type="text"
+                        className="form-control"
+                        value={formData.supplier || ""}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            supplier: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+
+                    {/* Transaction Type */}
+                    <div className="col-md-6 mb-3">
+                      <FormControl
+                        fullWidth
+                        size="small"
+                        className="inventory-select-field"
+                      >
+                        <InputLabel id="transaction-type-label">
+                          Transaction Type
+                        </InputLabel>
+                        <Select
+                          required
+                          labelId="transaction-type-label"
+                          id="transaction-type-select"
+                          value={formData.transaction_type || ""}
+                          label="Transaction Type"
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              transaction_type: e.target.value,
+                            })
+                          }
+                        >
+                          <MenuItem value="">
+                            <em>-- Select Type --</em>
+                          </MenuItem>
+
+                          <MenuItem value="In">IN</MenuItem>
+                          <MenuItem value="Out">OUT</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </div>
+
+                    {/* Transaction Quantity */}
+                    {editingCode ? (
+                      <div className="col-md-6 mb-3">
+                        <label className="form-label">
+                          Transaction Quantity
+                        </label>
+                        <input
+                          required={editingCode ? true : false}
                           type="number"
                           className="form-control"
-                          value={formData.quantity || ""}
+                          value={formData.transaction_quantity || ""}
                           onChange={(e) =>
                             setFormData({
                               ...formData,
-                              quantity: e.target.value,
+                              transaction_quantity: e.target.value,
                             })
                           }
                         />
                       </div>
+                    ) : (
+                      ""
+                    )}
 
-                      {/* Unit Price */}
-                      <div className="col-md-6 mb-3">
-                        <label className="form-label">Unit Price</label>
-                        <input
-                          type="number"
-                          required
-                          className="form-control"
-                          value={formData.unit_price || ""}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              unit_price: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-
-                      {/* Supplier */}
-                      <div className="col-md-6 mb-3">
-                        <label className="form-label">Supplier</label>
-                        <input
-                          required
-                          type="text"
-                          className="form-control"
-                          value={formData.supplier || ""}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              supplier: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-
-                      {/* Transaction Type */}
-                      <div className="col-md-6 mb-3">
-                        <FormControl
-                          fullWidth
-                          size="small"
-                          className="inventory-select-field"
-                        >
-                          <InputLabel id="transaction-type-label">
-                            Transaction Type
-                          </InputLabel>
-                          <Select
-                            required
-                            labelId="transaction-type-label"
-                            id="transaction-type-select"
-                            value={formData.transaction_type || ""}
-                            label="Transaction Type"
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                transaction_type: e.target.value,
-                              })
-                            }
-                          >
-                            <MenuItem value="">
-                              <em>-- Select Type --</em>
-                            </MenuItem>
-
-                            <MenuItem value="In">IN</MenuItem>
-                            <MenuItem value="Out">OUT</MenuItem>
-                          </Select>
-                        </FormControl>
-                      </div>
-
-                      {/* Transaction Quantity */}
-                      {editingCode ? (
-                        <div className="col-md-6 mb-3">
-                          <label className="form-label">
-                            Transaction Quantity
-                          </label>
-                          <input
-                            required={editingCode ? true : false}
-                            type="number"
-                            className="form-control"
-                            value={formData.transaction_quantity || ""}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                transaction_quantity: e.target.value,
-                              })
-                            }
-                          />
-                        </div>
-                      ) : (
-                        ""
-                      )}
-
-                      {/* Transaction Date */}
-                      <div className="col-md-6 mb-3">
-                        <label className="form-label">Transaction Date</label>
-                        <input
-                          type="date"
-                          className="form-control"
-                          value={formData.transaction_date || ""}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              transaction_date: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
+                    {/* Transaction Date */}
+                    <div className="col-md-6 mb-3">
+                      <label className="form-label">Transaction Date</label>
+                      <input
+                        type="date"
+                        className="form-control"
+                        value={formData.transaction_date || ""}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            transaction_date: e.target.value,
+                          })
+                        }
+                      />
                     </div>
                   </div>
+                </div>
 
-                  <div className="modal-footer">
-                    <button
-                      type="button"
-                      className="btn btn-secondary"
-                      onClick={() => setShowForm(false)}
-                    >
-                      Cancel
-                    </button>
-
-                    <button type="submit" className="btn btn-primary">
-                      {editingCode ? "Update" : "Create"}
-                    </button>
-                  </div>
-                </form>
-              </div>
+                <Space style={{ display: "flex", justifyContent: "flex-end" }}>
+                  <button
+                    type="button"
+                    class="btn btn-outline-danger"
+                    onClick={() => setShowForm(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    class="btn btn-outline-primary pl-5 pr-5"
+                  >
+                    {editingCode ? "Update" : "Create"}
+                  </button>
+                </Space>
+              </form>
             </div>
           </div>
         )}
         {/*end Modal alert add  */}
+
+        <Modal
+          title={"Inventory Transactions"}
+          open={showTransaction}
+          onCancel={handleCancel}
+          footer={false}
+          width={1000}
+        >
+          <div>
+            <Table
+              dataSource={transactionData.inventoryTransactions}
+              columns={columns}
+              pagination={false}
+            />
+          </div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              marginTop: "20px",
+            }}
+          >
+            <Space>
+              <Button type="primary" onClick={handleCancel}>
+                Cancel
+              </Button>
+              <Button type="primary" onClick={handlePrint}>
+                Print
+              </Button>
+            </Space>
+          </div>
+        </Modal>
       </div>
     </>
   );

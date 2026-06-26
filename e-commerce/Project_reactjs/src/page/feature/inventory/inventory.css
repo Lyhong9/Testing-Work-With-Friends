@@ -650,3 +650,15 @@
   max-height: 80vh;
   overflow-y: auto;
 }
+
+.modal-content {
+  width: 90%;
+  max-width: 800px;
+  border-radius: 10px;
+}
+
+.modal-overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

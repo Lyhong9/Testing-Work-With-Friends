@@ -10,6 +10,7 @@ const {
 } = require("../controllers/users.controller");
 const { validateCheck } = require("../middleware/logError");
 const { body } = require("express-validator");
+const { validate_token } = require("../middleware/auth");
 
 const validateRegister = () => {
   return [
@@ -23,7 +24,7 @@ const validateRegister = () => {
   ];
 };
 const usersRoute = (app) => {
-  app.get("/api/user", getUsers);
+  app.get("/api/user",  validate_token(), getUsers);
   app.post("/api/user",validateCheck, registerUser);
   app.post("/api/user/login", userLogin);
   app.post("/api/user/sendOTP", sendOTP);
