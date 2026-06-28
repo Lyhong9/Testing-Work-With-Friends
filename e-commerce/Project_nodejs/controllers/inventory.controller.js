@@ -64,6 +64,53 @@ const validateInventory = (
   return null;
 };
 
+const subtractQuantity = async (req, res) => {
+  try {
+    const { inventoryId, quantity, transaction_type, transaction_date } =req.body;
+    if (inventoryId) {
+
+      const inventory = await Inventory.findAll({
+        where: {
+          id: inventoryId,
+        },
+      });
+      if (inventory[0].quantity < quantity) {
+        return res.status(400).json({
+          success: false,
+          message: "Inventory quantity is not enough",
+        });
+      }
+      const newqty = inventory.quantity -= quantity;
+      
+      const inventoryNew = await Inventory.update(
+        {
+          quantity: newqty,
+        },
+        {
+          where: {
+            id: inventoryId,
+          },
+        },
+      );
+
+      const inventoryTransaction = await InventoryTransaction.create({
+        inventory_id: inventory.id,
+        transaction_type,
+        quantity,
+        transaction_date: transaction_date || new Date(),
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: "Inventory subtracted successfully",
+        inventoryNew,
+      });
+    }
+  } catch (err) {
+    logError("subtractQuantity", err, res);
+  }
+};
+
 // POST /inventory
 const createInventory = async (req, res) => {
   const t = await sequelize.transaction();
@@ -277,4 +324,5 @@ module.exports = {
   createInventory,
   updateInventory,
   deleteInventory,
+  subtractQuantity
 };

@@ -4,6 +4,7 @@ const fs = require('fs');
 
 // Ensure upload directory exists
 const uploadDir = path.join(__dirname, '../../public/image');
+
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
@@ -36,7 +37,7 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 5MB
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
 });
 
 // Middleware for single file upload (any field name)
@@ -47,7 +48,7 @@ const uploadAny = (req, res, next) => {
     if (error instanceof multer.MulterError && error.code === 'LIMIT_FILE_SIZE') {
       return res.status(413).json({
         success: false,
-        message: 'File too large. Max size is 2MB.',
+        message: 'File too large. Max size is 10MB.',
       });
     }
 
@@ -58,4 +59,16 @@ const uploadAny = (req, res, next) => {
   });
 };
 
-module.exports = { uploadAny };
+const deleteImageFolder = (filePath) => {
+  if (!filePath) return;
+
+  // const cleanedPath = filePath.replace(/^\/image\//, '');
+  const clearnedPath = path.join(__dirname,  "../../public")
+  const fullPath = path.join(clearnedPath, filePath);
+
+  if (fs.existsSync(fullPath)) {
+    fs.unlinkSync(fullPath);
+  }
+};
+
+module.exports = { uploadAny, deleteImageFolder };

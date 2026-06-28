@@ -1,7 +1,7 @@
 const { Op } = require("sequelize");
 const { Product, Category, Brand } = require("../models");
 const logError = require("../middleware/logError");
-
+const  { deleteImageFolder } = require("../middleware/uploads/upload");
 const buildPhotoPath = (file) => {
   return file ? `/image/${file.filename}` : null;
 };
@@ -194,6 +194,11 @@ const deleteProduct = async (req, res) => {
         success: false,
         message: "Product not found",
       });
+    }
+
+    if(id){
+      const idPrepare = await Product.findAll({where:{id}});
+      deleteImageFolder(idPrepare[0].image);
     }
     const deleted = await Product.destroy({ where: { id } });
 

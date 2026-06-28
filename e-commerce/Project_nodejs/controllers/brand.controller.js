@@ -1,6 +1,7 @@
 const { Op } = require("sequelize");
 const { Brand } = require("../models");
 const {logError} = require("../middleware/logError");
+const {deleteImageFolder} = require("../middleware/uploads/upload");
 const buildPhotoPath = (file) => {
   if (!file) {
     return null;
@@ -159,6 +160,10 @@ const updateBrand = async (req, res) => {
 const deleteBrand = async (req, res) => {
   try {
     const { id } = req.params;
+    if(id){
+      const brand = await Brand.findAll({where:{id}});
+      deleteImageFolder(brand[0].image);
+    }
     const brand = await Brand.destroy({ where: { id } });
     res.json({
       success: true,

@@ -1,0 +1,8 @@
+[29/06/2026 00:04:34] [subtractQuantity] inventory.save is not a function
+TypeError: inventory.save is not a function
+    at subtractQuantity (D:\GitRepo\Testing-Work-With-Friends\e-commerce\Project_nodejs\controllers\inventory.controller.js:84:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+[29/06/2026 00:04:35] [subtractQuantity] inventory.save is not a function
+TypeError: inventory.save is not a function
+    at subtractQuantity (D:\GitRepo\Testing-Work-With-Friends\e-commerce\Project_nodejs\controllers\inventory.controller.js:84:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
