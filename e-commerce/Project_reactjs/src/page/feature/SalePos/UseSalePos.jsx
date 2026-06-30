@@ -16,6 +16,8 @@ const UseSalePos = () => {
 
   const setProfile = getProfileUser();
 
+  const [Datakhqr, setDatakhqr] = useState([]);
+
   // ⏱ 5 minutes countdown (300 seconds)
   const [countMinutes, setCountMinutes] = useState(300);
 
@@ -171,6 +173,26 @@ const UseSalePos = () => {
     setIsOpen(true);
   };
 
+  const fetchKhqr = async () =>{
+    try{
+      const res = await request(`/api/khqr/generate`, "post", {
+        amount: 0.01,
+        currency: "USD",
+        billNumber: generateInvoiceID(), // ✅ generate here
+      });
+      if(res){
+        setDatakhqr(res.data);
+      }
+    }
+    catch(error){
+      alertError({ text: error?.response?.data.message || "fetch khqr Failed!" });
+    }
+  }
+
+  useEffect(() => {
+    fetchKhqr();
+  }, []);
+
   // ===============================
   // QR COUNTDOWN TIMER (5 MIN)
   // ===============================
@@ -234,6 +256,7 @@ const UseSalePos = () => {
     formatTime,
     caseLoading,
     setSearch,
+    Datakhqr
   };
 };
 

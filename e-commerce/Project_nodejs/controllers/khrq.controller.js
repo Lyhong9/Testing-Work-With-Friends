@@ -32,7 +32,7 @@ const checkPaymentStatus = async (req, res) => {
 
         // Call Bakong Open API to check transaction status
         const apiUrl = process.env.BAKONG_API_URL || 'https://sit-api-bakong.nbc.org.kh';
-        const apiToken = process.env.BAKONG_API_TOKEN;
+        const apiToken = process.env.BAKONG_API_TOKEN || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNzM4MDY3YzBiMDBmNDU3YyJ9LCJpYXQiOjE3ODI4NDE1NjUsImV4cCI6MTc5MDYxNzU2NX0.OPJEijhepT0N8ngiIe69e4-hHyZZRAn-D_MxNES5QOU";
 
         // Determine which endpoint to use based on provided parameter
         const endpoint = hash ? '/v1/check_transaction_by_hash' : '/v1/check_transaction_by_md5';

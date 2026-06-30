@@ -5,7 +5,9 @@ import { BaseURL } from "../../../utils/BaseURL";
 import { alertError } from "../../../swertalert/AlertSuccess";
 import UseSalePos from "./UseSalePos";
 import {Modal} from "antd"
-
+import QrCode from "react-qr-code";
+import QRCodeSVG from "qrcode-svg";
+import GenerateKhqr from "./GenerateKhqr";
 const SalePos = () => {
   const [products, setProducts] = useState([]);
   const [Search, SetSearch] = useState("");
@@ -28,6 +30,7 @@ const SalePos = () => {
     formatTime,
     countMinutes,
     caseLoading,
+    Datakhqr
   } = UseSalePos();
 
   useEffect(() => {
@@ -251,14 +254,8 @@ const SalePos = () => {
             footer={null}
             title="Payment Processing"
           >
-            <div className="qr-code-container">
-              <img
-                src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=payment:${totalPrice.toFixed(
-                  2
-                )}`}
-                alt="QR Code"
-                className="qr-code-image"
-              />
+            <div className="flex justify-center mb-5" style={{ width: "100%" }}>
+              <GenerateKhqr></GenerateKhqr>
             </div>
             <div style={{ textAlign: "center", fontSize: "15px", color: 'rgb(255, 0, 0', fontWeight: '600'}}>{formatTime(countMinutes)}</div>
             <h2 style={{ textAlign: "center" }}>Scan to Pay</h2>
